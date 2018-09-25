@@ -66,10 +66,12 @@ public final class Retrofit {
   final List<CallAdapter.Factory> callAdapterFactories;
   final @Nullable Executor callbackExecutor;
   final boolean validateEagerly;
+  final ServiceParser serviceParser;
 
-  Retrofit(okhttp3.Call.Factory callFactory, HttpUrl baseUrl,
-      List<Converter.Factory> converterFactories, List<CallAdapter.Factory> callAdapterFactories,
-      @Nullable Executor callbackExecutor, boolean validateEagerly) {
+  Retrofit(ServiceParser serviceParser, okhttp3.Call.Factory callFactory, HttpUrl baseUrl,
+           List<Converter.Factory> converterFactories, List<CallAdapter.Factory> callAdapterFactories,
+           @Nullable Executor callbackExecutor, boolean validateEagerly) {
+    this.serviceParser = serviceParser;
     this.callFactory = callFactory;
     this.baseUrl = baseUrl;
     this.converterFactories = converterFactories; // Copy+unmodifiable at call site.
@@ -165,7 +167,7 @@ public final class Retrofit {
     synchronized (serviceMethodCache) {
       result = serviceMethodCache.get(method);
       if (result == null) {
-        result = ServiceMethod.parseAnnotations(this, method);
+        result = serviceParser.parseAnnotations(this, method);
         serviceMethodCache.put(method, result);
       }
     }
@@ -391,6 +393,7 @@ public final class Retrofit {
    */
   public static final class Builder {
     private final Platform platform;
+    private ServiceParser serviceParser;
     private @Nullable okhttp3.Call.Factory callFactory;
     private HttpUrl baseUrl;
     private final List<Converter.Factory> converterFactories = new ArrayList<>();
@@ -398,12 +401,17 @@ public final class Retrofit {
     private @Nullable Executor callbackExecutor;
     private boolean validateEagerly;
 
-    Builder(Platform platform) {
+    Builder(Platform platform, ServiceParser serviceParser) {
       this.platform = platform;
+      this.serviceParser = serviceParser;
     }
 
     public Builder() {
-      this(Platform.get());
+      this(Platform.get(), new HttpServiceParser());
+    }
+
+    public Builder(ServiceParser serviceParser) {
+      this(Platform.get(), serviceParser);
     }
 
     Builder(Retrofit retrofit) {
@@ -424,6 +432,7 @@ public final class Retrofit {
 
       callbackExecutor = retrofit.callbackExecutor;
       validateEagerly = retrofit.validateEagerly;
+      serviceParser = retrofit.serviceParser;
     }
 
     /**
@@ -595,7 +604,7 @@ public final class Retrofit {
       converterFactories.add(new BuiltInConverters());
       converterFactories.addAll(this.converterFactories);
 
-      return new Retrofit(callFactory, baseUrl, unmodifiableList(converterFactories),
+      return new Retrofit(serviceParser, callFactory, baseUrl, unmodifiableList(converterFactories),
           unmodifiableList(callAdapterFactories), callbackExecutor, validateEagerly);
     }
   }
