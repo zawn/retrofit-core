@@ -7,5 +7,5 @@ import java.lang.reflect.Method;
  */
 public abstract class ServiceParser {
 
-  abstract <T> ServiceMethod<T> parseAnnotations(Retrofit retrofit, Method method);
+  public abstract <T> ServiceMethod<T> parseAnnotations(Retrofit retrofit, Method method);
 }

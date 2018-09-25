@@ -60,7 +60,7 @@ public final class Invocation {
   private final List<?> arguments;
 
   /** Trusted constructor assumes ownership of {@code arguments}. */
-  Invocation(Method method, List<?> arguments) {
+  public Invocation(Method method, List<?> arguments) {
     this.method = method;
     this.arguments = Collections.unmodifiableList(arguments);
   }

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package retrofit2;
+package retrofit2.protocol.http;
 
 import java.io.IOException;
 import javax.annotation.Nullable;
@@ -25,6 +25,11 @@ import okio.Buffer;
 import okio.BufferedSource;
 import okio.ForwardingSource;
 import okio.Okio;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Converter;
+import retrofit2.Response;
+import retrofit2.Utils;
 
 import static retrofit2.Utils.checkNotNull;
 import static retrofit2.Utils.throwIfFatal;

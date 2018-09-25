@@ -21,6 +21,7 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.concurrent.CompletableFuture;
 import org.codehaus.mojo.animal_sniffer.IgnoreJRERequirement;
+import retrofit2.protocol.http.HttpException;
 
 /**
  * A {@linkplain CallAdapter.Factory call adapter} which creates Java 8 futures.
@@ -36,7 +37,7 @@ import org.codehaus.mojo.animal_sniffer.IgnoreJRERequirement;
  * There are two configurations supported for the {@code CompletableFuture} type parameter:
  * <ul>
  * <li>Direct body (e.g., {@code CompletableFuture<User>}) returns the deserialized body for 2XX
- * responses, sets {@link retrofit2.HttpException HttpException} errors for non-2XX responses, and
+ * responses, sets {@link HttpException HttpException} errors for non-2XX responses, and
  * sets {@link IOException} for network errors.</li>
  * <li>Response wrapped body (e.g., {@code CompletableFuture<Response<User>>}) returns a
  * {@link Response} object for all HTTP responses and sets {@link IOException} for network

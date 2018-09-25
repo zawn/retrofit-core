@@ -25,6 +25,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import retrofit2.helpers.ToStringConverterFactory;
 import retrofit2.http.GET;
+import retrofit2.protocol.http.HttpException;
 
 import static okhttp3.mockwebserver.SocketPolicy.DISCONNECT_AFTER_REQUEST;
 import static org.assertj.core.api.Assertions.assertThat;

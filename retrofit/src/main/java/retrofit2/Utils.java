@@ -15,6 +15,10 @@
  */
 package retrofit2;
 
+import okhttp3.ResponseBody;
+import okio.Buffer;
+
+import javax.annotation.Nullable;
 import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Array;
@@ -27,41 +31,41 @@ import java.lang.reflect.TypeVariable;
 import java.lang.reflect.WildcardType;
 import java.util.Arrays;
 import java.util.NoSuchElementException;
-import javax.annotation.Nullable;
-import okhttp3.ResponseBody;
-import okio.Buffer;
 
-final class Utils {
+  public final class Utils {
   static final Type[] EMPTY_TYPE_ARRAY = new Type[0];
 
   private Utils() {
     // No instances.
   }
 
-  static RuntimeException methodError(Method method, String message, Object... args) {
-    return methodError(method, null, message, args);
-  }
+    public static RuntimeException methodError(Method method, String message, Object... args) {
+      return methodError(method, null, message, args);
+    }
 
-  static RuntimeException methodError(Method method, @Nullable Throwable cause, String message,
-      Object... args) {
-    message = String.format(message, args);
-    return new IllegalArgumentException(message
-        + "\n    for method "
-        + method.getDeclaringClass().getSimpleName()
-        + "."
-        + method.getName(), cause);
-  }
+    public static RuntimeException methodError(Method method, @Nullable Throwable cause,
+                                               String message,
+                                               Object... args) {
+      message = String.format(message, args);
+      return new IllegalArgumentException(message
+          + "\n    for method "
+          + method.getDeclaringClass().getSimpleName()
+          + "."
+          + method.getName(), cause);
+    }
 
-  static RuntimeException parameterError(Method method,
-      Throwable cause, int p, String message, Object... args) {
-    return methodError(method, cause, message + " (parameter #" + (p + 1) + ")", args);
-  }
+    public static RuntimeException parameterError(Method method,
+                                                  Throwable cause, int p, String message,
+                                                  Object... args) {
+      return methodError(method, cause, message + " (parameter #" + (p + 1) + ")", args);
+    }
 
-  static RuntimeException parameterError(Method method, int p, String message, Object... args) {
-    return methodError(method, message + " (parameter #" + (p + 1) + ")", args);
-  }
+    public static RuntimeException parameterError(Method method, int p, String message,
+                                                  Object... args) {
+      return methodError(method, message + " (parameter #" + (p + 1) + ")", args);
+    }
 
-  static Class<?> getRawType(Type type) {
+  public static Class<?> getRawType(Type type) {
     checkNotNull(type, "type == null");
 
     if (type instanceof Class<?>) {
@@ -192,7 +196,7 @@ final class Utils {
    *
    * @param supertype a superclass of, or interface implemented by, this.
    */
-  static Type getSupertype(Type context, Class<?> contextRawType, Class<?> supertype) {
+  public static Type getSupertype(Type context, Class<?> contextRawType, Class<?> supertype) {
     if (!supertype.isAssignableFrom(contextRawType)) throw new IllegalArgumentException();
     return resolve(context, contextRawType,
         getGenericSupertype(context, contextRawType, supertype));
@@ -299,7 +303,7 @@ final class Utils {
     }
   }
 
-  static <T> T checkNotNull(@Nullable T object, String message) {
+  public static <T> T checkNotNull(@Nullable T object, String message) {
     if (object == null) {
       throw new NullPointerException(message);
     }
@@ -307,8 +311,8 @@ final class Utils {
   }
 
   /** Returns true if {@code annotations} contains an instance of {@code cls}. */
-  static boolean isAnnotationPresent(Annotation[] annotations,
-      Class<? extends Annotation> cls) {
+  public static boolean isAnnotationPresent(Annotation[] annotations,
+                                            Class<? extends Annotation> cls) {
     for (Annotation annotation : annotations) {
       if (cls.isInstance(annotation)) {
         return true;
@@ -317,13 +321,13 @@ final class Utils {
     return false;
   }
 
-  static ResponseBody buffer(final ResponseBody body) throws IOException {
+  public static ResponseBody buffer(final ResponseBody body) throws IOException {
     Buffer buffer = new Buffer();
     body.source().readAll(buffer);
     return ResponseBody.create(body.contentType(), body.contentLength(), buffer);
   }
 
-  static <T> void validateServiceInterface(Class<T> service) {
+  public static <T> void validateServiceInterface(Class<T> service) {
     if (!service.isInterface()) {
       throw new IllegalArgumentException("API declarations must be interfaces.");
     }
@@ -335,7 +339,7 @@ final class Utils {
     }
   }
 
-  static Type getParameterUpperBound(int index, ParameterizedType type) {
+  public static Type getParameterUpperBound(int index, ParameterizedType type) {
     Type[] types = type.getActualTypeArguments();
     if (index < 0 || index >= types.length) {
       throw new IllegalArgumentException(
@@ -348,7 +352,7 @@ final class Utils {
     return paramType;
   }
 
-  static boolean hasUnresolvableType(@Nullable Type type) {
+  public static boolean hasUnresolvableType(@Nullable Type type) {
     if (type instanceof Class<?>) {
       return false;
     }
@@ -375,7 +379,7 @@ final class Utils {
         + "GenericArrayType, but <" + type + "> is of type " + className);
   }
 
-  static Type getCallResponseType(Type returnType) {
+  public static Type getCallResponseType(Type returnType) {
     if (!(returnType instanceof ParameterizedType)) {
       throw new IllegalArgumentException(
           "Call return type must be parameterized as Call<Foo> or Call<? extends Foo>");
@@ -517,7 +521,7 @@ final class Utils {
 
   // https://github.com/ReactiveX/RxJava/blob/6a44e5d0543a48f1c378dc833a155f3f71333bc2/
   // src/main/java/io/reactivex/exceptions/Exceptions.java#L66
-  static void throwIfFatal(Throwable t) {
+  public static void throwIfFatal(Throwable t) {
     if (t instanceof VirtualMachineError) {
       throw (VirtualMachineError) t;
     } else if (t instanceof ThreadDeath) {

@@ -1,6 +1,13 @@
-package retrofit2;
+package retrofit2.protocol.http;
 
 import okhttp3.ResponseBody;
+import retrofit2.CallAdapter;
+import retrofit2.Converter;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.ServiceMethod;
+import retrofit2.ServiceParser;
+import retrofit2.Utils;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
@@ -12,7 +19,7 @@ import static retrofit2.Utils.methodError;
  * @author zhangzhenli
  */
 public class HttpServiceParser extends ServiceParser {
-  @Override <T> ServiceMethod<T> parseAnnotations(Retrofit retrofit, Method method) {
+  @Override public <T> ServiceMethod<T> parseAnnotations(Retrofit retrofit, Method method) {
     HttpRequestFactory requestFactory = HttpRequestFactory.parseAnnotations(retrofit, method);
 
     Type returnType = method.getGenericReturnType();
@@ -38,7 +45,7 @@ public class HttpServiceParser extends ServiceParser {
     Converter<ResponseBody, Object> responseConverter =
         createResponseConverter(retrofit, method, responseType);
 
-    okhttp3.Call.Factory callFactory = retrofit.callFactory;
+    okhttp3.Call.Factory callFactory = retrofit.callFactory();
     return new HttpServiceMethod<>(requestFactory, callFactory, callAdapter, responseConverter);
   }
 

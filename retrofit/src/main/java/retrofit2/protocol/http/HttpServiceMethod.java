@@ -13,9 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package retrofit2;
+package retrofit2.protocol.http;
 
 import okhttp3.ResponseBody;
+import retrofit2.CallAdapter;
+import retrofit2.Converter;
+import retrofit2.ServiceMethod;
 
 /** Adapts an invocation of an interface method into an HTTP call. */
 final class HttpServiceMethod<ResponseT, ReturnT> extends ServiceMethod<ReturnT> {
@@ -34,7 +37,7 @@ final class HttpServiceMethod<ResponseT, ReturnT> extends ServiceMethod<ReturnT>
     this.responseConverter = responseConverter;
   }
 
-  @Override ReturnT invoke(Object[] args) {
+  @Override public ReturnT invoke(Object[] args) {
     return callAdapter.adapt(
         new OkHttpCall<>(requestFactory, args, callFactory, responseConverter));
   }

@@ -16,6 +16,7 @@
 package retrofit2;
 
 import org.junit.Test;
+import retrofit2.protocol.http.HttpException;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.fail;

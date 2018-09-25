@@ -15,7 +15,7 @@
  */
 package retrofit2;
 
-abstract class ServiceMethod<T> {
+public abstract class ServiceMethod<T> {
 
-  abstract T invoke(Object[] args);
+  public abstract T invoke(Object[] args);
 }
