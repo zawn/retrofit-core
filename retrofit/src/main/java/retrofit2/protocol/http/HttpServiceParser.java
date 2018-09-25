@@ -1,5 +1,7 @@
 package retrofit2.protocol.http;
 
+import okhttp3.Call;
+import okhttp3.OkHttpClient;
 import okhttp3.ResponseBody;
 import retrofit2.CallAdapter;
 import retrofit2.Converter;
@@ -19,6 +21,13 @@ import static retrofit2.Utils.methodError;
  * @author zhangzhenli
  */
 public class HttpServiceParser extends ServiceParser {
+
+  final okhttp3.Call.Factory callFactory;
+
+  public HttpServiceParser(Call.Factory callFactory) {
+    this.callFactory = callFactory;
+  }
+
   @Override public <T> ServiceMethod<T> parseAnnotations(Retrofit retrofit, Method method) {
     HttpRequestFactory requestFactory = HttpRequestFactory.parseAnnotations(retrofit, method);
 
@@ -45,7 +54,7 @@ public class HttpServiceParser extends ServiceParser {
     Converter<ResponseBody, Object> responseConverter =
         createResponseConverter(retrofit, method, responseType);
 
-    okhttp3.Call.Factory callFactory = retrofit.callFactory();
+    okhttp3.Call.Factory callFactory = callFactory();
     return new HttpServiceMethod<>(requestFactory, callFactory, callAdapter, responseConverter);
   }
 
@@ -69,5 +78,13 @@ public class HttpServiceParser extends ServiceParser {
     } catch (RuntimeException e) { // Wide exception range because factories are user code.
       throw methodError(method, e, "Unable to create converter for %s", responseType);
     }
+  }
+
+  /**
+   * The factory used to create {@linkplain okhttp3.Call OkHttp calls} for sending a HTTP requests.
+   * Typically an instance of {@link OkHttpClient}.
+   */
+  public okhttp3.Call.Factory callFactory() {
+    return callFactory;
   }
 }

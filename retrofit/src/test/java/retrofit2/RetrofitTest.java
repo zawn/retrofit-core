@@ -1258,7 +1258,7 @@ public final class RetrofitTest {
         return executor;
       }
     };
-    Retrofit retrofit = new Retrofit.Builder(platform,new HttpServiceParser())
+    Retrofit retrofit = new Retrofit.Builder(platform,new HttpServiceParser(callFactory))
         .baseUrl("http://example.com/")
         .build();
     assertThat(retrofit.callbackExecutor()).isSameAs(executor);
