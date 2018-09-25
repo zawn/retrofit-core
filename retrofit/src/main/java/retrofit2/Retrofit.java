@@ -20,6 +20,8 @@ import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.lang.reflect.Type;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -61,14 +63,14 @@ public final class Retrofit {
   private final Map<Method, ServiceMethod<?>> serviceMethodCache = new ConcurrentHashMap<>();
 
   final okhttp3.Call.Factory callFactory;
-  final HttpUrl baseUrl;
+  final URL baseUrl;
   final List<Converter.Factory> converterFactories;
   final List<CallAdapter.Factory> callAdapterFactories;
   final @Nullable Executor callbackExecutor;
   final boolean validateEagerly;
   final ServiceParser serviceParser;
 
-  Retrofit(ServiceParser serviceParser, okhttp3.Call.Factory callFactory, HttpUrl baseUrl,
+  Retrofit(ServiceParser serviceParser, okhttp3.Call.Factory callFactory, URL baseUrl,
            List<Converter.Factory> converterFactories, List<CallAdapter.Factory> callAdapterFactories,
            @Nullable Executor callbackExecutor, boolean validateEagerly) {
     this.serviceParser = serviceParser;
@@ -183,7 +185,7 @@ public final class Retrofit {
   }
 
   /** The API base URL. */
-  public HttpUrl baseUrl() {
+  public URL baseUrl() {
     return baseUrl;
   }
 
@@ -395,7 +397,7 @@ public final class Retrofit {
     private final Platform platform;
     private ServiceParser serviceParser;
     private @Nullable okhttp3.Call.Factory callFactory;
-    private HttpUrl baseUrl;
+    private URL baseUrl;
     private final List<Converter.Factory> converterFactories = new ArrayList<>();
     private final List<CallAdapter.Factory> callAdapterFactories = new ArrayList<>();
     private @Nullable Executor callbackExecutor;
@@ -516,8 +518,15 @@ public final class Retrofit {
      */
     public Builder baseUrl(HttpUrl baseUrl) {
       checkNotNull(baseUrl, "baseUrl == null");
-      List<String> pathSegments = baseUrl.pathSegments();
-      if (!"".equals(pathSegments.get(pathSegments.size() - 1))) {
+      this.baseUrl(baseUrl.url());
+      return this;
+    }
+
+
+    public Builder baseUrl(URL baseUrl) {
+      checkNotNull(baseUrl, "baseUrl == null");
+      String path = baseUrl.getPath();
+      if (!"/".equals(path)) {
         throw new IllegalArgumentException("baseUrl must end in /: " + baseUrl);
       }
       this.baseUrl = baseUrl;

@@ -60,8 +60,8 @@ import retrofit2.http.Url;
 import static retrofit2.Utils.methodError;
 import static retrofit2.Utils.parameterError;
 
-final class RequestFactory {
-  static RequestFactory parseAnnotations(Retrofit retrofit, Method method) {
+final class HttpRequestFactory {
+  static HttpRequestFactory parseAnnotations(Retrofit retrofit, Method method) {
     return new Builder(retrofit, method).build();
   }
 
@@ -76,9 +76,9 @@ final class RequestFactory {
   private final boolean isMultipart;
   private final ParameterHandler<?>[] parameterHandlers;
 
-  RequestFactory(Builder builder) {
+  HttpRequestFactory(Builder builder) {
     method = builder.method;
-    baseUrl = builder.retrofit.baseUrl;
+    baseUrl = HttpUrl.get(builder.retrofit.baseUrl);
     httpMethod = builder.httpMethod;
     relativeUrl = builder.relativeUrl;
     headers = builder.headers;
@@ -156,7 +156,7 @@ final class RequestFactory {
       this.parameterAnnotationsArray = method.getParameterAnnotations();
     }
 
-    RequestFactory build() {
+    HttpRequestFactory build() {
       for (Annotation annotation : methodAnnotations) {
         parseMethodAnnotation(annotation);
       }
@@ -195,7 +195,7 @@ final class RequestFactory {
         throw methodError(method, "Multipart method must contain at least one @Part.");
       }
 
-      return new RequestFactory(this);
+      return new HttpRequestFactory(this);
     }
 
     private void parseMethodAnnotation(Annotation annotation) {

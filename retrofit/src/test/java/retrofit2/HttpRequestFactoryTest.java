@@ -64,7 +64,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.fail;
 
 @SuppressWarnings({"UnusedParameters", "unused"}) // Parameters inspected reflectively.
-public final class RequestFactoryTest {
+public final class HttpRequestFactoryTest {
   private static final MediaType TEXT_PLAIN = MediaType.get("text/plain");
 
   @Test public void customMethodNoBody() {
@@ -2768,7 +2768,7 @@ public final class RequestFactoryTest {
 
     Method method = TestingUtils.onlyMethod(cls);
     try {
-      return RequestFactory.parseAnnotations(retrofit, method).create(args);
+      return HttpRequestFactory.parseAnnotations(retrofit, method).create(args);
     } catch (RuntimeException e) {
       throw e;
     } catch (Exception e) {

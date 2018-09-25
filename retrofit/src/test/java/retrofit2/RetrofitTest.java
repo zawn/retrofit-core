@@ -167,7 +167,7 @@ public final class RetrofitTest {
     assertThat(two.callAdapterFactories()).contains(callAdapter, callAdapter2);
     assertEquals(one.converterFactories().size() + 1, two.converterFactories().size());
     assertThat(two.converterFactories()).contains(converter, converter2);
-    assertSame(baseUrl, two.baseUrl());
+    assertEquals(baseUrl.url(), two.baseUrl());
     assertSame(executor, two.callbackExecutor());
     assertSame(callFactory, two.callFactory());
   }
@@ -718,7 +718,7 @@ public final class RetrofitTest {
     Retrofit retrofit = new Retrofit.Builder()
         .baseUrl("http://example.com/")
         .build();
-    HttpUrl baseUrl = retrofit.baseUrl();
+    HttpUrl baseUrl = HttpUrl.get(retrofit.baseUrl());
     assertThat(baseUrl).isEqualTo(HttpUrl.get("http://example.com/"));
   }
 
@@ -727,7 +727,7 @@ public final class RetrofitTest {
     Retrofit retrofit = new Retrofit.Builder()
         .baseUrl(url)
         .build();
-    assertThat(retrofit.baseUrl()).isSameAs(url);
+    assertThat(retrofit.baseUrl()).isEqualTo(url.url());
   }
 
   @Test public void clientNullThrows() {

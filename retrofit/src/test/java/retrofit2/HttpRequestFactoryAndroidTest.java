@@ -25,11 +25,11 @@ import retrofit2.http.GET;
 import retrofit2.http.Url;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static retrofit2.RequestFactoryTest.buildRequest;
+import static retrofit2.HttpRequestFactoryTest.buildRequest;
 
 @RunWith(RobolectricTestRunner.class)
 @SuppressWarnings({"UnusedParameters", "unused"}) // Parameters inspected reflectively.
-public final class RequestFactoryAndroidTest {
+public final class HttpRequestFactoryAndroidTest {
   @Test public void getWithAndroidUriUrl() {
     class Example {
       @GET
