@@ -29,6 +29,7 @@ import org.simpleframework.xml.Default;
 import org.simpleframework.xml.DefaultType;
 import retrofit2.Call;
 import retrofit2.Converter;
+import retrofit2.ConverterFactory;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 import retrofit2.converter.simplexml.SimpleXmlConverterFactory;
@@ -52,11 +53,11 @@ public final class JsonAndXmlConverters {
   @interface Xml {
   }
 
-  static class QualifiedTypeConverterFactory extends Converter.Factory {
-    private final Converter.Factory jsonFactory;
-    private final Converter.Factory xmlFactory;
+  static class QualifiedTypeConverterFactory extends ConverterFactory {
+    private final ConverterFactory jsonFactory;
+    private final ConverterFactory xmlFactory;
 
-    QualifiedTypeConverterFactory(Converter.Factory jsonFactory, Converter.Factory xmlFactory) {
+    QualifiedTypeConverterFactory(ConverterFactory jsonFactory, ConverterFactory xmlFactory) {
       this.jsonFactory = jsonFactory;
       this.xmlFactory = xmlFactory;
     }

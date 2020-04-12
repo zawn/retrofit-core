@@ -421,7 +421,7 @@ public final class CallTest {
   @Test public void converterBodyDoesNotLeakContentInIntermediateBuffers() throws IOException {
     Retrofit retrofit = new Retrofit.Builder()
         .baseUrl(server.url("/"))
-        .addConverterFactory(new Converter.Factory() {
+        .addConverterFactory(new ConverterFactory() {
           @Override public Converter<ResponseBody, ?> responseBodyConverter(Type type,
               Annotation[] annotations, Retrofit retrofit) {
             return new Converter<ResponseBody, String>() {

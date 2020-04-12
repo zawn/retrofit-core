@@ -23,10 +23,11 @@ import okhttp3.ResponseBody;
 import org.simpleframework.xml.Serializer;
 import org.simpleframework.xml.core.Persister;
 import retrofit2.Converter;
+import retrofit2.ConverterFactory;
 import retrofit2.Retrofit;
 
 /**
- * A {@linkplain Converter.Factory converter} which uses Simple Framework for XML.
+ * A {@linkplain ConverterFactory converter} which uses Simple Framework for XML.
  * <p>
  * This converter only applies for class types. Parameterized types (e.g., {@code List<Foo>}) are
  * not handled.
@@ -34,7 +35,7 @@ import retrofit2.Retrofit;
  * @deprecated we recommend switching to the JAXB converter.
  */
 @Deprecated
-public final class SimpleXmlConverterFactory extends Converter.Factory {
+public final class SimpleXmlConverterFactory extends ConverterFactory {
   /** Create an instance using a default {@link Persister} instance for conversion. */
   public static SimpleXmlConverterFactory create() {
     return create(new Persister());

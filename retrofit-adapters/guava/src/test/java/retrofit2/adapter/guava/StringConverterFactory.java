@@ -22,9 +22,10 @@ import okhttp3.MediaType;
 import okhttp3.RequestBody;
 import okhttp3.ResponseBody;
 import retrofit2.Converter;
+import retrofit2.ConverterFactory;
 import retrofit2.Retrofit;
 
-final class StringConverterFactory extends Converter.Factory {
+final class StringConverterFactory extends ConverterFactory {
   @Override
   public Converter<ResponseBody, ?> responseBodyConverter(Type type, Annotation[] annotations,
       Retrofit retrofit) {

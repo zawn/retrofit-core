@@ -64,7 +64,7 @@ public final class SingleTest {
     RecordingSingleObserver<String> observer = observerRule.create();
     service.body().subscribe(observer);
     // Required for backwards compatibility.
-    observer.assertError(HttpException.class, "HTTP 404 Client Error");
+    observer.assertError(ResponseException.class, "HTTP 404 Client Error");
   }
 
   @Test public void bodyFailure() {

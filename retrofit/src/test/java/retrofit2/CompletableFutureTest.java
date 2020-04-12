@@ -64,8 +64,8 @@ public final class CompletableFutureTest {
       fail();
     } catch (ExecutionException e) {
       assertThat(e.getCause())
-          .isInstanceOf(HttpException.class) // Required for backwards compatibility.
-          .isInstanceOf(HttpException.class)
+          .isInstanceOf(ResponseException.class) // Required for backwards compatibility.
+          .isInstanceOf(ResponseException.class)
           .hasMessage("HTTP 404 Client Error");
     }
   }

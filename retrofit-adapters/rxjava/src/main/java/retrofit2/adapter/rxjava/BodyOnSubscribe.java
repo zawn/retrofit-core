@@ -51,7 +51,7 @@ final class BodyOnSubscribe<T> implements OnSubscribe<T> {
         subscriber.onNext(response.body());
       } else {
         subscriberTerminated = true;
-        Throwable t = new HttpException(response);
+        Throwable t = new ResponseException(response);
         try {
           subscriber.onError(t);
         } catch (OnCompletedFailedException

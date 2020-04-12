@@ -143,7 +143,7 @@ public final class NetworkBehaviorTest {
   @Test public void errorFactoryCannotReturnSuccess() {
     behavior.setErrorFactory(new Callable<Response<?>>() {
       @Override public Response<?> call() throws Exception {
-        return Response.success("Taco");
+        return Utils.success("Taco");
       }
     });
     try {

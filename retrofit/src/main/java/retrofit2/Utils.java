@@ -15,23 +15,13 @@
  */
 package retrofit2;
 
-import java.io.IOException;
+import javax.annotation.Nullable;
 import java.lang.annotation.Annotation;
-import java.lang.reflect.Array;
-import java.lang.reflect.GenericArrayType;
-import java.lang.reflect.GenericDeclaration;
-import java.lang.reflect.Method;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
-import java.lang.reflect.TypeVariable;
-import java.lang.reflect.WildcardType;
+import java.lang.reflect.*;
 import java.util.Arrays;
 import java.util.NoSuchElementException;
-import javax.annotation.Nullable;
-import okhttp3.ResponseBody;
-import okio.Buffer;
 
-final class Utils {
+public final class Utils {
   static final Type[] EMPTY_TYPE_ARRAY = new Type[0];
 
   private Utils() {
@@ -57,7 +47,7 @@ final class Utils {
     return methodError(method, cause, message + " (parameter #" + (p + 1) + ")", args);
   }
 
-  static RuntimeException parameterError(Method method, int p, String message, Object... args) {
+ public static RuntimeException parameterError(Method method, int p, String message, Object... args) {
     return methodError(method, message + " (parameter #" + (p + 1) + ")", args);
   }
 
@@ -299,7 +289,7 @@ final class Utils {
     }
   }
 
-  static <T> T checkNotNull(@Nullable T object, String message) {
+ public static <T> T checkNotNull(@Nullable T object, String message) {
     if (object == null) {
       throw new NullPointerException(message);
     }
@@ -315,12 +305,6 @@ final class Utils {
       }
     }
     return false;
-  }
-
-  static ResponseBody buffer(final ResponseBody body) throws IOException {
-    Buffer buffer = new Buffer();
-    body.source().readAll(buffer);
-    return ResponseBody.create(body.contentType(), body.contentLength(), buffer);
   }
 
   static <T> void validateServiceInterface(Class<T> service) {

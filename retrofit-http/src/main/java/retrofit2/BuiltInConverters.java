@@ -24,7 +24,7 @@ import okhttp3.RequestBody;
 import okhttp3.ResponseBody;
 import retrofit2.http.Streaming;
 
-final class BuiltInConverters extends Converter.Factory {
+final class BuiltInConverters extends ConverterFactory<RequestBody,ResponseBody> {
   /** Not volatile because we don't mind multiple threads discovering this. */
   private boolean checkForKotlinUnit = true;
 
@@ -100,7 +100,7 @@ final class BuiltInConverters extends Converter.Factory {
     @Override public ResponseBody convert(ResponseBody value) throws IOException {
       try {
         // Buffer the entire body to avoid future I/O.
-        return Utils.buffer(value);
+        return retrofit2.okhttp.Utils.buffer(value);
       } finally {
         value.close();
       }

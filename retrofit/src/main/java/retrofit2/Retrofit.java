@@ -15,27 +15,16 @@
  */
 package retrofit2;
 
-import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Proxy;
-import java.lang.reflect.Type;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executor;
 import javax.annotation.Nullable;
-import okhttp3.HttpUrl;
-import okhttp3.OkHttpClient;
-import okhttp3.RequestBody;
-import okhttp3.ResponseBody;
-import retrofit2.http.GET;
-import retrofit2.http.HTTP;
-import retrofit2.http.Header;
-import retrofit2.http.Url;
 
 import static java.util.Collections.unmodifiableList;
 import static retrofit2.Utils.checkNotNull;
@@ -62,20 +51,13 @@ import static retrofit2.Utils.checkNotNull;
 public final class Retrofit {
   private final Map<Method, ServiceMethod<?>> serviceMethodCache = new ConcurrentHashMap<>();
 
-  final okhttp3.Call.Factory callFactory;
-  final HttpUrl baseUrl;
-  final List<Converter.Factory> converterFactories;
-  final List<CallAdapter.Factory> callAdapterFactories;
+
+//  final List<Converter.Factory> converterFactories;
+//  final List<CallAdapter.Factory> callAdapterFactories;
   final @Nullable Executor callbackExecutor;
   final boolean validateEagerly;
 
-  Retrofit(okhttp3.Call.Factory callFactory, HttpUrl baseUrl,
-      List<Converter.Factory> converterFactories, List<CallAdapter.Factory> callAdapterFactories,
-      @Nullable Executor callbackExecutor, boolean validateEagerly) {
-    this.callFactory = callFactory;
-    this.baseUrl = baseUrl;
-    this.converterFactories = converterFactories; // Copy+unmodifiable at call site.
-    this.callAdapterFactories = callAdapterFactories; // Copy+unmodifiable at call site.
+  Retrofit(@Nullable Executor callbackExecutor, boolean validateEagerly) {
     this.callbackExecutor = callbackExecutor;
     this.validateEagerly = validateEagerly;
   }
@@ -97,7 +79,7 @@ public final class Retrofit {
    * {@link retrofit2.http.Query @Query}.
    * <p>
    * The body of a request is denoted by the {@link retrofit2.http.Body @Body} annotation. The
-   * object will be converted to request representation by one of the {@link Converter.Factory}
+   * object will be converted to request representation by one of the {@link ConverterFactory}
    * instances. A {@link RequestBody} can also be used for a raw representation.
    * <p>
    * Alternative request body formats are supported by method annotations and corresponding
@@ -115,7 +97,7 @@ public final class Retrofit {
    * <p>
    * By default, methods return a {@link Call} which represents the HTTP request. The generic
    * parameter of the call is the response body type and will be converted by one of the
-   * {@link Converter.Factory} instances. {@link ResponseBody} can also be used for a raw
+   * {@link ConverterFactory} instances. {@link ResponseBody} can also be used for a raw
    * representation. {@link Void} can be used if you do not care about the body contents.
    * <p>
    * For example:
@@ -251,127 +233,8 @@ public final class Retrofit {
     return converterFactories;
   }
 
-  /**
-   * Returns a {@link Converter} for {@code type} to {@link RequestBody} from the available
-   * {@linkplain #converterFactories() factories}.
-   *
-   * @throws IllegalArgumentException if no converter available for {@code type}.
-   */
-  public <T> Converter<T, RequestBody> requestBodyConverter(Type type,
-      Annotation[] parameterAnnotations, Annotation[] methodAnnotations) {
-    return nextRequestBodyConverter(null, type, parameterAnnotations, methodAnnotations);
-  }
 
-  /**
-   * Returns a {@link Converter} for {@code type} to {@link RequestBody} from the available
-   * {@linkplain #converterFactories() factories} except {@code skipPast}.
-   *
-   * @throws IllegalArgumentException if no converter available for {@code type}.
-   */
-  public <T> Converter<T, RequestBody> nextRequestBodyConverter(
-      @Nullable Converter.Factory skipPast, Type type, Annotation[] parameterAnnotations,
-      Annotation[] methodAnnotations) {
-    checkNotNull(type, "type == null");
-    checkNotNull(parameterAnnotations, "parameterAnnotations == null");
-    checkNotNull(methodAnnotations, "methodAnnotations == null");
 
-    int start = converterFactories.indexOf(skipPast) + 1;
-    for (int i = start, count = converterFactories.size(); i < count; i++) {
-      Converter.Factory factory = converterFactories.get(i);
-      Converter<?, RequestBody> converter =
-          factory.requestBodyConverter(type, parameterAnnotations, methodAnnotations, this);
-      if (converter != null) {
-        //noinspection unchecked
-        return (Converter<T, RequestBody>) converter;
-      }
-    }
-
-    StringBuilder builder = new StringBuilder("Could not locate RequestBody converter for ")
-        .append(type)
-        .append(".\n");
-    if (skipPast != null) {
-      builder.append("  Skipped:");
-      for (int i = 0; i < start; i++) {
-        builder.append("\n   * ").append(converterFactories.get(i).getClass().getName());
-      }
-      builder.append('\n');
-    }
-    builder.append("  Tried:");
-    for (int i = start, count = converterFactories.size(); i < count; i++) {
-      builder.append("\n   * ").append(converterFactories.get(i).getClass().getName());
-    }
-    throw new IllegalArgumentException(builder.toString());
-  }
-
-  /**
-   * Returns a {@link Converter} for {@link ResponseBody} to {@code type} from the available
-   * {@linkplain #converterFactories() factories}.
-   *
-   * @throws IllegalArgumentException if no converter available for {@code type}.
-   */
-  public <T> Converter<ResponseBody, T> responseBodyConverter(Type type, Annotation[] annotations) {
-    return nextResponseBodyConverter(null, type, annotations);
-  }
-
-  /**
-   * Returns a {@link Converter} for {@link ResponseBody} to {@code type} from the available
-   * {@linkplain #converterFactories() factories} except {@code skipPast}.
-   *
-   * @throws IllegalArgumentException if no converter available for {@code type}.
-   */
-  public <T> Converter<ResponseBody, T> nextResponseBodyConverter(
-      @Nullable Converter.Factory skipPast, Type type, Annotation[] annotations) {
-    checkNotNull(type, "type == null");
-    checkNotNull(annotations, "annotations == null");
-
-    int start = converterFactories.indexOf(skipPast) + 1;
-    for (int i = start, count = converterFactories.size(); i < count; i++) {
-      Converter<ResponseBody, ?> converter =
-          converterFactories.get(i).responseBodyConverter(type, annotations, this);
-      if (converter != null) {
-        //noinspection unchecked
-        return (Converter<ResponseBody, T>) converter;
-      }
-    }
-
-    StringBuilder builder = new StringBuilder("Could not locate ResponseBody converter for ")
-        .append(type)
-        .append(".\n");
-    if (skipPast != null) {
-      builder.append("  Skipped:");
-      for (int i = 0; i < start; i++) {
-        builder.append("\n   * ").append(converterFactories.get(i).getClass().getName());
-      }
-      builder.append('\n');
-    }
-    builder.append("  Tried:");
-    for (int i = start, count = converterFactories.size(); i < count; i++) {
-      builder.append("\n   * ").append(converterFactories.get(i).getClass().getName());
-    }
-    throw new IllegalArgumentException(builder.toString());
-  }
-
-  /**
-   * Returns a {@link Converter} for {@code type} to {@link String} from the available
-   * {@linkplain #converterFactories() factories}.
-   */
-  public <T> Converter<T, String> stringConverter(Type type, Annotation[] annotations) {
-    checkNotNull(type, "type == null");
-    checkNotNull(annotations, "annotations == null");
-
-    for (int i = 0, count = converterFactories.size(); i < count; i++) {
-      Converter<?, String> converter =
-          converterFactories.get(i).stringConverter(type, annotations, this);
-      if (converter != null) {
-        //noinspection unchecked
-        return (Converter<T, String>) converter;
-      }
-    }
-
-    // Nothing matched. Resort to default converter which just calls toString().
-    //noinspection unchecked
-    return (Converter<T, String>) BuiltInConverters.ToStringConverter.INSTANCE;
-  }
 
   /**
    * The executor used for {@link Callback} methods on a {@link Call}. This may be {@code null},
@@ -393,9 +256,7 @@ public final class Retrofit {
    */
   public static final class Builder {
     private final Platform platform;
-    private @Nullable okhttp3.Call.Factory callFactory;
-    private @Nullable HttpUrl baseUrl;
-    private final List<Converter.Factory> converterFactories = new ArrayList<>();
+
     private final List<CallAdapter.Factory> callAdapterFactories = new ArrayList<>();
     private @Nullable Executor callbackExecutor;
     private boolean validateEagerly;
@@ -410,15 +271,6 @@ public final class Retrofit {
 
     Builder(Retrofit retrofit) {
       platform = Platform.get();
-      callFactory = retrofit.callFactory;
-      baseUrl = retrofit.baseUrl;
-
-      // Do not add the default BuiltIntConverters and platform-aware converters added by build().
-      for (int i = 1,
-          size = retrofit.converterFactories.size() - platform.defaultConverterFactoriesSize();
-          i < size; i++) {
-        converterFactories.add(retrofit.converterFactories.get(i));
-      }
 
       // Do not add the default, platform-aware call adapters added by build().
       for (int i = 0,
@@ -431,110 +283,6 @@ public final class Retrofit {
       validateEagerly = retrofit.validateEagerly;
     }
 
-    /**
-     * The HTTP client used for requests.
-     * <p>
-     * This is a convenience method for calling {@link #callFactory}.
-     */
-    public Builder client(OkHttpClient client) {
-      return callFactory(checkNotNull(client, "client == null"));
-    }
-
-    /**
-     * Specify a custom call factory for creating {@link Call} instances.
-     * <p>
-     * Note: Calling {@link #client} automatically sets this value.
-     */
-    public Builder callFactory(okhttp3.Call.Factory factory) {
-      this.callFactory = checkNotNull(factory, "factory == null");
-      return this;
-    }
-
-    /**
-     * Set the API base URL.
-     *
-     * @see #baseUrl(HttpUrl)
-     */
-    public Builder baseUrl(URL baseUrl) {
-      checkNotNull(baseUrl, "baseUrl == null");
-      return baseUrl(HttpUrl.get(baseUrl.toString()));
-    }
-
-    /**
-     * Set the API base URL.
-     *
-     * @see #baseUrl(HttpUrl)
-     */
-    public Builder baseUrl(String baseUrl) {
-      checkNotNull(baseUrl, "baseUrl == null");
-      return baseUrl(HttpUrl.get(baseUrl));
-    }
-
-    /**
-     * Set the API base URL.
-     * <p>
-     * The specified endpoint values (such as with {@link GET @GET}) are resolved against this
-     * value using {@link HttpUrl#resolve(String)}. The behavior of this matches that of an
-     * {@code <a href="">} link on a website resolving on the current URL.
-     * <p>
-     * <b>Base URLs should always end in {@code /}.</b>
-     * <p>
-     * A trailing {@code /} ensures that endpoints values which are relative paths will correctly
-     * append themselves to a base which has path components.
-     * <p>
-     * <b>Correct:</b><br>
-     * Base URL: http://example.com/api/<br>
-     * Endpoint: foo/bar/<br>
-     * Result: http://example.com/api/foo/bar/
-     * <p>
-     * <b>Incorrect:</b><br>
-     * Base URL: http://example.com/api<br>
-     * Endpoint: foo/bar/<br>
-     * Result: http://example.com/foo/bar/
-     * <p>
-     * This method enforces that {@code baseUrl} has a trailing {@code /}.
-     * <p>
-     * <b>Endpoint values which contain a leading {@code /} are absolute.</b>
-     * <p>
-     * Absolute values retain only the host from {@code baseUrl} and ignore any specified path
-     * components.
-     * <p>
-     * Base URL: http://example.com/api/<br>
-     * Endpoint: /foo/bar/<br>
-     * Result: http://example.com/foo/bar/
-     * <p>
-     * Base URL: http://example.com/<br>
-     * Endpoint: /foo/bar/<br>
-     * Result: http://example.com/foo/bar/
-     * <p>
-     * <b>Endpoint values may be a full URL.</b>
-     * <p>
-     * Values which have a host replace the host of {@code baseUrl} and values also with a scheme
-     * replace the scheme of {@code baseUrl}.
-     * <p>
-     * Base URL: http://example.com/<br>
-     * Endpoint: https://github.com/square/retrofit/<br>
-     * Result: https://github.com/square/retrofit/
-     * <p>
-     * Base URL: http://example.com<br>
-     * Endpoint: //github.com/square/retrofit/<br>
-     * Result: http://github.com/square/retrofit/ (note the scheme stays 'http')
-     */
-    public Builder baseUrl(HttpUrl baseUrl) {
-      checkNotNull(baseUrl, "baseUrl == null");
-      List<String> pathSegments = baseUrl.pathSegments();
-      if (!"".equals(pathSegments.get(pathSegments.size() - 1))) {
-        throw new IllegalArgumentException("baseUrl must end in /: " + baseUrl);
-      }
-      this.baseUrl = baseUrl;
-      return this;
-    }
-
-    /** Add converter factory for serialization and deserialization of objects. */
-    public Builder addConverterFactory(Converter.Factory factory) {
-      converterFactories.add(checkNotNull(factory, "factory == null"));
-      return this;
-    }
 
     /**
      * Add a call adapter factory for supporting service method return types other than {@link
@@ -563,7 +311,7 @@ public final class Retrofit {
     }
 
     /** Returns a modifiable list of converter factories. */
-    public List<Converter.Factory> converterFactories() {
+    public List<ConverterFactory> converterFactories() {
       return this.converterFactories;
     }
 
@@ -583,14 +331,6 @@ public final class Retrofit {
      * OkHttpClient} will be created and used.
      */
     public Retrofit build() {
-      if (baseUrl == null) {
-        throw new IllegalStateException("Base URL required.");
-      }
-
-      okhttp3.Call.Factory callFactory = this.callFactory;
-      if (callFactory == null) {
-        callFactory = new OkHttpClient();
-      }
 
       Executor callbackExecutor = this.callbackExecutor;
       if (callbackExecutor == null) {
@@ -602,7 +342,7 @@ public final class Retrofit {
       callAdapterFactories.addAll(platform.defaultCallAdapterFactories(callbackExecutor));
 
       // Make a defensive copy of the converters.
-      List<Converter.Factory> converterFactories = new ArrayList<>(
+      List<ConverterFactory> converterFactories = new ArrayList<>(
           1 + this.converterFactories.size() + platform.defaultConverterFactoriesSize());
 
       // Add the built-in converter factory first. This prevents overriding its behavior but also

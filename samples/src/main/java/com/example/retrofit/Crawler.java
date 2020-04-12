@@ -36,11 +36,7 @@ import okhttp3.ResponseBody;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Converter;
-import retrofit2.Response;
-import retrofit2.Retrofit;
+import retrofit2.*;
 import retrofit2.http.GET;
 import retrofit2.http.Url;
 
@@ -127,7 +123,7 @@ public final class Crawler {
   }
 
   static final class PageAdapter implements Converter<ResponseBody, Page> {
-    static final Converter.Factory FACTORY = new Converter.Factory() {
+    static final ConverterFactory FACTORY = new ConverterFactory() {
       @Override public @Nullable Converter<ResponseBody, ?> responseBodyConverter(
           Type type, Annotation[] annotations, Retrofit retrofit) {
         if (type == Page.class) return new PageAdapter();

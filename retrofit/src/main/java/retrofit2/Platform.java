@@ -69,7 +69,7 @@ class Platform {
     return 1;
   }
 
-  List<? extends Converter.Factory> defaultConverterFactories() {
+  List<? extends ConverterFactory> defaultConverterFactories() {
     return emptyList();
   }
 
@@ -116,7 +116,7 @@ class Platform {
       return 2;
     }
 
-    @Override List<? extends Converter.Factory> defaultConverterFactories() {
+    @Override List<? extends ConverterFactory> defaultConverterFactories() {
       return singletonList(OptionalConverterFactory.INSTANCE);
     }
 
@@ -151,10 +151,10 @@ class Platform {
       return Build.VERSION.SDK_INT >= 24 ? 2 : 1;
     }
 
-    @Override List<? extends Converter.Factory> defaultConverterFactories() {
+    @Override List<? extends ConverterFactory> defaultConverterFactories() {
       return Build.VERSION.SDK_INT >= 24
           ? singletonList(OptionalConverterFactory.INSTANCE)
-          : Collections.<Converter.Factory>emptyList();
+          : Collections.<ConverterFactory>emptyList();
     }
 
     @Override int defaultConverterFactoriesSize() {

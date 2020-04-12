@@ -21,11 +21,8 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.concurrent.CompletableFuture;
 import javax.annotation.Nullable;
-import retrofit2.Call;
-import retrofit2.CallAdapter;
-import retrofit2.Callback;
-import retrofit2.Response;
-import retrofit2.Retrofit;
+
+import retrofit2.*;
 
 /**
  * @deprecated Retrofit includes support for CompletableFuture. This no longer needs to be added to
@@ -44,7 +41,7 @@ import retrofit2.Retrofit;
  * There are two configurations supported for the {@code CompletableFuture} type parameter:
  * <ul>
  * <li>Direct body (e.g., {@code CompletableFuture<User>}) returns the deserialized body for 2XX
- * responses, sets {@link retrofit2.HttpException HttpException} errors for non-2XX responses, and
+ * responses, sets {@link ResponseException HttpException} errors for non-2XX responses, and
  * sets {@link IOException} for network errors.</li>
  * <li>Response wrapped body (e.g., {@code CompletableFuture<Response<User>>}) returns a
  * {@link Response} object for all HTTP responses and sets {@link IOException} for network
@@ -111,7 +108,7 @@ public final class Java8CallAdapterFactory extends CallAdapter.Factory {
           if (response.isSuccessful()) {
             future.complete(response.body());
           } else {
-            future.completeExceptionally(new HttpException(response));
+            future.completeExceptionally(new ResponseException(response));
           }
         }
 

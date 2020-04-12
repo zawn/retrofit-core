@@ -22,17 +22,18 @@ import java.util.Optional;
 import javax.annotation.Nullable;
 import okhttp3.ResponseBody;
 import retrofit2.Converter;
+import retrofit2.ConverterFactory;
 import retrofit2.Retrofit;
 
 /**
  * @deprecated Retrofit includes support for Optional. This no longer needs to be added to the
  * Retrofit instance explicitly.
  * <p>
- * A {@linkplain Converter.Factory converter} for {@code Optional<T>} which delegates to another
+ * A {@linkplain ConverterFactory converter} for {@code Optional<T>} which delegates to another
  * converter to deserialize {@code T} and then wraps it into {@link Optional}.
  */
 @Deprecated
-public final class Java8OptionalConverterFactory extends Converter.Factory {
+public final class Java8OptionalConverterFactory extends ConverterFactory {
   public static Java8OptionalConverterFactory create() {
     return new Java8OptionalConverterFactory();
   }

@@ -26,10 +26,7 @@ import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
 import okhttp3.mockwebserver.RecordedRequest;
 import okio.Buffer;
-import retrofit2.Call;
-import retrofit2.Converter;
-import retrofit2.Response;
-import retrofit2.Retrofit;
+import retrofit2.*;
 import retrofit2.converter.gson.GsonConverterFactory;
 import retrofit2.http.GET;
 import retrofit2.http.Query;
@@ -41,10 +38,10 @@ public final class JsonQueryParameters {
   @interface Json {
   }
 
-  static class JsonStringConverterFactory extends Converter.Factory {
-    private final Converter.Factory delegateFactory;
+  static class JsonStringConverterFactory extends ConverterFactory {
+    private final ConverterFactory delegateFactory;
 
-    JsonStringConverterFactory(Converter.Factory delegateFactory) {
+    JsonStringConverterFactory(ConverterFactory delegateFactory) {
       this.delegateFactory = delegateFactory;
     }
 

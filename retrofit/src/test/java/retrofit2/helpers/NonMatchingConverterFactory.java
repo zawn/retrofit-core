@@ -21,9 +21,10 @@ import javax.annotation.Nullable;
 import okhttp3.RequestBody;
 import okhttp3.ResponseBody;
 import retrofit2.Converter;
+import retrofit2.ConverterFactory;
 import retrofit2.Retrofit;
 
-public final class NonMatchingConverterFactory extends Converter.Factory {
+public final class NonMatchingConverterFactory extends ConverterFactory {
   public boolean called;
 
   @Override public @Nullable Converter<ResponseBody, ?> responseBodyConverter(

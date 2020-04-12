@@ -22,6 +22,7 @@ import java.lang.reflect.Type;
 import javax.annotation.Nullable;
 import kotlin.coroutines.Continuation;
 import okhttp3.ResponseBody;
+import org.apache.http.HttpRequestFactory;
 
 import static retrofit2.Utils.getRawType;
 import static retrofit2.Utils.methodError;
@@ -34,8 +35,8 @@ abstract class HttpServiceMethod<ResponseT, ReturnT> extends ServiceMethod<Retur
    * method only once and reuse it.
    */
   static <ResponseT, ReturnT> HttpServiceMethod<ResponseT, ReturnT> parseAnnotations(
-      Retrofit retrofit, Method method, RequestFactory requestFactory) {
-    boolean isKotlinSuspendFunction = requestFactory.isKotlinSuspendFunction;
+      Retrofit retrofit, Method method, HttpRequestFactory httpRequestFactory) {
+    boolean isKotlinSuspendFunction = httpRequestFactory.isKotlinSuspendFunction;
     boolean continuationWantsResponse = false;
     boolean continuationBodyNullable = false;
 
@@ -74,7 +75,7 @@ abstract class HttpServiceMethod<ResponseT, ReturnT> extends ServiceMethod<Retur
       throw methodError(method, "Response must include generic type (e.g., Response<String>)");
     }
     // TODO support Unit for Kotlin?
-    if (requestFactory.httpMethod.equals("HEAD") && !Void.class.equals(responseType)) {
+    if (httpRequestFactory.httpMethod.equals("HEAD") && !Void.class.equals(responseType)) {
       throw methodError(method, "HEAD method must use Void as response type.");
     }
 
@@ -83,14 +84,14 @@ abstract class HttpServiceMethod<ResponseT, ReturnT> extends ServiceMethod<Retur
 
     okhttp3.Call.Factory callFactory = retrofit.callFactory;
     if (!isKotlinSuspendFunction) {
-      return new CallAdapted<>(requestFactory, callFactory, responseConverter, callAdapter);
+      return new CallAdapted<>(httpRequestFactory, callFactory, responseConverter, callAdapter);
     } else if (continuationWantsResponse) {
       //noinspection unchecked Kotlin compiler guarantees ReturnT to be Object.
-      return (HttpServiceMethod<ResponseT, ReturnT>) new SuspendForResponse<>(requestFactory,
+      return (HttpServiceMethod<ResponseT, ReturnT>) new SuspendForResponse<>(httpRequestFactory,
           callFactory, responseConverter, (CallAdapter<ResponseT, Call<ResponseT>>) callAdapter);
     } else {
       //noinspection unchecked Kotlin compiler guarantees ReturnT to be Object.
-      return (HttpServiceMethod<ResponseT, ReturnT>) new SuspendForBody<>(requestFactory,
+      return (HttpServiceMethod<ResponseT, ReturnT>) new SuspendForBody<>(httpRequestFactory,
           callFactory, responseConverter, (CallAdapter<ResponseT, Call<ResponseT>>) callAdapter,
           continuationBodyNullable);
     }
@@ -116,19 +117,19 @@ abstract class HttpServiceMethod<ResponseT, ReturnT> extends ServiceMethod<Retur
     }
   }
 
-  private final RequestFactory requestFactory;
+  private final HttpRequestFactory httpRequestFactory;
   private final okhttp3.Call.Factory callFactory;
   private final Converter<ResponseBody, ResponseT> responseConverter;
 
-  HttpServiceMethod(RequestFactory requestFactory, okhttp3.Call.Factory callFactory,
-      Converter<ResponseBody, ResponseT> responseConverter) {
-    this.requestFactory = requestFactory;
+  HttpServiceMethod(HttpRequestFactory httpRequestFactory, okhttp3.Call.Factory callFactory,
+                    Converter<ResponseBody, ResponseT> responseConverter) {
+    this.httpRequestFactory = httpRequestFactory;
     this.callFactory = callFactory;
     this.responseConverter = responseConverter;
   }
 
   @Override final @Nullable ReturnT invoke(Object[] args) {
-    Call<ResponseT> call = new OkHttpCall<>(requestFactory, args, callFactory, responseConverter);
+    Call<ResponseT> call = new OkHttpCall<>(httpRequestFactory, args, callFactory, responseConverter);
     return adapt(call, args);
   }
 
@@ -137,10 +138,10 @@ abstract class HttpServiceMethod<ResponseT, ReturnT> extends ServiceMethod<Retur
   static final class CallAdapted<ResponseT, ReturnT> extends HttpServiceMethod<ResponseT, ReturnT> {
     private final CallAdapter<ResponseT, ReturnT> callAdapter;
 
-    CallAdapted(RequestFactory requestFactory, okhttp3.Call.Factory callFactory,
-        Converter<ResponseBody, ResponseT> responseConverter,
-        CallAdapter<ResponseT, ReturnT> callAdapter) {
-      super(requestFactory, callFactory, responseConverter);
+    CallAdapted(HttpRequestFactory httpRequestFactory, okhttp3.Call.Factory callFactory,
+                Converter<ResponseBody, ResponseT> responseConverter,
+                CallAdapter<ResponseT, ReturnT> callAdapter) {
+      super(httpRequestFactory, callFactory, responseConverter);
       this.callAdapter = callAdapter;
     }
 
@@ -152,10 +153,10 @@ abstract class HttpServiceMethod<ResponseT, ReturnT> extends ServiceMethod<Retur
   static final class SuspendForResponse<ResponseT> extends HttpServiceMethod<ResponseT, Object> {
     private final CallAdapter<ResponseT, Call<ResponseT>> callAdapter;
 
-    SuspendForResponse(RequestFactory requestFactory, okhttp3.Call.Factory callFactory,
-        Converter<ResponseBody, ResponseT> responseConverter,
-        CallAdapter<ResponseT, Call<ResponseT>> callAdapter) {
-      super(requestFactory, callFactory, responseConverter);
+    SuspendForResponse(HttpRequestFactory httpRequestFactory, okhttp3.Call.Factory callFactory,
+                       Converter<ResponseBody, ResponseT> responseConverter,
+                       CallAdapter<ResponseT, Call<ResponseT>> callAdapter) {
+      super(httpRequestFactory, callFactory, responseConverter);
       this.callAdapter = callAdapter;
     }
 
@@ -173,10 +174,10 @@ abstract class HttpServiceMethod<ResponseT, ReturnT> extends ServiceMethod<Retur
     private final CallAdapter<ResponseT, Call<ResponseT>> callAdapter;
     private final boolean isNullable;
 
-    SuspendForBody(RequestFactory requestFactory, okhttp3.Call.Factory callFactory,
-        Converter<ResponseBody, ResponseT> responseConverter,
-        CallAdapter<ResponseT, Call<ResponseT>> callAdapter, boolean isNullable) {
-      super(requestFactory, callFactory, responseConverter);
+    SuspendForBody(HttpRequestFactory httpRequestFactory, okhttp3.Call.Factory callFactory,
+                   Converter<ResponseBody, ResponseT> responseConverter,
+                   CallAdapter<ResponseT, Call<ResponseT>> callAdapter, boolean isNullable) {
+      super(httpRequestFactory, callFactory, responseConverter);
       this.callAdapter = callAdapter;
       this.isNullable = isNullable;
     }

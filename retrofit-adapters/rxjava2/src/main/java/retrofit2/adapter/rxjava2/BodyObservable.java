@@ -51,7 +51,7 @@ final class BodyObservable<T> extends Observable<T> {
         observer.onNext(response.body());
       } else {
         terminated = true;
-        Throwable t = new HttpException(response);
+        Throwable t = new ResponseException(response);
         try {
           observer.onError(t);
         } catch (Throwable inner) {

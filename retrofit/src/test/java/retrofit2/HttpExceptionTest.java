@@ -22,8 +22,8 @@ import static org.junit.Assert.fail;
 
 public final class HttpExceptionTest {
   @Test public void response() {
-    Response<String> response = Response.success("Hi");
-    HttpException exception = new HttpException(response);
+    Response<String> response = Utils.success("Hi");
+    ResponseException exception = new ResponseException(response);
     assertThat(exception.code()).isEqualTo(200);
     assertThat(exception.message()).isEqualTo("OK");
     assertThat(exception.response()).isSameAs(response);
@@ -31,7 +31,7 @@ public final class HttpExceptionTest {
 
   @Test public void nullResponseThrows() {
     try {
-      new HttpException(null);
+      new ResponseException(null);
       fail();
     } catch (NullPointerException e) {
       assertThat(e).hasMessage("response == null");

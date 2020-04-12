@@ -24,7 +24,7 @@ import static org.junit.Assert.fail;
 
 public final class ResultTest {
   @Test public void response() {
-    Response<String> response = Response.success("Hi");
+    Response<String> response = Utils.success("Hi");
     Result<String> result = Result.response(response);
     assertThat(result.isError()).isFalse();
     assertThat(result.error()).isNull();

@@ -25,7 +25,7 @@ public abstract class ParameterHandler<B,T> {
   final ParameterHandler<B,Iterable<T>> iterable() {
     return new ParameterHandler<B,Iterable<T>>() {
       @Override void apply(B builder, @Nullable Iterable<T> values)
-              throws IOException {
+          throws IOException {
         if (values == null) return; // Skip null values.
 
         for (T value : values) {

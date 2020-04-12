@@ -16,7 +16,7 @@
 package retrofit2.adapter.rxjava;
 
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.function.Consumer;
+
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
 import org.junit.Before;

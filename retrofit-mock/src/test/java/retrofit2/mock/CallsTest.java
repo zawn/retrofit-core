@@ -53,7 +53,7 @@ public final class CallsTest {
   }
 
   @Test public void responseExecute() throws IOException {
-    Response<String> response = Response.success("Taco");
+    Response<String> response = Utils.success("Taco");
     Call<String> taco = Calls.response(response);
     assertFalse(taco.isExecuted());
     assertSame(response, taco.execute());
@@ -67,7 +67,7 @@ public final class CallsTest {
   }
 
   @Test public void responseEnqueue() {
-    Response<String> response = Response.success("Taco");
+    Response<String> response = Utils.success("Taco");
     Call<String> taco = Calls.response(response);
     assertFalse(taco.isExecuted());
 
@@ -111,7 +111,7 @@ public final class CallsTest {
   }
 
   @Test public void responseCancelExecute() {
-    Call<String> taco = Calls.response(Response.success("Taco"));
+    Call<String> taco = Calls.response(Utils.success("Taco"));
     assertFalse(taco.isCanceled());
     taco.cancel();
     assertTrue(taco.isCanceled());
@@ -125,7 +125,7 @@ public final class CallsTest {
   }
 
   @Test public void responseCancelEnqueue() throws IOException {
-    Call<String> taco = Calls.response(Response.success("Taco"));
+    Call<String> taco = Calls.response(Utils.success("Taco"));
     assertFalse(taco.isCanceled());
     taco.cancel();
     assertTrue(taco.isCanceled());

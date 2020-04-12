@@ -23,7 +23,7 @@ import static retrofit2.Utils.methodError;
 
 abstract class ServiceMethod<T> {
   static <T> ServiceMethod<T> parseAnnotations(Retrofit retrofit, Method method) {
-    RequestFactory requestFactory = RequestFactory.parseAnnotations(retrofit, method);
+    HttpRequestFactory httpRequestFactory = HttpRequestFactory.parseAnnotations(retrofit, method);
 
     Type returnType = method.getGenericReturnType();
     if (Utils.hasUnresolvableType(returnType)) {
@@ -34,7 +34,7 @@ abstract class ServiceMethod<T> {
       throw methodError(method, "Service methods cannot return void.");
     }
 
-    return HttpServiceMethod.parseAnnotations(retrofit, method, requestFactory);
+    return HttpServiceMethod.parseAnnotations(retrofit, method, httpRequestFactory);
   }
 
   abstract @Nullable T invoke(Object[] args);

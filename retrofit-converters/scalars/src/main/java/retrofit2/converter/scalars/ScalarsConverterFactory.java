@@ -21,6 +21,7 @@ import javax.annotation.Nullable;
 import okhttp3.RequestBody;
 import okhttp3.ResponseBody;
 import retrofit2.Converter;
+import retrofit2.ConverterFactory;
 import retrofit2.Retrofit;
 import retrofit2.converter.scalars.ScalarResponseBodyConverters.BooleanResponseBodyConverter;
 import retrofit2.converter.scalars.ScalarResponseBodyConverters.ByteResponseBodyConverter;
@@ -33,10 +34,10 @@ import retrofit2.converter.scalars.ScalarResponseBodyConverters.ShortResponseBod
 import retrofit2.converter.scalars.ScalarResponseBodyConverters.StringResponseBodyConverter;
 
 /**
- * A {@linkplain Converter.Factory converter} for strings and both primitives and their boxed types
+ * A {@linkplain ConverterFactory converter} for strings and both primitives and their boxed types
  * to {@code text/plain} bodies.
  */
-public final class ScalarsConverterFactory extends Converter.Factory {
+public final class ScalarsConverterFactory extends ConverterFactory {
   public static ScalarsConverterFactory create() {
     return new ScalarsConverterFactory();
   }

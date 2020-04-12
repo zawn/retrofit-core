@@ -23,9 +23,10 @@ import okhttp3.MediaType;
 import okhttp3.RequestBody;
 import okhttp3.ResponseBody;
 import retrofit2.Converter;
+import retrofit2.ConverterFactory;
 import retrofit2.Retrofit;
 
-public class ToStringConverterFactory extends Converter.Factory {
+public class ToStringConverterFactory extends ConverterFactory {
   static final MediaType MEDIA_TYPE = MediaType.get("text/plain");
 
   @Override public @Nullable Converter<ResponseBody, ?> responseBodyConverter(

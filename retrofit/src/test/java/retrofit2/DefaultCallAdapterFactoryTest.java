@@ -68,7 +68,7 @@ public final class DefaultCallAdapterFactoryTest {
     Type returnType = new TypeToken<Call<String>>() {}.getType();
     CallAdapter<String, Call<String>> adapter =
         (CallAdapter<String, Call<String>>) factory.get(returnType, NO_ANNOTATIONS, retrofit);
-    final Response<String> response = Response.success("Hi");
+    final Response<String> response = Utils.success("Hi");
     Call<String> call = adapter.adapt(new EmptyCall() {
       @Override public Response<String> execute() {
         return response;

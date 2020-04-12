@@ -19,10 +19,11 @@ import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import retrofit2.Converter;
+import retrofit2.ConverterFactory;
 import retrofit2.Retrofit;
 
 /** Always converts to null. */
-public final class NullObjectConverterFactory extends Converter.Factory {
+public final class NullObjectConverterFactory extends ConverterFactory {
   @Override public Converter<?, String> stringConverter(Type type, Annotation[] annotations,
       Retrofit retrofit) {
     return new Converter<Object, String>() {

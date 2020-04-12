@@ -25,13 +25,14 @@ import okhttp3.MediaType;
 import okhttp3.RequestBody;
 import okhttp3.ResponseBody;
 import retrofit2.Converter;
+import retrofit2.ConverterFactory;
 import retrofit2.Retrofit;
 
 /**
- * A {@linkplain Converter.Factory converter} which uses JAXB for XML. All validation events are
+ * A {@linkplain ConverterFactory converter} which uses JAXB for XML. All validation events are
  * ignored.
  */
-public final class JaxbConverterFactory extends Converter.Factory {
+public final class JaxbConverterFactory extends ConverterFactory {
   static final MediaType XML = MediaType.get("application/xml; charset=utf-8");
 
   /** Create an instance using a default {@link JAXBContext} instance for conversion. */

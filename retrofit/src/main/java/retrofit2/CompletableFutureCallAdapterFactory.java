@@ -55,40 +55,40 @@ final class CompletableFutureCallAdapterFactory extends CallAdapter.Factory {
   private static final class BodyCallAdapter<R> implements CallAdapter<R, CompletableFuture<R>> {
     private final Type responseType;
 
-    BodyCallAdapter(Type responseType) {
-      this.responseType = responseType;
-    }
+      BodyCallAdapter(Type responseType) {
+          this.responseType = responseType;
+      }
 
-    @Override public Type responseType() {
-      return responseType;
-    }
+      @Override public Type responseType() {
+          return responseType;
+      }
 
-    @Override public CompletableFuture<R> adapt(final Call<R> call) {
-      final CompletableFuture<R> future = new CompletableFuture<R>() {
-        @Override public boolean cancel(boolean mayInterruptIfRunning) {
-          if (mayInterruptIfRunning) {
-            call.cancel();
-          }
-          return super.cancel(mayInterruptIfRunning);
-        }
-      };
+      @Override public CompletableFuture<R> adapt(final Call<R> call) {
+          final CompletableFuture<R> future = new CompletableFuture<R>() {
+              @Override public boolean cancel(boolean mayInterruptIfRunning) {
+                  if (mayInterruptIfRunning) {
+                      call.cancel();
+                  }
+                  return super.cancel(mayInterruptIfRunning);
+              }
+          };
 
-      call.enqueue(new Callback<R>() {
-        @Override public void onResponse(Call<R> call, Response<R> response) {
-          if (response.isSuccessful()) {
-            future.complete(response.body());
-          } else {
-            future.completeExceptionally(new HttpException(response));
-          }
-        }
+          call.enqueue(new Callback<R>() {
+              @Override public void onResponse(Call<R> call, Response<R> response) {
+                  if (response.isSuccessful()) {
+                      future.complete(response.body());
+                  } else {
+                      future.completeExceptionally(new ResponseException(response));
+                  }
+              }
 
-        @Override public void onFailure(Call<R> call, Throwable t) {
-          future.completeExceptionally(t);
-        }
-      });
+              @Override public void onFailure(Call<R> call, Throwable t) {
+                  future.completeExceptionally(t);
+              }
+          });
 
-      return future;
-    }
+          return future;
+      }
   }
 
   @IgnoreJRERequirement

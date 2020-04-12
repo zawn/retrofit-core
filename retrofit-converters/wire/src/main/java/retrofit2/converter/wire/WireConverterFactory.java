@@ -23,14 +23,15 @@ import javax.annotation.Nullable;
 import okhttp3.RequestBody;
 import okhttp3.ResponseBody;
 import retrofit2.Converter;
+import retrofit2.ConverterFactory;
 import retrofit2.Retrofit;
 
 /**
- * A {@linkplain Converter.Factory converter} that uses Wire for protocol buffers.
+ * A {@linkplain ConverterFactory converter} that uses Wire for protocol buffers.
  * <p>
  * This converter only applies for types which extend from {@link Message}.
  */
-public final class WireConverterFactory extends Converter.Factory {
+public final class WireConverterFactory extends ConverterFactory {
   public static WireConverterFactory create() {
     return new WireConverterFactory();
   }

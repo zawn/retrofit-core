@@ -22,13 +22,14 @@ import java.lang.reflect.Type;
 import javax.annotation.Nullable;
 import okhttp3.ResponseBody;
 import retrofit2.Converter;
+import retrofit2.ConverterFactory;
 import retrofit2.Retrofit;
 
 /**
- * A {@linkplain Converter.Factory converter} for {@code Optional<T>} which delegates to another
+ * A {@linkplain ConverterFactory converter} for {@code Optional<T>} which delegates to another
  * converter to deserialize {@code T} and then wraps it into {@link Optional}.
  */
-public final class GuavaOptionalConverterFactory extends Converter.Factory {
+public final class GuavaOptionalConverterFactory extends ConverterFactory {
   public static GuavaOptionalConverterFactory create() {
     return new GuavaOptionalConverterFactory();
   }

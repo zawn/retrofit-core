@@ -32,6 +32,7 @@ import org.simpleframework.xml.Default;
 import org.simpleframework.xml.DefaultType;
 import retrofit2.Call;
 import retrofit2.Converter;
+import retrofit2.ConverterFactory;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 import retrofit2.converter.moshi.MoshiConverterFactory;
@@ -41,14 +42,14 @@ import retrofit2.http.GET;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 final class AnnotatedConverters {
-  public static final class AnnotatedConverterFactory extends Converter.Factory {
-    private final Map<Class<? extends Annotation>, Converter.Factory> factories;
+  public static final class AnnotatedConverterFactory extends ConverterFactory {
+    private final Map<Class<? extends Annotation>, ConverterFactory> factories;
 
     public static final class Builder {
-      private final Map<Class<? extends Annotation>, Converter.Factory> factories =
+      private final Map<Class<? extends Annotation>, ConverterFactory> factories =
           new LinkedHashMap<>();
 
-      public Builder add(Class<? extends Annotation> cls, Converter.Factory factory) {
+      public Builder add(Class<? extends Annotation> cls, ConverterFactory factory) {
         if (cls == null) {
           throw new NullPointerException("cls == null");
         }
@@ -64,14 +65,14 @@ final class AnnotatedConverters {
       }
     }
 
-    AnnotatedConverterFactory(Map<Class<? extends Annotation>, Converter.Factory> factories) {
+    AnnotatedConverterFactory(Map<Class<? extends Annotation>, ConverterFactory> factories) {
       this.factories = new LinkedHashMap<>(factories);
     }
 
     @Override public @Nullable Converter<ResponseBody, ?> responseBodyConverter(
         Type type, Annotation[] annotations, Retrofit retrofit) {
       for (Annotation annotation : annotations) {
-        Converter.Factory factory = factories.get(annotation.annotationType());
+        ConverterFactory factory = factories.get(annotation.annotationType());
         if (factory != null) {
           return factory.responseBodyConverter(type, annotations, retrofit);
         }
@@ -82,7 +83,7 @@ final class AnnotatedConverters {
     @Override public @Nullable Converter<?, RequestBody> requestBodyConverter(Type type,
         Annotation[] parameterAnnotations, Annotation[] methodAnnotations, Retrofit retrofit) {
       for (Annotation annotation : parameterAnnotations) {
-        Converter.Factory factory = factories.get(annotation.annotationType());
+        ConverterFactory factory = factories.get(annotation.annotationType());
         if (factory != null) {
           return factory.requestBodyConverter(type, parameterAnnotations, methodAnnotations,
               retrofit);

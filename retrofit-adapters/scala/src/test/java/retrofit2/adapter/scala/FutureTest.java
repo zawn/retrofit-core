@@ -21,7 +21,7 @@ import okhttp3.mockwebserver.MockWebServer;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import retrofit2.HttpException;
+import retrofit2.ResponseException;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.http.GET;
@@ -70,8 +70,8 @@ public final class FutureTest {
       fail();
     } catch (Exception e) {
       assertThat(e)
-          .isInstanceOf(HttpException.class) // Required for backwards compatibility.
-          .isInstanceOf(retrofit2.HttpException.class)
+          .isInstanceOf(ResponseException.class) // Required for backwards compatibility.
+          .isInstanceOf(ResponseException.class)
           .hasMessage("HTTP 404 Client Error");
     }
   }

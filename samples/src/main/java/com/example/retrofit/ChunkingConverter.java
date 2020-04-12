@@ -30,6 +30,7 @@ import okhttp3.mockwebserver.RecordedRequest;
 import okio.BufferedSink;
 import retrofit2.Call;
 import retrofit2.Converter;
+import retrofit2.ConverterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
 import retrofit2.Retrofit;
 import retrofit2.http.Body;
@@ -48,7 +49,7 @@ public final class ChunkingConverter {
    * A converter which removes known content lengths to force chunking when {@code @Chunked} is
    * present on {@code @Body} params.
    */
-  static class ChunkingConverterFactory extends Converter.Factory {
+  static class ChunkingConverterFactory extends ConverterFactory {
     @Override public @Nullable Converter<?, RequestBody> requestBodyConverter(Type type,
         Annotation[] parameterAnnotations, Annotation[] methodAnnotations, Retrofit retrofit) {
       boolean isBody = false;

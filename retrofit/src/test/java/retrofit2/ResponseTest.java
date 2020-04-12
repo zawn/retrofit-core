@@ -40,7 +40,7 @@ public final class ResponseTest {
 
   @Test public void success() {
     Object body = new Object();
-    Response<Object> response = Response.success(body);
+    Response<Object> response = Utils.success(body);
     assertThat(response.raw()).isNotNull();
     assertThat(response.code()).isEqualTo(200);
     assertThat(response.message()).isEqualTo("OK");
@@ -51,7 +51,7 @@ public final class ResponseTest {
   }
 
   @Test public void successNullAllowed() {
-    Response<Object> response = Response.success(null);
+    Response<Object> response = Utils.success(null);
     assertThat(response.isSuccessful()).isTrue();
     assertThat(response.body()).isNull();
   }
@@ -80,7 +80,7 @@ public final class ResponseTest {
 
   @Test public void successWithStatusCode() {
     Object body = new Object();
-    Response<Object> response = Response.success(204, body);
+    Response<Object> response = Utils.success(204, body);
     assertThat(response.code()).isEqualTo(204);
     assertThat(response.message()).isEqualTo("Response.success()");
     assertThat(response.headers().size()).isZero();
@@ -141,7 +141,7 @@ public final class ResponseTest {
 
   @Test public void nullErrorThrows() {
     try {
-      Response.error(400, null);
+      Utils.error(400, null);
       fail();
     } catch (NullPointerException e) {
       assertThat(e).hasMessage("body == null");

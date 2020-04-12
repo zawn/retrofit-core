@@ -14,10 +14,10 @@
   <name>Retrofit</name>
 
   <dependencies>
-    <dependency>
-      <groupId>com.squareup.okhttp3</groupId>
-      <artifactId>okhttp</artifactId>
-    </dependency>
+<!--    <dependency>-->
+<!--      <groupId>com.squareup.okhttp3</groupId>-->
+<!--      <artifactId>okhttp</artifactId>-->
+<!--    </dependency>-->
 
     <dependency>
       <groupId>com.google.android</groupId>
@@ -114,6 +114,14 @@
           <excludePackageNames>retrofit2.internal</excludePackageNames>
         </configuration>
       </plugin>
+        <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-compiler-plugin</artifactId>
+            <configuration>
+                <source>8</source>
+                <target>8</target>
+            </configuration>
+        </plugin>
     </plugins>
   </build>
 </project>

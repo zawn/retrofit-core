@@ -28,6 +28,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import retrofit2.Call;
 import retrofit2.Converter;
+import retrofit2.ConverterFactory;
 import retrofit2.Retrofit;
 import retrofit2.http.GET;
 
@@ -71,7 +72,7 @@ public final class Java8OptionalConverterFactoryTest {
     Object object = new Object();
     Retrofit retrofit = new Retrofit.Builder()
         .baseUrl(server.url("/"))
-        .addConverterFactory(new Converter.Factory() {
+        .addConverterFactory(new ConverterFactory() {
           @Nullable @Override public Converter<ResponseBody, ?> responseBodyConverter(Type type,
               Annotation[] annotations, Retrofit retrofit) {
             if (getRawType(type) != Object.class) {

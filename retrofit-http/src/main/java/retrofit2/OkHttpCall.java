@@ -29,8 +29,8 @@ import okio.Okio;
 import static retrofit2.Utils.checkNotNull;
 import static retrofit2.Utils.throwIfFatal;
 
-final class OkHttpCall<T> implements Call<T> {
-  private final RequestFactory requestFactory;
+public final class OkHttpCall<T> implements Call<T> {
+  private final HttpRequestFactory httpRequestFactory;
   private final Object[] args;
   private final okhttp3.Call.Factory callFactory;
   private final Converter<ResponseBody, T> responseConverter;
@@ -44,9 +44,9 @@ final class OkHttpCall<T> implements Call<T> {
   @GuardedBy("this")
   private boolean executed;
 
-  OkHttpCall(RequestFactory requestFactory, Object[] args,
-      okhttp3.Call.Factory callFactory, Converter<ResponseBody, T> responseConverter) {
-    this.requestFactory = requestFactory;
+  OkHttpCall(HttpRequestFactory httpRequestFactory, Object[] args,
+             okhttp3.Call.Factory callFactory, Converter<ResponseBody, T> responseConverter) {
+    this.httpRequestFactory = httpRequestFactory;
     this.args = args;
     this.callFactory = callFactory;
     this.responseConverter = responseConverter;
@@ -54,7 +54,7 @@ final class OkHttpCall<T> implements Call<T> {
 
   @SuppressWarnings("CloneDoesntCallSuperClone") // We are a final type & this saves clearing state.
   @Override public OkHttpCall<T> clone() {
-    return new OkHttpCall<>(requestFactory, args, callFactory, responseConverter);
+    return new OkHttpCall<>(httpRequestFactory, args, callFactory, responseConverter);
   }
 
   @Override public synchronized Request request() {
@@ -189,7 +189,7 @@ final class OkHttpCall<T> implements Call<T> {
   }
 
   private okhttp3.Call createRawCall() throws IOException {
-    okhttp3.Call call = callFactory.newCall(requestFactory.create(args));
+    okhttp3.Call call = callFactory.newCall(httpRequestFactory.create(args));
     if (call == null) {
       throw new NullPointerException("Call.Factory returned null.");
     }
@@ -208,7 +208,7 @@ final class OkHttpCall<T> implements Call<T> {
     if (code < 200 || code >= 300) {
       try {
         // Buffer the entire body to avoid future I/O.
-        ResponseBody bufferedBody = Utils.buffer(rawBody);
+        ResponseBody bufferedBody = retrofit2.okhttp.Utils.buffer(rawBody);
         return Response.error(bufferedBody, rawResponse);
       } finally {
         rawBody.close();
@@ -253,11 +253,11 @@ final class OkHttpCall<T> implements Call<T> {
     }
   }
 
-  static final class NoContentResponseBody extends ResponseBody {
+  public static final class NoContentResponseBody extends ResponseBody {
     private final @Nullable MediaType contentType;
     private final long contentLength;
 
-    NoContentResponseBody(@Nullable MediaType contentType, long contentLength) {
+    public NoContentResponseBody(@Nullable MediaType contentType, long contentLength) {
       this.contentType = contentType;
       this.contentLength = contentLength;
     }

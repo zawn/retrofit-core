@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 Square, Inc.
+ * Copyright (C) 2016 Square, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,14 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package retrofit2.adapter.rxjava2;
+package retrofit2.adapter.java8;
 
 import retrofit2.Response;
 
-/** @deprecated Use {@link retrofit2.HttpException}. */
+/** @deprecated Use {@link retrofit2.ResponseException}. */
 @Deprecated
-public final class HttpException extends retrofit2.HttpException {
-  public HttpException(Response<?> response) {
+public final class ResponseException extends retrofit2.ResponseException {
+  public ResponseException(Response<?> response) {
     super(response);
   }
 }

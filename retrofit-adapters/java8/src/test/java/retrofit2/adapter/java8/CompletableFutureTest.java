@@ -24,6 +24,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import retrofit2.Response;
+import retrofit2.ResponseException;
 import retrofit2.Retrofit;
 import retrofit2.http.GET;
 
@@ -66,8 +67,8 @@ public final class CompletableFutureTest {
       fail();
     } catch (ExecutionException e) {
       assertThat(e.getCause())
-          .isInstanceOf(HttpException.class) // Required for backwards compatibility.
-          .isInstanceOf(retrofit2.HttpException.class)
+          .isInstanceOf(retrofit2.adapter.java8.ResponseException.class) // Required for backwards compatibility.
+          .isInstanceOf(ResponseException.class)
           .hasMessage("HTTP 404 Client Error");
     }
   }

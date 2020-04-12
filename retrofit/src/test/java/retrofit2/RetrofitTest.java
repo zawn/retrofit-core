@@ -150,7 +150,7 @@ public final class RetrofitTest {
         throw new AssertionError();
       }
     };
-    Converter.Factory converter = new Converter.Factory() {};
+    ConverterFactory converter = new ConverterFactory() {};
     HttpUrl baseUrl = server.url("/");
     Executor executor = new Executor() {
       @Override public void execute(@NotNull Runnable command) {
@@ -177,7 +177,7 @@ public final class RetrofitTest {
         throw new AssertionError();
       }
     };
-    Converter.Factory converter2 = new Converter.Factory() {};
+    ConverterFactory converter2 = new ConverterFactory() {};
     Retrofit two = one.newBuilder()
         .addCallAdapterFactory(callAdapter2)
         .addConverterFactory(converter2)
@@ -390,7 +390,7 @@ public final class RetrofitTest {
 
   @Test public void methodAnnotationsPassedToResponseBodyConverter() {
     final AtomicReference<Annotation[]> annotationsRef = new AtomicReference<>();
-    class MyConverterFactory extends Converter.Factory {
+    class MyConverterFactory extends ConverterFactory {
       @Override
       public Converter<ResponseBody, ?> responseBodyConverter(Type type, Annotation[] annotations,
           Retrofit retrofit) {
@@ -413,7 +413,7 @@ public final class RetrofitTest {
     final AtomicReference<Annotation[]> parameterAnnotationsRef = new AtomicReference<>();
     final AtomicReference<Annotation[]> methodAnnotationsRef = new AtomicReference<>();
 
-    class MyConverterFactory extends Converter.Factory {
+    class MyConverterFactory extends ConverterFactory {
       @Override
       public Converter<?, RequestBody> requestBodyConverter(Type type,
           Annotation[] parameterAnnotations, Annotation[] methodAnnotations, Retrofit retrofit) {
@@ -436,7 +436,7 @@ public final class RetrofitTest {
 
   @Test public void parameterAnnotationsPassedToStringConverter() {
     final AtomicReference<Annotation[]> annotationsRef = new AtomicReference<>();
-    class MyConverterFactory extends Converter.Factory {
+    class MyConverterFactory extends ConverterFactory {
       @Override public Converter<?, String> stringConverter(Type type, Annotation[] annotations,
           Retrofit retrofit) {
         annotationsRef.set(annotations);
@@ -461,7 +461,7 @@ public final class RetrofitTest {
 
   @Test public void stringConverterCalledForString() {
     final AtomicBoolean factoryCalled = new AtomicBoolean();
-    class MyConverterFactory extends Converter.Factory {
+    class MyConverterFactory extends ConverterFactory {
       @Override public @Nullable Converter<?, String> stringConverter(
           Type type, Annotation[] annotations, Retrofit retrofit) {
         factoryCalled.set(true);
@@ -480,7 +480,7 @@ public final class RetrofitTest {
 
   @Test public void stringConverterReturningNullResultsInDefault() {
     final AtomicBoolean factoryCalled = new AtomicBoolean();
-    class MyConverterFactory extends Converter.Factory {
+    class MyConverterFactory extends ConverterFactory {
       @Override public @Nullable Converter<?, String> stringConverter(
           Type type, Annotation[] annotations, Retrofit retrofit) {
         factoryCalled.set(true);
@@ -877,13 +877,13 @@ public final class RetrofitTest {
     Retrofit retrofit = new Retrofit.Builder()
         .baseUrl("http://example.com/")
         .build();
-    List<Converter.Factory> converterFactories = retrofit.converterFactories();
+    List<ConverterFactory> converterFactories = retrofit.converterFactories();
     assertThat(converterFactories).hasSize(2);
     assertThat(converterFactories.get(0)).isInstanceOf(BuiltInConverters.class);
   }
 
   @Test public void builtInConvertersFirstInClone() {
-    Converter.Factory factory = new Converter.Factory() {
+    ConverterFactory factory = new ConverterFactory() {
       @Nullable @Override
       public Converter<ResponseBody, ?> responseBodyConverter(Type type, Annotation[] annotations,
           Retrofit retrofit) {
@@ -907,7 +907,7 @@ public final class RetrofitTest {
         throw new AssertionError();
       }
     };
-    Converter.Factory factory = new Converter.Factory() {
+    ConverterFactory factory = new ConverterFactory() {
       @Override public Converter<?, RequestBody> requestBodyConverter(Type type,
           Annotation[] parameterAnnotations, Annotation[] methodAnnotations, Retrofit retrofit) {
         return String.class.equals(type)
@@ -989,7 +989,7 @@ public final class RetrofitTest {
         throw new AssertionError();
       }
     };
-    Converter.Factory factory = new Converter.Factory() {
+    ConverterFactory factory = new ConverterFactory() {
       @Nullable @Override
       public Converter<ResponseBody, ?> responseBodyConverter(Type type, Annotation[] annotations,
           Retrofit retrofit) {
@@ -1072,7 +1072,7 @@ public final class RetrofitTest {
         throw new AssertionError();
       }
     };
-    Converter.Factory factory = new Converter.Factory() {
+    ConverterFactory factory = new ConverterFactory() {
       @Nullable @Override
       public Converter<?, String> stringConverter(Type type, Annotation[] annotations,
           Retrofit retrofit) {
@@ -1093,7 +1093,7 @@ public final class RetrofitTest {
   }
 
   @Test public void converterFactoryPropagated() {
-    Converter.Factory factory = new Converter.Factory() {};
+    ConverterFactory factory = new ConverterFactory() {};
     Retrofit retrofit = new Retrofit.Builder()
         .baseUrl("http://example.com/")
         .addConverterFactory(factory)

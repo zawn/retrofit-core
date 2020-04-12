@@ -3023,7 +3023,7 @@ public final class RequestFactoryTest {
 
     Method method = TestingUtils.onlyMethod(cls);
     try {
-      return RequestFactory.parseAnnotations(retrofit, method).create(args);
+      return HttpRequestFactory.parseAnnotations(retrofit, method).create(args);
     } catch (RuntimeException e) {
       throw e;
     } catch (Exception e) {

@@ -38,6 +38,7 @@
     <module>retrofit-converters</module>
     <module>retrofit-mock</module>
     <module>samples</module>
+      <module>retrofit-http</module>
   </modules>
 
   <properties>
@@ -45,7 +46,7 @@
     <project.reporting.sourceEncoding>UTF-8</project.reporting.sourceEncoding>
 
     <!-- Compilation -->
-    <java.version>1.7</java.version>
+    <java.version>1.8</java.version>
     <kotlin.version>1.3.10</kotlin.version>
 
     <!-- Dependencies -->

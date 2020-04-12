@@ -26,23 +26,24 @@ import java.util.Set;
 import okhttp3.RequestBody;
 import okhttp3.ResponseBody;
 import retrofit2.Converter;
+import retrofit2.ConverterFactory;
 import retrofit2.Retrofit;
 
 import static java.util.Collections.unmodifiableSet;
 
 /**
- * A {@linkplain Converter.Factory converter} which uses Moshi for JSON.
+ * A {@linkplain ConverterFactory converter} which uses Moshi for JSON.
  * <p>
  * Because Moshi is so flexible in the types it supports, this converter assumes that it can handle
  * all types. If you are mixing JSON serialization with something else (such as protocol buffers),
- * you must {@linkplain Retrofit.Builder#addConverterFactory(Converter.Factory) add this instance}
+ * you must {@linkplain Retrofit.Builder#addConverterFactory(ConverterFactory) add this instance}
  * last to allow the other converters a chance to see their types.
  * <p>
  * Any {@link JsonQualifier @JsonQualifier}-annotated annotations on the parameter will be used
  * when looking up a request body converter and those on the method will be used when looking up a
  * response body converter.
  */
-public final class MoshiConverterFactory extends Converter.Factory {
+public final class MoshiConverterFactory extends ConverterFactory {
   /** Create an instance using a default {@link Moshi} instance for conversion. */
   public static MoshiConverterFactory create() {
     return create(new Moshi.Builder().build());

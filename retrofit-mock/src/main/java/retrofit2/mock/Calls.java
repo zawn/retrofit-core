@@ -35,7 +35,7 @@ public final class Calls {
   }
 
   public static <T> Call<T> response(@Nullable T successValue) {
-    return new FakeCall<>(Response.success(successValue), null);
+    return new FakeCall<>(Utils.success(successValue), null);
   }
 
   public static <T> Call<T> response(Response<T> response) {

@@ -77,7 +77,7 @@ class KotlinSuspendTest {
     try {
       runBlocking { example.body() }
       fail()
-    } catch (e: HttpException) {
+    } catch (e: ResponseException) {
       assertThat(e.code()).isEqualTo(404)
     }
   }
@@ -248,7 +248,7 @@ class KotlinSuspendTest {
                 call.enqueue(object : Callback<String> by callback {
                   override fun onResponse(call: Call<String>, response: Response<String>) {
                     if (response.isSuccessful) {
-                      callback.onResponse(call, Response.success(response.body()?.repeat(5)))
+                      callback.onResponse(call, retrofit2.okhttp.Utils.success(response.body()?.repeat(5)))
                     } else {
                       callback.onResponse(call, response)
                     }

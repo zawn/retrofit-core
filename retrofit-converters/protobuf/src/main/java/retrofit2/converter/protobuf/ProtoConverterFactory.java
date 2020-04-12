@@ -27,15 +27,16 @@ import javax.annotation.Nullable;
 import okhttp3.RequestBody;
 import okhttp3.ResponseBody;
 import retrofit2.Converter;
+import retrofit2.ConverterFactory;
 import retrofit2.Retrofit;
 
 /**
- * A {@linkplain Converter.Factory converter} which uses Protocol Buffers.
+ * A {@linkplain ConverterFactory converter} which uses Protocol Buffers.
  * <p>
  * This converter only applies for types which extend from {@link MessageLite} (or one of its
  * subclasses).
  */
-public final class ProtoConverterFactory extends Converter.Factory {
+public final class ProtoConverterFactory extends ConverterFactory {
   public static ProtoConverterFactory create() {
     return new ProtoConverterFactory(null);
   }
