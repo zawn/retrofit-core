@@ -21,7 +21,7 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import javax.annotation.Nullable;
 import retrofit2.CallAdapter;
-import retrofit2.HttpException;
+import retrofit2.okhttp.HttpException;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import rx.Completable;

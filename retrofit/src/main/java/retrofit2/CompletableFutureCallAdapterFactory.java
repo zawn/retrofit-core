@@ -21,6 +21,7 @@ import java.lang.reflect.Type;
 import java.util.concurrent.CompletableFuture;
 import javax.annotation.Nullable;
 import org.codehaus.mojo.animal_sniffer.IgnoreJRERequirement;
+import retrofit2.okhttp.HttpException;
 
 @IgnoreJRERequirement // Only added when CompletableFuture is available (Java 8+ / Android API 24+).
 final class CompletableFutureCallAdapterFactory extends CallAdapter.Factory {

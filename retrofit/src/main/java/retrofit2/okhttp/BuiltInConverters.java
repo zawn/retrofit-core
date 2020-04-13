@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package retrofit2;
+package retrofit2.okhttp;
 
 import java.io.IOException;
 import java.lang.annotation.Annotation;
@@ -22,9 +22,12 @@ import javax.annotation.Nullable;
 import kotlin.Unit;
 import okhttp3.RequestBody;
 import okhttp3.ResponseBody;
+import retrofit2.Converter;
+import retrofit2.Retrofit;
+import retrofit2.Utils;
 import retrofit2.http.Streaming;
 
-final class BuiltInConverters extends Converter.Factory {
+public final class BuiltInConverters extends Converter.Factory {
   /** Not volatile because we don't mind multiple threads discovering this. */
   private boolean checkForKotlinUnit = true;
 
@@ -107,8 +110,8 @@ final class BuiltInConverters extends Converter.Factory {
     }
   }
 
-  static final class ToStringConverter implements Converter<Object, String> {
-    static final ToStringConverter INSTANCE = new ToStringConverter();
+  public static final class ToStringConverter implements Converter<Object, String> {
+    public static final ToStringConverter INSTANCE = new ToStringConverter();
 
     @Override public String convert(Object value) {
       return value.toString();

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package retrofit2;
+package retrofit2.okhttp;
 
 import java.io.IOException;
 import java.util.regex.Pattern;
@@ -28,7 +28,7 @@ import okhttp3.RequestBody;
 import okio.Buffer;
 import okio.BufferedSink;
 
-final class RequestBuilder {
+public final class RequestBuilder {
   private static final char[] HEX_DIGITS =
       { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F' };
   private static final String PATH_SEGMENT_ALWAYS_ENCODE_SET = " \"<>^`{}|\\?#";

@@ -20,6 +20,7 @@ import okhttp3.Headers;
 import okhttp3.Protocol;
 import okhttp3.Request;
 import okhttp3.ResponseBody;
+import retrofit2.okhttp.OkHttpCall;
 
 import static retrofit2.Utils.checkNotNull;
 

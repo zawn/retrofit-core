@@ -36,6 +36,7 @@ import retrofit2.http.GET;
 import retrofit2.http.HTTP;
 import retrofit2.http.Header;
 import retrofit2.http.Url;
+import retrofit2.okhttp.BuiltInConverters;
 
 import static java.util.Collections.unmodifiableList;
 import static retrofit2.Utils.checkNotNull;
@@ -62,8 +63,8 @@ import static retrofit2.Utils.checkNotNull;
 public final class Retrofit {
   private final Map<Method, ServiceMethod<?>> serviceMethodCache = new ConcurrentHashMap<>();
 
-  final okhttp3.Call.Factory callFactory;
-  final HttpUrl baseUrl;
+  public final okhttp3.Call.Factory callFactory;
+  public final HttpUrl baseUrl;
   final List<Converter.Factory> converterFactories;
   final List<CallAdapter.Factory> callAdapterFactories;
   final @Nullable Executor callbackExecutor;

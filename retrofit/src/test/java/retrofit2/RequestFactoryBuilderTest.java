@@ -17,6 +17,7 @@ package retrofit2;
 
 import java.util.Set;
 import org.junit.Test;
+import retrofit2.okhttp.RequestFactory;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

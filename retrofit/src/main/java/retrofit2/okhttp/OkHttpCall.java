@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package retrofit2;
+package retrofit2.okhttp;
 
 import java.io.IOException;
 import javax.annotation.Nullable;
@@ -25,11 +25,16 @@ import okio.Buffer;
 import okio.BufferedSource;
 import okio.ForwardingSource;
 import okio.Okio;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Converter;
+import retrofit2.Response;
+import retrofit2.Utils;
 
 import static retrofit2.Utils.checkNotNull;
 import static retrofit2.Utils.throwIfFatal;
 
-final class OkHttpCall<T> implements Call<T> {
+public final class OkHttpCall<T> implements Call<T> {
   private final RequestFactory requestFactory;
   private final Object[] args;
   private final okhttp3.Call.Factory callFactory;
@@ -253,11 +258,11 @@ final class OkHttpCall<T> implements Call<T> {
     }
   }
 
-  static final class NoContentResponseBody extends ResponseBody {
+  public static final class NoContentResponseBody extends ResponseBody {
     private final @Nullable MediaType contentType;
     private final long contentLength;
 
-    NoContentResponseBody(@Nullable MediaType contentType, long contentLength) {
+    public NoContentResponseBody(@Nullable MediaType contentType, long contentLength) {
       this.contentType = contentType;
       this.contentLength = contentLength;
     }

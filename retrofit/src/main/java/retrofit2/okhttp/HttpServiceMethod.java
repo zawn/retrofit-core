@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package retrofit2;
+package retrofit2.okhttp;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
@@ -22,18 +22,27 @@ import java.lang.reflect.Type;
 import javax.annotation.Nullable;
 import kotlin.coroutines.Continuation;
 import okhttp3.ResponseBody;
+import retrofit2.Call;
+import retrofit2.CallAdapter;
+import retrofit2.Converter;
+import retrofit2.KotlinExtensions;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.ServiceMethod;
+import retrofit2.SkipCallbackExecutorImpl;
+import retrofit2.Utils;
 
 import static retrofit2.Utils.getRawType;
 import static retrofit2.Utils.methodError;
 
 /** Adapts an invocation of an interface method into an HTTP call. */
-abstract class HttpServiceMethod<ResponseT, ReturnT> extends ServiceMethod<ReturnT> {
+public abstract class HttpServiceMethod<ResponseT, ReturnT> extends ServiceMethod<ReturnT> {
   /**
    * Inspects the annotations on an interface method to construct a reusable service method that
    * speaks HTTP. This requires potentially-expensive reflection so it is best to build each service
    * method only once and reuse it.
    */
-  static <ResponseT, ReturnT> HttpServiceMethod<ResponseT, ReturnT> parseAnnotations(
+  public static <ResponseT, ReturnT> HttpServiceMethod<ResponseT, ReturnT> parseAnnotations(
       Retrofit retrofit, Method method, RequestFactory requestFactory) {
     boolean isKotlinSuspendFunction = requestFactory.isKotlinSuspendFunction;
     boolean continuationWantsResponse = false;
@@ -66,16 +75,16 @@ abstract class HttpServiceMethod<ResponseT, ReturnT> extends ServiceMethod<Retur
         createCallAdapter(retrofit, method, adapterType, annotations);
     Type responseType = callAdapter.responseType();
     if (responseType == okhttp3.Response.class) {
-      throw methodError(method, "'"
+      throw Utils.methodError(method, "'"
           + getRawType(responseType).getName()
           + "' is not a valid response body type. Did you mean ResponseBody?");
     }
     if (responseType == Response.class) {
-      throw methodError(method, "Response must include generic type (e.g., Response<String>)");
+      throw Utils.methodError(method, "Response must include generic type (e.g., Response<String>)");
     }
     // TODO support Unit for Kotlin?
     if (requestFactory.httpMethod.equals("HEAD") && !Void.class.equals(responseType)) {
-      throw methodError(method, "HEAD method must use Void as response type.");
+      throw Utils.methodError(method, "HEAD method must use Void as response type.");
     }
 
     Converter<ResponseBody, ResponseT> responseConverter =
@@ -102,7 +111,7 @@ abstract class HttpServiceMethod<ResponseT, ReturnT> extends ServiceMethod<Retur
       //noinspection unchecked
       return (CallAdapter<ResponseT, ReturnT>) retrofit.callAdapter(returnType, annotations);
     } catch (RuntimeException e) { // Wide exception range because factories are user code.
-      throw methodError(method, e, "Unable to create call adapter for %s", returnType);
+      throw Utils.methodError(method, e, "Unable to create call adapter for %s", returnType);
     }
   }
 
@@ -112,7 +121,7 @@ abstract class HttpServiceMethod<ResponseT, ReturnT> extends ServiceMethod<Retur
     try {
       return retrofit.responseBodyConverter(responseType, annotations);
     } catch (RuntimeException e) { // Wide exception range because factories are user code.
-      throw methodError(method, e, "Unable to create converter for %s", responseType);
+      throw Utils.methodError(method, e, "Unable to create converter for %s", responseType);
     }
   }
 
@@ -127,7 +136,7 @@ abstract class HttpServiceMethod<ResponseT, ReturnT> extends ServiceMethod<Retur
     this.responseConverter = responseConverter;
   }
 
-  @Override final @Nullable ReturnT invoke(Object[] args) {
+  @Override public final @Nullable ReturnT invoke(Object[] args) {
     Call<ResponseT> call = new OkHttpCall<>(requestFactory, args, callFactory, responseConverter);
     return adapt(call, args);
   }

@@ -53,6 +53,7 @@ import retrofit2.http.Body;
 import retrofit2.http.GET;
 import retrofit2.http.POST;
 import retrofit2.http.Query;
+import retrofit2.okhttp.BuiltInConverters;
 
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 import static okhttp3.mockwebserver.SocketPolicy.DISCONNECT_AT_START;
@@ -512,7 +513,7 @@ public final class RetrofitTest {
       assertThat(e.getCause()).hasMessage(""
           + "Could not locate RequestBody converter for class java.lang.String.\n"
           + "  Tried:\n"
-          + "   * retrofit2.BuiltInConverters\n"
+          + "   * retrofit2.okhttp.BuiltInConverters\n"
           + "   * retrofit2.OptionalConverterFactory");
     }
   }
@@ -535,7 +536,7 @@ public final class RetrofitTest {
       assertThat(e.getCause()).hasMessage(""
           + "Could not locate ResponseBody converter for class java.lang.String.\n"
           + "  Tried:\n"
-          + "   * retrofit2.BuiltInConverters\n"
+          + "   * retrofit2.okhttp.BuiltInConverters\n"
           + "   * retrofit2.OptionalConverterFactory");
     }
   }
@@ -944,7 +945,7 @@ public final class RetrofitTest {
       assertThat(e).hasMessage(""
           + "Could not locate RequestBody converter for class java.lang.String.\n"
           + "  Tried:\n"
-          + "   * retrofit2.BuiltInConverters\n"
+          + "   * retrofit2.okhttp.BuiltInConverters\n"
           + "   * retrofit2.helpers.NonMatchingConverterFactory\n"
           + "   * retrofit2.OptionalConverterFactory");
     }
@@ -972,7 +973,7 @@ public final class RetrofitTest {
       assertThat(e).hasMessage(""
           + "Could not locate RequestBody converter for class java.lang.String.\n"
           + "  Skipped:\n"
-          + "   * retrofit2.BuiltInConverters\n"
+          + "   * retrofit2.okhttp.BuiltInConverters\n"
           + "   * retrofit2.helpers.NonMatchingConverterFactory\n"
           + "  Tried:\n"
           + "   * retrofit2.helpers.NonMatchingConverterFactory\n"
@@ -1027,7 +1028,7 @@ public final class RetrofitTest {
       assertThat(e).hasMessage(""
           + "Could not locate ResponseBody converter for class java.lang.String.\n"
           + "  Tried:\n"
-          + "   * retrofit2.BuiltInConverters\n"
+          + "   * retrofit2.okhttp.BuiltInConverters\n"
           + "   * retrofit2.helpers.NonMatchingConverterFactory\n"
           + "   * retrofit2.OptionalConverterFactory");
     }
@@ -1055,7 +1056,7 @@ public final class RetrofitTest {
       assertThat(e).hasMessage(""
           + "Could not locate ResponseBody converter for class java.lang.String.\n"
           + "  Skipped:\n"
-          + "   * retrofit2.BuiltInConverters\n"
+          + "   * retrofit2.okhttp.BuiltInConverters\n"
           + "   * retrofit2.helpers.NonMatchingConverterFactory\n"
           + "  Tried:\n"
           + "   * retrofit2.helpers.NonMatchingConverterFactory\n"

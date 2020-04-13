@@ -59,6 +59,7 @@ import retrofit2.http.QueryMap;
 import retrofit2.http.QueryName;
 import retrofit2.http.Tag;
 import retrofit2.http.Url;
+import retrofit2.okhttp.RequestFactory;
 
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;

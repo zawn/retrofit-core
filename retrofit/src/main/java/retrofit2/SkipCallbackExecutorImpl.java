@@ -18,10 +18,10 @@ package retrofit2;
 import java.lang.annotation.Annotation;
 
 // This class conforms to the annotation requirements documented on Annotation.
-final class SkipCallbackExecutorImpl implements SkipCallbackExecutor {
+public final class SkipCallbackExecutorImpl implements SkipCallbackExecutor {
   private static final SkipCallbackExecutor INSTANCE = new SkipCallbackExecutorImpl();
 
-  static Annotation[] ensurePresent(Annotation[] annotations) {
+  public static Annotation[] ensurePresent(Annotation[] annotations) {
     if (Utils.isAnnotationPresent(annotations, SkipCallbackExecutor.class)) {
       return annotations;
     }

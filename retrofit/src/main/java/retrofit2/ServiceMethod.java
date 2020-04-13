@@ -15,13 +15,16 @@
  */
 package retrofit2;
 
+import retrofit2.okhttp.HttpServiceMethod;
+import retrofit2.okhttp.RequestFactory;
+
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import javax.annotation.Nullable;
 
 import static retrofit2.Utils.methodError;
 
-abstract class ServiceMethod<T> {
+public abstract class ServiceMethod<T> {
   static <T> ServiceMethod<T> parseAnnotations(Retrofit retrofit, Method method) {
     RequestFactory requestFactory = RequestFactory.parseAnnotations(retrofit, method);
 
@@ -37,5 +40,5 @@ abstract class ServiceMethod<T> {
     return HttpServiceMethod.parseAnnotations(retrofit, method, requestFactory);
   }
 
-  abstract @Nullable T invoke(Object[] args);
+  public abstract @Nullable T invoke(Object[] args);
 }

@@ -44,7 +44,7 @@ import retrofit2.Retrofit;
  * There are two configurations supported for the {@code CompletableFuture} type parameter:
  * <ul>
  * <li>Direct body (e.g., {@code CompletableFuture<User>}) returns the deserialized body for 2XX
- * responses, sets {@link retrofit2.HttpException HttpException} errors for non-2XX responses, and
+ * responses, sets {@link retrofit2.okhttp.HttpException HttpException} errors for non-2XX responses, and
  * sets {@link IOException} for network errors.</li>
  * <li>Response wrapped body (e.g., {@code CompletableFuture<Response<User>>}) returns a
  * {@link Response} object for all HTTP responses and sets {@link IOException} for network

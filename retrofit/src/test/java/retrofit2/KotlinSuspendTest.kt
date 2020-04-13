@@ -34,6 +34,7 @@ import org.junit.Test
 import retrofit2.helpers.ToStringConverterFactory
 import retrofit2.http.GET
 import retrofit2.http.Path
+import retrofit2.okhttp.HttpException
 import java.io.IOException
 import java.lang.reflect.ParameterizedType
 import java.lang.reflect.Type
