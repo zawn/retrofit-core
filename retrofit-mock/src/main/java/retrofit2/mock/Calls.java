@@ -23,6 +23,7 @@ import okhttp3.Request;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+import retrofit2.okhttp.HttpResponse;
 
 /** Factory methods for creating {@link Call} instances which immediately respond or fail. */
 public final class Calls {
@@ -35,7 +36,7 @@ public final class Calls {
   }
 
   public static <T> Call<T> response(@Nullable T successValue) {
-    return new FakeCall<>(Response.success(successValue), null);
+    return new FakeCall<>(HttpResponse.success(successValue), null);
   }
 
   public static <T> Call<T> response(Response<T> response) {

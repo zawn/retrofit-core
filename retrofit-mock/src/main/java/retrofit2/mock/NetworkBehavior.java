@@ -21,6 +21,7 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
 import okhttp3.ResponseBody;
 import retrofit2.Response;
+import retrofit2.okhttp.HttpResponse;
 
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 
@@ -69,7 +70,7 @@ public final class NetworkBehavior {
   private volatile int errorPercent = DEFAULT_ERROR_PERCENT;
   private volatile Callable<Response<?>> errorFactory = new Callable<Response<?>>() {
     @Override public Response<?> call() {
-      return Response.error(500, ResponseBody.create(null, new byte[0]));
+      return HttpResponse.error(500, ResponseBody.create(null, new byte[0]));
     }
   };
 

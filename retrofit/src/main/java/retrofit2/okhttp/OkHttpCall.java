@@ -214,7 +214,7 @@ public final class OkHttpCall<T> implements Call<T> {
       try {
         // Buffer the entire body to avoid future I/O.
         ResponseBody bufferedBody = Utils.buffer(rawBody);
-        return Response.error(bufferedBody, rawResponse);
+        return HttpResponse.error(bufferedBody, rawResponse);
       } finally {
         rawBody.close();
       }
@@ -222,13 +222,13 @@ public final class OkHttpCall<T> implements Call<T> {
 
     if (code == 204 || code == 205) {
       rawBody.close();
-      return Response.success(null, rawResponse);
+      return HttpResponse.success(null, rawResponse);
     }
 
     ExceptionCatchingResponseBody catchingBody = new ExceptionCatchingResponseBody(rawBody);
     try {
       T body = responseConverter.convert(catchingBody);
-      return Response.success(body, rawResponse);
+      return HttpResponse.success(body, rawResponse);
     } catch (RuntimeException e) {
       // If the underlying source threw an exception, propagate that rather than indicating it was
       // a runtime exception.

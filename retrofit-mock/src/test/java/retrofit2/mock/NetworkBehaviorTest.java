@@ -21,6 +21,7 @@ import java.util.concurrent.Callable;
 import okhttp3.ResponseBody;
 import org.junit.Test;
 import retrofit2.Response;
+import retrofit2.okhttp.HttpResponse;
 
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static java.util.concurrent.TimeUnit.SECONDS;
@@ -143,7 +144,7 @@ public final class NetworkBehaviorTest {
   @Test public void errorFactoryCannotReturnSuccess() {
     behavior.setErrorFactory(new Callable<Response<?>>() {
       @Override public Response<?> call() throws Exception {
-        return Response.success("Taco");
+        return HttpResponse.success("Taco");
       }
     });
     try {
@@ -159,7 +160,7 @@ public final class NetworkBehaviorTest {
       private int code = 500;
 
       @Override public Response<?> call() throws Exception {
-        return Response.error(code++, ResponseBody.create(null, new byte[0]));
+        return HttpResponse.error(code++, ResponseBody.create(null, new byte[0]));
       }
     });
 

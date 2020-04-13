@@ -35,6 +35,7 @@ import retrofit2.helpers.ToStringConverterFactory
 import retrofit2.http.GET
 import retrofit2.http.Path
 import retrofit2.okhttp.HttpException
+import retrofit2.okhttp.HttpResponse
 import java.io.IOException
 import java.lang.reflect.ParameterizedType
 import java.lang.reflect.Type
@@ -252,7 +253,7 @@ class KotlinSuspendTest {
                 call.enqueue(object : Callback<String> by callback {
                   override fun onResponse(call: Call<String>, response: Response<String>) {
                     if (response.isSuccessful) {
-                      callback.onResponse(call, Response.success(response.body()?.repeat(5)))
+                      callback.onResponse(call, HttpResponse.success(response.body()?.repeat(5)))
                     } else {
                       callback.onResponse(call, response)
                     }

@@ -17,13 +17,14 @@ package retrofit2;
 
 import org.junit.Test;
 import retrofit2.okhttp.HttpException;
+import retrofit2.okhttp.HttpResponse;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.fail;
 
 public final class HttpExceptionTest {
   @Test public void response() {
-    Response<String> response = Response.success("Hi");
+    Response<String> response = HttpResponse.success("Hi");
     HttpException exception = new HttpException(response);
     assertThat(exception.code()).isEqualTo(200);
     assertThat(exception.message()).isEqualTo("OK");

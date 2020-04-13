@@ -20,6 +20,7 @@ import okhttp3.MediaType;
 import okhttp3.Protocol;
 import okhttp3.ResponseBody;
 import org.junit.Test;
+import retrofit2.okhttp.HttpResponse;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.fail;
@@ -40,7 +41,7 @@ public final class ResponseTest {
 
   @Test public void success() {
     Object body = new Object();
-    Response<Object> response = Response.success(body);
+    Response<Object> response = HttpResponse.success(body);
     assertThat(response.raw()).isNotNull();
     assertThat(response.code()).isEqualTo(200);
     assertThat(response.message()).isEqualTo("OK");
@@ -51,7 +52,7 @@ public final class ResponseTest {
   }
 
   @Test public void successNullAllowed() {
-    Response<Object> response = Response.success(null);
+    Response<Object> response = HttpResponse.success(null);
     assertThat(response.isSuccessful()).isTrue();
     assertThat(response.body()).isNull();
   }
@@ -59,7 +60,7 @@ public final class ResponseTest {
   @Test public void successWithHeaders() {
     Object body = new Object();
     Headers headers = Headers.of("foo", "bar");
-    Response<Object> response = Response.success(body, headers);
+    Response<Object> response = HttpResponse.success(body, headers);
     assertThat(response.raw()).isNotNull();
     assertThat(response.code()).isEqualTo(200);
     assertThat(response.message()).isEqualTo("OK");
@@ -71,7 +72,7 @@ public final class ResponseTest {
 
   @Test public void successWithNullHeadersThrows() {
     try {
-      Response.success("", (okhttp3.Headers) null);
+      HttpResponse.success("", (okhttp3.Headers) null);
       fail();
     } catch (NullPointerException e) {
       assertThat(e).hasMessage("headers == null");
@@ -80,7 +81,7 @@ public final class ResponseTest {
 
   @Test public void successWithStatusCode() {
     Object body = new Object();
-    Response<Object> response = Response.success(204, body);
+    Response<Object> response = HttpResponse.success(204, body);
     assertThat(response.code()).isEqualTo(204);
     assertThat(response.message()).isEqualTo("Response.success()");
     assertThat(response.headers().size()).isZero();
@@ -91,7 +92,7 @@ public final class ResponseTest {
 
   @Test public void successWithRawResponse() {
     Object body = new Object();
-    Response<Object> response = Response.success(body, successResponse);
+    Response<Object> response = HttpResponse.success(body, successResponse);
     assertThat(response.raw()).isSameAs(successResponse);
     assertThat(response.code()).isEqualTo(200);
     assertThat(response.message()).isEqualTo("OK");
@@ -103,7 +104,7 @@ public final class ResponseTest {
 
   @Test public void successWithNullRawResponseThrows() {
     try {
-      Response.success("", (okhttp3.Response) null);
+      HttpResponse.success("", (okhttp3.Response) null);
       fail();
     } catch (NullPointerException e) {
       assertThat(e).hasMessage("rawResponse == null");
@@ -112,7 +113,7 @@ public final class ResponseTest {
 
   @Test public void successWithErrorRawResponseThrows() {
     try {
-      Response.success("", errorResponse);
+      HttpResponse.success("", errorResponse);
       fail();
     } catch (IllegalArgumentException e) {
       assertThat(e).hasMessage("rawResponse must be successful response");
@@ -122,7 +123,7 @@ public final class ResponseTest {
   @Test public void error() {
     MediaType plainText = MediaType.get("text/plain; charset=utf-8");
     ResponseBody errorBody = ResponseBody.create(plainText, "Broken!");
-    Response<?> response = Response.error(400, errorBody);
+    Response<?> response = HttpResponse.error(400, errorBody);
     assertThat(response.raw()).isNotNull();
     assertThat(response.raw().body().contentType()).isEqualTo(plainText);
     assertThat(response.raw().body().contentLength()).isEqualTo(7);
@@ -141,7 +142,7 @@ public final class ResponseTest {
 
   @Test public void nullErrorThrows() {
     try {
-      Response.error(400, null);
+      HttpResponse.error(400, null);
       fail();
     } catch (NullPointerException e) {
       assertThat(e).hasMessage("body == null");
@@ -151,7 +152,7 @@ public final class ResponseTest {
   @Test public void errorWithSuccessCodeThrows() {
     ResponseBody errorBody = ResponseBody.create(null, "Broken!");
     try {
-      Response.error(200, errorBody);
+      HttpResponse.error(200, errorBody);
       fail();
     } catch (IllegalArgumentException e) {
       assertThat(e).hasMessage("code < 400: 200");
@@ -160,7 +161,7 @@ public final class ResponseTest {
 
   @Test public void errorWithRawResponse() {
     ResponseBody errorBody = ResponseBody.create(null, "Broken!");
-    Response<?> response = Response.error(errorBody, errorResponse);
+    Response<?> response = HttpResponse.error(errorBody, errorResponse);
     assertThat(response.raw()).isSameAs(errorResponse);
     assertThat(response.code()).isEqualTo(400);
     assertThat(response.message()).isEqualTo("Broken!");
@@ -172,7 +173,7 @@ public final class ResponseTest {
 
   @Test public void nullErrorWithRawResponseThrows() {
     try {
-      Response.error(null, errorResponse);
+      HttpResponse.error(null, errorResponse);
       fail();
     } catch (NullPointerException e) {
       assertThat(e).hasMessage("body == null");
@@ -182,7 +183,7 @@ public final class ResponseTest {
   @Test public void errorWithNullRawResponseThrows() {
     ResponseBody errorBody = ResponseBody.create(null, "Broken!");
     try {
-      Response.error(errorBody, null);
+      HttpResponse.error(errorBody, null);
       fail();
     } catch (NullPointerException e) {
       assertThat(e).hasMessage("rawResponse == null");
@@ -192,7 +193,7 @@ public final class ResponseTest {
   @Test public void errorWithSuccessRawResponseThrows() {
     ResponseBody errorBody = ResponseBody.create(null, "Broken!");
     try {
-      Response.error(errorBody, successResponse);
+      HttpResponse.error(errorBody, successResponse);
       fail();
     } catch (IllegalArgumentException e) {
       assertThat(e).hasMessage("rawResponse should not be successful response");

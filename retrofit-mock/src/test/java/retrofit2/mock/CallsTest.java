@@ -23,6 +23,7 @@ import org.junit.Test;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+import retrofit2.okhttp.HttpResponse;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertEquals;
@@ -53,7 +54,7 @@ public final class CallsTest {
   }
 
   @Test public void responseExecute() throws IOException {
-    Response<String> response = Response.success("Taco");
+    Response<String> response = HttpResponse.success("Taco");
     Call<String> taco = Calls.response(response);
     assertFalse(taco.isExecuted());
     assertSame(response, taco.execute());
@@ -67,7 +68,7 @@ public final class CallsTest {
   }
 
   @Test public void responseEnqueue() {
-    Response<String> response = Response.success("Taco");
+    Response<String> response = HttpResponse.success("Taco");
     Call<String> taco = Calls.response(response);
     assertFalse(taco.isExecuted());
 
@@ -111,7 +112,7 @@ public final class CallsTest {
   }
 
   @Test public void responseCancelExecute() {
-    Call<String> taco = Calls.response(Response.success("Taco"));
+    Call<String> taco = Calls.response(HttpResponse.success("Taco"));
     assertFalse(taco.isCanceled());
     taco.cancel();
     assertTrue(taco.isCanceled());
@@ -125,7 +126,7 @@ public final class CallsTest {
   }
 
   @Test public void responseCancelEnqueue() throws IOException {
-    Call<String> taco = Calls.response(Response.success("Taco"));
+    Call<String> taco = Calls.response(HttpResponse.success("Taco"));
     assertFalse(taco.isCanceled());
     taco.cancel();
     assertTrue(taco.isCanceled());
