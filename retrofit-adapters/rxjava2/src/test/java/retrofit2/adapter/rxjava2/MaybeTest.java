@@ -25,6 +25,7 @@ import org.junit.Test;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.http.GET;
+import retrofit2.okhttp.HttpRetrofit;
 
 import static okhttp3.mockwebserver.SocketPolicy.DISCONNECT_AFTER_REQUEST;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -42,7 +43,7 @@ public final class MaybeTest {
   private Service service;
 
   @Before public void setUp() {
-    Retrofit retrofit = new Retrofit.Builder()
+    Retrofit retrofit = new HttpRetrofit.Builder()
         .baseUrl(server.url("/"))
         .addConverterFactory(new StringConverterFactory())
         .addCallAdapterFactory(RxJava2CallAdapterFactory.create())

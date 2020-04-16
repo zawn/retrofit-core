@@ -23,6 +23,7 @@ import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import retrofit2.http.GET;
+import retrofit2.okhttp.HttpRetrofit;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -35,7 +36,7 @@ public final class KotlinUnitTest {
   }
 
   @Test public void unitOnClasspath() throws IOException {
-    Retrofit retrofit = new Retrofit.Builder()
+    Retrofit retrofit = new HttpRetrofit.Builder()
         .baseUrl(server.url("/"))
         .build();
     Service example = retrofit.create(Service.class);

@@ -39,6 +39,7 @@ import retrofit2.Retrofit;
 import retrofit2.converter.jackson.JacksonConverterFactory;
 import retrofit2.http.Body;
 import retrofit2.http.POST;
+import retrofit2.okhttp.HttpRetrofit;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -123,7 +124,7 @@ public class JacksonConverterFactoryTest {
         .getDefaultVisibilityChecker()
         .withFieldVisibility(JsonAutoDetect.Visibility.ANY));
 
-    Retrofit retrofit = new Retrofit.Builder()
+    Retrofit retrofit = new HttpRetrofit.Builder()
         .baseUrl(server.url("/"))
         .addConverterFactory(JacksonConverterFactory.create(mapper))
         .build();

@@ -24,6 +24,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import retrofit2.Retrofit;
 import retrofit2.http.GET;
+import retrofit2.okhttp.HttpRetrofit;
 
 public final class CompletableWithSchedulerTest {
   @Rule public final MockWebServer server = new MockWebServer();
@@ -38,7 +39,7 @@ public final class CompletableWithSchedulerTest {
   private Service service;
 
   @Before public void setUp() {
-    Retrofit retrofit = new Retrofit.Builder()
+    Retrofit retrofit = new HttpRetrofit.Builder()
         .baseUrl(server.url("/"))
         .addCallAdapterFactory(RxJava2CallAdapterFactory.createWithScheduler(scheduler))
         .build();

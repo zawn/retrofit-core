@@ -26,6 +26,7 @@ import org.junit.Test;
 import retrofit2.CallAdapter;
 import retrofit2.Response;
 import retrofit2.Retrofit;
+import retrofit2.okhttp.HttpRetrofit;
 import scala.concurrent.Future;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -40,7 +41,7 @@ public final class ScalaCallAdapterFactoryTest {
   private Retrofit retrofit;
 
   @Before public void setUp() {
-    retrofit = new Retrofit.Builder()
+    retrofit = new HttpRetrofit.Builder()
         .baseUrl(server.url("/"))
         .addConverterFactory(new StringConverterFactory())
         .addCallAdapterFactory(factory)

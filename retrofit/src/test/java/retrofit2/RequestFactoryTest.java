@@ -59,6 +59,7 @@ import retrofit2.http.QueryMap;
 import retrofit2.http.QueryName;
 import retrofit2.http.Tag;
 import retrofit2.http.Url;
+import retrofit2.okhttp.HttpRetrofit;
 import retrofit2.okhttp.RequestFactory;
 
 import static java.util.Arrays.asList;
@@ -2874,7 +2875,7 @@ public final class RequestFactoryTest {
       }
     }
 
-    Retrofit.Builder retrofitBuilder = new Retrofit.Builder()
+    HttpRetrofit.Builder retrofitBuilder = new HttpRetrofit.Builder()
         .baseUrl("http://example.com")
         .addConverterFactory(new NullObjectConverterFactory());
 
@@ -2890,7 +2891,7 @@ public final class RequestFactoryTest {
       }
     }
 
-    Retrofit.Builder retrofitBuilder = new Retrofit.Builder()
+    HttpRetrofit.Builder retrofitBuilder = new HttpRetrofit.Builder()
         .baseUrl("http://example.com")
         .addConverterFactory(new NullObjectConverterFactory());
 
@@ -2913,7 +2914,7 @@ public final class RequestFactoryTest {
       }
     }
 
-    Retrofit.Builder retrofitBuilder = new Retrofit.Builder()
+    HttpRetrofit.Builder retrofitBuilder = new HttpRetrofit.Builder()
         .baseUrl("http://example.com")
         .addConverterFactory(new NullObjectConverterFactory());
 
@@ -2930,7 +2931,7 @@ public final class RequestFactoryTest {
       }
     }
 
-    Retrofit.Builder retrofitBuilder = new Retrofit.Builder()
+    HttpRetrofit.Builder retrofitBuilder = new HttpRetrofit.Builder()
         .baseUrl("http://example.com")
         .addConverterFactory(new NullObjectConverterFactory());
 
@@ -3013,7 +3014,7 @@ public final class RequestFactoryTest {
     }
   }
 
-  static <T> Request buildRequest(Class<T> cls, Retrofit.Builder builder, Object... args) {
+  static <T> Request buildRequest(Class<T> cls, HttpRetrofit.Builder builder, Object... args) {
     okhttp3.Call.Factory callFactory = new okhttp3.Call.Factory() {
       @Override public okhttp3.Call newCall(Request request) {
         throw new UnsupportedOperationException("Not implemented");
@@ -3033,7 +3034,7 @@ public final class RequestFactoryTest {
   }
 
   static <T> Request buildRequest(Class<T> cls, Object... args) {
-    Retrofit.Builder retrofitBuilder = new Retrofit.Builder()
+    HttpRetrofit.Builder retrofitBuilder = new HttpRetrofit.Builder()
         .baseUrl("http://example.com/")
         .addConverterFactory(new ToStringConverterFactory());
 

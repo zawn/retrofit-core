@@ -28,6 +28,7 @@ import retrofit2.http.Body;
 import retrofit2.http.POST;
 import retrofit2.http.Path;
 import retrofit2.http.Query;
+import retrofit2.okhttp.HttpRetrofit;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.fail;
@@ -40,7 +41,7 @@ public final class InvocationTest {
   }
 
   @Test public void invocationObjectOnCallAndRequestTag() {
-    Retrofit retrofit = new Retrofit.Builder()
+    Retrofit retrofit = new HttpRetrofit.Builder()
         .baseUrl("http://example.com/")
         .callFactory(new OkHttpClient())
         .build();

@@ -28,6 +28,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.http.GET;
+import retrofit2.okhttp.HttpRetrofit;
 
 /**
  * A sample showing a custom {@link CallAdapter} which adapts the built-in {@link Call} to a custom
@@ -155,7 +156,7 @@ public final class ErrorHandlingAdapter {
   }
 
   public static void main(String... args) {
-    Retrofit retrofit = new Retrofit.Builder()
+    Retrofit retrofit = new HttpRetrofit.Builder()
         .baseUrl("http://httpbin.org")
         .addCallAdapterFactory(new ErrorHandlingCallAdapterFactory())
         .addConverterFactory(GsonConverterFactory.create())

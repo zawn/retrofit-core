@@ -26,6 +26,7 @@ import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
 import retrofit2.helpers.ToStringConverterFactory;
 import retrofit2.http.GET;
+import retrofit2.okhttp.HttpRetrofit;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.fail;
@@ -44,7 +45,7 @@ public final class CompletableFutureAndroidTest {
   private Service service;
 
   @Before public void setUp() {
-    Retrofit retrofit = new Retrofit.Builder()
+    HttpRetrofit retrofit = new HttpRetrofit.Builder()
         .baseUrl(server.url("/"))
         .addConverterFactory(new ToStringConverterFactory())
         .build();

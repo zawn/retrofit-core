@@ -68,7 +68,7 @@ import static retrofit2.Utils.methodError;
 import static retrofit2.Utils.parameterError;
 
 public final class RequestFactory {
-  public static RequestFactory parseAnnotations(Retrofit retrofit, Method method) {
+  public static RequestFactory parseAnnotations(HttpRetrofit retrofit, Method method) {
     return new Builder(retrofit, method).build();
   }
 
@@ -138,7 +138,7 @@ public final class RequestFactory {
     private static final Pattern PARAM_URL_REGEX = Pattern.compile("\\{(" + PARAM + ")\\}");
     private static final Pattern PARAM_NAME_REGEX = Pattern.compile(PARAM);
 
-    final Retrofit retrofit;
+    final HttpRetrofit retrofit;
     final Method method;
     final Annotation[] methodAnnotations;
     final Annotation[][] parameterAnnotationsArray;
@@ -163,7 +163,7 @@ public final class RequestFactory {
     @Nullable ParameterHandler<RequestBuilder,?>[] parameterHandlers;
     boolean isKotlinSuspendFunction;
 
-    Builder(Retrofit retrofit, Method method) {
+    Builder(HttpRetrofit retrofit, Method method) {
       this.retrofit = retrofit;
       this.method = method;
       this.methodAnnotations = method.getAnnotations();

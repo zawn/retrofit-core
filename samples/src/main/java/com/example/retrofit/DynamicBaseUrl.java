@@ -25,6 +25,7 @@ import retrofit2.Call;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.http.GET;
+import retrofit2.okhttp.HttpRetrofit;
 
 /**
  * This example uses an OkHttp interceptor to change the target hostname dynamically at runtime.
@@ -66,7 +67,7 @@ public final class DynamicBaseUrl {
         .addInterceptor(hostSelectionInterceptor)
         .build();
 
-    Retrofit retrofit = new Retrofit.Builder()
+    Retrofit retrofit = new HttpRetrofit.Builder()
         .baseUrl("http://www.github.com/")
         .callFactory(okHttpClient)
         .build();

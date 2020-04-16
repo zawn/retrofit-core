@@ -43,6 +43,7 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.http.GET;
 import retrofit2.http.Url;
+import retrofit2.okhttp.HttpRetrofit;
 
 /** A simple web crawler that uses a Retrofit service to turn URLs into webpages. */
 public final class Crawler {
@@ -100,7 +101,7 @@ public final class Crawler {
         .connectionPool(new ConnectionPool(100, 30, TimeUnit.SECONDS))
         .build();
 
-    Retrofit retrofit = new Retrofit.Builder()
+    Retrofit retrofit = new HttpRetrofit.Builder()
         .baseUrl(HttpUrl.get("https://example.com/"))
         .addConverterFactory(PageAdapter.FACTORY)
         .client(okHttpClient)

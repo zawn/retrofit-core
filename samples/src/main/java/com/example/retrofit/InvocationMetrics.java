@@ -26,6 +26,7 @@ import retrofit2.Invocation;
 import retrofit2.Retrofit;
 import retrofit2.http.GET;
 import retrofit2.http.Url;
+import retrofit2.okhttp.HttpRetrofit;
 
 /**
  * This example prints HTTP call metrics with the initiating method names and arguments.
@@ -73,7 +74,7 @@ public final class InvocationMetrics {
         .addInterceptor(invocationLogger)
         .build();
 
-    Retrofit retrofit = new Retrofit.Builder()
+    Retrofit retrofit = new HttpRetrofit.Builder()
         .baseUrl("https://square.com/")
         .callFactory(okHttpClient)
         .build();

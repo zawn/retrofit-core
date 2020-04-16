@@ -24,6 +24,7 @@ import org.junit.Test;
 import retrofit2.CallAdapter;
 import retrofit2.Response;
 import retrofit2.Retrofit;
+import retrofit2.okhttp.HttpRetrofit;
 import rx.Observable;
 import rx.Single;
 
@@ -37,7 +38,7 @@ public final class RxJavaCallAdapterFactoryTest {
   private Retrofit retrofit;
 
   @Before public void setUp() {
-    retrofit = new Retrofit.Builder()
+    retrofit = new HttpRetrofit.Builder()
         .baseUrl("http://localhost:1")
         .addConverterFactory(new StringConverterFactory())
         .addCallAdapterFactory(factory)

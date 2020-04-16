@@ -20,6 +20,7 @@ import okhttp3.mockwebserver.MockWebServer;
 import org.junit.Rule;
 import org.junit.Test;
 import retrofit2.http.GET;
+import retrofit2.okhttp.HttpRetrofit;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.fail;
@@ -37,7 +38,7 @@ public final class KotlinSuspendRawTest {
   }
 
   @Test public void raw() {
-    Retrofit retrofit = new Retrofit.Builder()
+    Retrofit retrofit = new HttpRetrofit.Builder()
         .baseUrl(server.url("/"))
         .build();
     Service service = retrofit.create(Service.class);

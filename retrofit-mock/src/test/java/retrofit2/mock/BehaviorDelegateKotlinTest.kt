@@ -21,6 +21,7 @@ import org.junit.Before
 import org.junit.Test
 import retrofit2.Response
 import retrofit2.Retrofit
+import retrofit2.okhttp.HttpRetrofit
 import java.io.IOException
 import java.util.Random
 import java.util.concurrent.TimeUnit.MILLISECONDS
@@ -39,7 +40,7 @@ class BehaviorDelegateKotlinTest {
   private lateinit var service: DoWorkService
 
   @Before fun before() {
-    val retrofit = Retrofit.Builder()
+    val retrofit = HttpRetrofit.Builder()
         .baseUrl("http://example.com")
         .build()
     val mockRetrofit = MockRetrofit.Builder(retrofit)

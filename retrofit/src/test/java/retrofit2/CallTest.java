@@ -41,6 +41,10 @@ import retrofit2.http.GET;
 import retrofit2.http.POST;
 import retrofit2.http.Path;
 import retrofit2.http.Streaming;
+import retrofit2.okhttp.HttpResponse;
+import retrofit2.okhttp.HttpRetrofit;
+
+import javax.annotation.Nullable;
 
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static okhttp3.mockwebserver.SocketPolicy.DISCONNECT_DURING_RESPONSE_BODY;
@@ -61,7 +65,7 @@ public final class CallTest {
   }
 
   @Test public void http200Sync() throws IOException {
-    Retrofit retrofit = new Retrofit.Builder()
+    HttpRetrofit retrofit = new HttpRetrofit.Builder()
         .baseUrl(server.url("/"))
         .addConverterFactory(new ToStringConverterFactory())
         .build();
@@ -75,7 +79,7 @@ public final class CallTest {
   }
 
   @Test public void http200Async() throws InterruptedException {
-    Retrofit retrofit = new Retrofit.Builder()
+    HttpRetrofit retrofit = new HttpRetrofit.Builder()
         .baseUrl(server.url("/"))
         .addConverterFactory(new ToStringConverterFactory())
         .build();
@@ -103,7 +107,7 @@ public final class CallTest {
   }
 
   @Test public void http404Sync() throws IOException {
-    Retrofit retrofit = new Retrofit.Builder()
+    HttpRetrofit retrofit = new HttpRetrofit.Builder()
         .baseUrl(server.url("/"))
         .addConverterFactory(new ToStringConverterFactory())
         .build();
@@ -111,14 +115,14 @@ public final class CallTest {
 
     server.enqueue(new MockResponse().setResponseCode(404).setBody("Hi"));
 
-    Response<String> response = example.getString().execute();
+    HttpResponse<String> response = (HttpResponse<String>) example.getString().execute();
     assertThat(response.isSuccessful()).isFalse();
     assertThat(response.code()).isEqualTo(404);
     assertThat(response.errorBody().string()).isEqualTo("Hi");
   }
 
   @Test public void http404Async() throws InterruptedException, IOException {
-    Retrofit retrofit = new Retrofit.Builder()
+    HttpRetrofit retrofit = new HttpRetrofit.Builder()
         .baseUrl(server.url("/"))
         .addConverterFactory(new ToStringConverterFactory())
         .build();
@@ -140,14 +144,14 @@ public final class CallTest {
     });
     assertTrue(latch.await(10, SECONDS));
 
-    Response<String> response = responseRef.get();
+    HttpResponse<String> response = (HttpResponse<String>) responseRef.get();
     assertThat(response.isSuccessful()).isFalse();
     assertThat(response.code()).isEqualTo(404);
     assertThat(response.errorBody().string()).isEqualTo("Hi");
   }
 
   @Test public void transportProblemSync() {
-    Retrofit retrofit = new Retrofit.Builder()
+    HttpRetrofit retrofit = new HttpRetrofit.Builder()
         .baseUrl(server.url("/"))
         .addConverterFactory(new ToStringConverterFactory())
         .build();
@@ -164,7 +168,7 @@ public final class CallTest {
   }
 
   @Test public void transportProblemAsync() throws InterruptedException {
-    Retrofit retrofit = new Retrofit.Builder()
+    HttpRetrofit retrofit = new HttpRetrofit.Builder()
         .baseUrl(server.url("/"))
         .addConverterFactory(new ToStringConverterFactory())
         .build();
@@ -191,7 +195,7 @@ public final class CallTest {
   }
 
   @Test public void conversionProblemOutgoingSync() throws IOException {
-    Retrofit retrofit = new Retrofit.Builder()
+    HttpRetrofit retrofit = new HttpRetrofit.Builder()
         .baseUrl(server.url("/"))
         .addConverterFactory(new ToStringConverterFactory() {
           @Override
@@ -218,7 +222,7 @@ public final class CallTest {
   }
 
   @Test public void conversionProblemOutgoingAsync() throws InterruptedException {
-    Retrofit retrofit = new Retrofit.Builder()
+    HttpRetrofit retrofit = new HttpRetrofit.Builder()
         .baseUrl(server.url("/"))
         .addConverterFactory(new ToStringConverterFactory() {
           @Override
@@ -254,7 +258,7 @@ public final class CallTest {
   }
 
   @Test public void conversionProblemIncomingSync() throws IOException {
-    Retrofit retrofit = new Retrofit.Builder()
+    HttpRetrofit retrofit = new HttpRetrofit.Builder()
         .baseUrl(server.url("/"))
         .addConverterFactory(new ToStringConverterFactory() {
           @Override
@@ -298,7 +302,7 @@ public final class CallTest {
           }
         }).build();
 
-    Retrofit retrofit = new Retrofit.Builder()
+    HttpRetrofit retrofit = new HttpRetrofit.Builder()
         .baseUrl(server.url("/"))
         .client(client)
         .addConverterFactory(new ToStringConverterFactory() {
@@ -332,7 +336,7 @@ public final class CallTest {
   }
 
   @Test public void conversionProblemIncomingAsync() throws InterruptedException {
-    Retrofit retrofit = new Retrofit.Builder()
+    HttpRetrofit retrofit = new HttpRetrofit.Builder()
         .baseUrl(server.url("/"))
         .addConverterFactory(new ToStringConverterFactory() {
           @Override
@@ -374,7 +378,7 @@ public final class CallTest {
         throw new AssertionError();
       }
     };
-    Retrofit retrofit = new Retrofit.Builder()
+    HttpRetrofit retrofit = new HttpRetrofit.Builder()
         .baseUrl(server.url("/"))
         .addConverterFactory(new ToStringConverterFactory() {
           @Override
@@ -388,7 +392,7 @@ public final class CallTest {
 
     server.enqueue(new MockResponse().setStatus("HTTP/1.1 204 Nothin"));
 
-    Response<String> response = example.getString().execute();
+    HttpResponse<String> response = (HttpResponse<String>) example.getString().execute();
     assertThat(response.code()).isEqualTo(204);
     assertThat(response.body()).isNull();
   }
@@ -399,12 +403,13 @@ public final class CallTest {
         throw new AssertionError();
       }
     };
-    Retrofit retrofit = new Retrofit.Builder()
+    HttpRetrofit retrofit = new HttpRetrofit.Builder()
         .baseUrl(server.url("/"))
         .addConverterFactory(new ToStringConverterFactory() {
-          @Override
-          public Converter<ResponseBody, ?> responseBodyConverter(Type type,
-              Annotation[] annotations, Retrofit retrofit) {
+
+          @Nullable @Override
+          public Converter<ResponseBody, ?> responseBodyConverter(
+              Type type, Annotation[] annotations, Retrofit retrofit) {
             return converter;
           }
         })
@@ -413,13 +418,13 @@ public final class CallTest {
 
     server.enqueue(new MockResponse().setStatus("HTTP/1.1 205 Nothin"));
 
-    Response<String> response = example.getString().execute();
+    HttpResponse<String> response = (HttpResponse<String>) example.getString().execute();
     assertThat(response.code()).isEqualTo(205);
     assertThat(response.body()).isNull();
   }
 
   @Test public void converterBodyDoesNotLeakContentInIntermediateBuffers() throws IOException {
-    Retrofit retrofit = new Retrofit.Builder()
+    HttpRetrofit retrofit = new HttpRetrofit.Builder()
         .baseUrl(server.url("/"))
         .addConverterFactory(new Converter.Factory() {
           @Override public Converter<ResponseBody, ?> responseBodyConverter(Type type,
@@ -444,7 +449,7 @@ public final class CallTest {
   }
 
   @Test public void executeCallOnce() throws IOException {
-    Retrofit retrofit = new Retrofit.Builder()
+    HttpRetrofit retrofit = new HttpRetrofit.Builder()
         .baseUrl(server.url("/"))
         .addConverterFactory(new ToStringConverterFactory())
         .build();
@@ -461,7 +466,7 @@ public final class CallTest {
   }
 
   @Test public void successfulRequestResponseWhenMimeTypeMissing() throws Exception {
-    Retrofit retrofit = new Retrofit.Builder()
+    HttpRetrofit retrofit = new HttpRetrofit.Builder()
         .baseUrl(server.url("/"))
         .addConverterFactory(new ToStringConverterFactory())
         .build();
@@ -474,7 +479,7 @@ public final class CallTest {
   }
 
   @Test public void responseBody() throws IOException {
-    Retrofit retrofit = new Retrofit.Builder()
+    HttpRetrofit retrofit = new HttpRetrofit.Builder()
         .baseUrl(server.url("/"))
         .addConverterFactory(new ToStringConverterFactory())
         .build();
@@ -487,7 +492,7 @@ public final class CallTest {
   }
 
   @Test public void responseBodyBuffers() throws IOException {
-    Retrofit retrofit = new Retrofit.Builder()
+    HttpRetrofit retrofit = new HttpRetrofit.Builder()
         .baseUrl(server.url("/"))
         .addConverterFactory(new ToStringConverterFactory())
         .build();
@@ -508,7 +513,7 @@ public final class CallTest {
   }
 
   @Test public void responseBodyStreams() throws IOException {
-    Retrofit retrofit = new Retrofit.Builder()
+    HttpRetrofit retrofit = new HttpRetrofit.Builder()
         .baseUrl(server.url("/"))
         .addConverterFactory(new ToStringConverterFactory())
         .build();
@@ -531,7 +536,7 @@ public final class CallTest {
   }
 
   @Test public void rawResponseContentTypeAndLengthButNoSource() throws IOException {
-    Retrofit retrofit = new Retrofit.Builder()
+    HttpRetrofit retrofit = new HttpRetrofit.Builder()
         .baseUrl(server.url("/"))
         .addConverterFactory(new ToStringConverterFactory())
         .build();
@@ -539,7 +544,7 @@ public final class CallTest {
 
     server.enqueue(new MockResponse().setBody("Hi").addHeader("Content-Type", "text/greeting"));
 
-    Response<String> response = example.getString().execute();
+    HttpResponse<String> response = (HttpResponse<String>) example.getString().execute();
     assertThat(response.body()).isEqualTo("Hi");
     ResponseBody rawBody = response.raw().body();
     assertThat(rawBody.contentLength()).isEqualTo(2);
@@ -553,7 +558,7 @@ public final class CallTest {
   }
 
   @Test public void emptyResponse() throws IOException {
-    Retrofit retrofit = new Retrofit.Builder()
+    HttpRetrofit retrofit = new HttpRetrofit.Builder()
         .baseUrl(server.url("/"))
         .addConverterFactory(new ToStringConverterFactory())
         .build();
@@ -561,7 +566,7 @@ public final class CallTest {
 
     server.enqueue(new MockResponse().setBody("").addHeader("Content-Type", "text/stringy"));
 
-    Response<String> response = example.getString().execute();
+    HttpResponse<String> response = (HttpResponse<String>) example.getString().execute();
     assertThat(response.body()).isEqualTo("");
     ResponseBody rawBody = response.raw().body();
     assertThat(rawBody.contentLength()).isEqualTo(0);
@@ -569,7 +574,7 @@ public final class CallTest {
   }
 
   @Test public void reportsExecutedSync() throws IOException {
-    Retrofit retrofit = new Retrofit.Builder()
+    HttpRetrofit retrofit = new HttpRetrofit.Builder()
         .baseUrl(server.url("/"))
         .addConverterFactory(new ToStringConverterFactory())
         .build();
@@ -585,7 +590,7 @@ public final class CallTest {
   }
 
   @Test public void reportsExecutedAsync() throws InterruptedException {
-    Retrofit retrofit = new Retrofit.Builder()
+    HttpRetrofit retrofit = new HttpRetrofit.Builder()
         .baseUrl(server.url("/"))
         .addConverterFactory(new ToStringConverterFactory())
         .build();
@@ -604,7 +609,7 @@ public final class CallTest {
   }
 
   @Test public void cancelBeforeExecute() {
-    Retrofit retrofit = new Retrofit.Builder()
+    HttpRetrofit retrofit = new HttpRetrofit.Builder()
         .baseUrl(server.url("/"))
         .addConverterFactory(new ToStringConverterFactory())
         .build();
@@ -623,7 +628,7 @@ public final class CallTest {
   }
 
   @Test public void cancelBeforeEnqueue() throws Exception {
-    Retrofit retrofit = new Retrofit.Builder()
+    HttpRetrofit retrofit = new HttpRetrofit.Builder()
         .baseUrl(server.url("/"))
         .addConverterFactory(new ToStringConverterFactory())
         .build();
@@ -650,7 +655,7 @@ public final class CallTest {
   }
 
   @Test public void cloningExecutedRequestDoesNotCopyState() throws IOException {
-    Retrofit retrofit = new Retrofit.Builder()
+    HttpRetrofit retrofit = new HttpRetrofit.Builder()
         .baseUrl(server.url("/"))
         .addConverterFactory(new ToStringConverterFactory())
         .build();
@@ -667,7 +672,7 @@ public final class CallTest {
   }
 
   @Test public void cancelRequest() throws InterruptedException {
-    Retrofit retrofit = new Retrofit.Builder()
+    HttpRetrofit retrofit = new HttpRetrofit.Builder()
         .baseUrl(server.url("/"))
         .addConverterFactory(new ToStringConverterFactory())
         .build();
@@ -699,7 +704,7 @@ public final class CallTest {
 
   @Test public void cancelOkHttpRequest() throws InterruptedException {
     OkHttpClient client = new OkHttpClient();
-    Retrofit retrofit = new Retrofit.Builder()
+    HttpRetrofit retrofit = new HttpRetrofit.Builder()
         .baseUrl(server.url("/"))
         .client(client)
         .addConverterFactory(new ToStringConverterFactory())
@@ -732,7 +737,7 @@ public final class CallTest {
   }
 
   @Test public void requestBeforeExecuteCreates() throws IOException {
-    Retrofit retrofit = new Retrofit.Builder()
+    HttpRetrofit retrofit = new HttpRetrofit.Builder()
         .baseUrl(server.url("/"))
         .addConverterFactory(new ToStringConverterFactory())
         .build();
@@ -757,7 +762,7 @@ public final class CallTest {
   }
 
   @Test public void requestThrowingBeforeExecuteFailsExecute() throws IOException {
-    Retrofit retrofit = new Retrofit.Builder()
+    HttpRetrofit retrofit = new HttpRetrofit.Builder()
         .baseUrl(server.url("/"))
         .addConverterFactory(new ToStringConverterFactory())
         .build();
@@ -792,7 +797,7 @@ public final class CallTest {
   }
 
   @Test public void requestThrowingNonFatalErrorBeforeExecuteFailsExecute() throws IOException {
-    Retrofit retrofit = new Retrofit.Builder()
+    HttpRetrofit retrofit = new HttpRetrofit.Builder()
         .baseUrl(server.url("/"))
         .addConverterFactory(new ToStringConverterFactory())
         .build();
@@ -827,7 +832,7 @@ public final class CallTest {
   }
 
   @Test public void requestAfterExecuteReturnsCachedValue() throws IOException {
-    Retrofit retrofit = new Retrofit.Builder()
+    HttpRetrofit retrofit = new HttpRetrofit.Builder()
         .baseUrl(server.url("/"))
         .addConverterFactory(new ToStringConverterFactory())
         .build();
@@ -852,7 +857,7 @@ public final class CallTest {
   }
 
   @Test public void requestAfterExecuteThrowingAlsoThrows() throws IOException {
-    Retrofit retrofit = new Retrofit.Builder()
+    HttpRetrofit retrofit = new HttpRetrofit.Builder()
         .baseUrl(server.url("/"))
         .addConverterFactory(new ToStringConverterFactory())
         .build();
@@ -887,7 +892,7 @@ public final class CallTest {
   }
 
   @Test public void requestAfterExecuteThrowingAlsoThrowsForNonFatalErrors() throws IOException {
-    Retrofit retrofit = new Retrofit.Builder()
+    HttpRetrofit retrofit = new HttpRetrofit.Builder()
         .baseUrl(server.url("/"))
         .addConverterFactory(new ToStringConverterFactory())
         .build();
@@ -922,7 +927,7 @@ public final class CallTest {
   }
 
   @Test public void requestBeforeEnqueueCreates() throws IOException, InterruptedException {
-    Retrofit retrofit = new Retrofit.Builder()
+    HttpRetrofit retrofit = new HttpRetrofit.Builder()
         .baseUrl(server.url("/"))
         .addConverterFactory(new ToStringConverterFactory())
         .build();
@@ -957,7 +962,7 @@ public final class CallTest {
 
   @Test public void requestThrowingBeforeEnqueueFailsEnqueue()
       throws IOException, InterruptedException {
-    Retrofit retrofit = new Retrofit.Builder()
+    HttpRetrofit retrofit = new HttpRetrofit.Builder()
         .baseUrl(server.url("/"))
         .addConverterFactory(new ToStringConverterFactory())
         .build();
@@ -998,7 +1003,7 @@ public final class CallTest {
 
   @Test public void requestThrowingNonFatalErrorBeforeEnqueueFailsEnqueue()
       throws IOException, InterruptedException {
-    Retrofit retrofit = new Retrofit.Builder()
+    HttpRetrofit retrofit = new HttpRetrofit.Builder()
         .baseUrl(server.url("/"))
         .addConverterFactory(new ToStringConverterFactory())
         .build();
@@ -1039,7 +1044,7 @@ public final class CallTest {
 
   @Test public void requestAfterEnqueueReturnsCachedValue() throws IOException,
       InterruptedException {
-    Retrofit retrofit = new Retrofit.Builder()
+    HttpRetrofit retrofit = new HttpRetrofit.Builder()
         .baseUrl(server.url("/"))
         .addConverterFactory(new ToStringConverterFactory())
         .build();
@@ -1074,7 +1079,7 @@ public final class CallTest {
 
   @Test public void requestAfterEnqueueFailingThrows() throws IOException,
       InterruptedException {
-    Retrofit retrofit = new Retrofit.Builder()
+    HttpRetrofit retrofit = new HttpRetrofit.Builder()
         .baseUrl(server.url("/"))
         .addConverterFactory(new ToStringConverterFactory())
         .build();
@@ -1115,7 +1120,7 @@ public final class CallTest {
 
   @Test public void requestAfterEnqueueFailingThrowsForNonFatalErrors() throws IOException,
       InterruptedException {
-    Retrofit retrofit = new Retrofit.Builder()
+    HttpRetrofit retrofit = new HttpRetrofit.Builder()
         .baseUrl(server.url("/"))
         .addConverterFactory(new ToStringConverterFactory())
         .build();
@@ -1155,7 +1160,7 @@ public final class CallTest {
   }
 
   @Test public void fatalErrorsAreNotCaughtRequest() throws Exception {
-    Retrofit retrofit = new Retrofit.Builder()
+    HttpRetrofit retrofit = new HttpRetrofit.Builder()
         .baseUrl(server.url("/"))
         .addConverterFactory(new ToStringConverterFactory())
         .build();
@@ -1190,7 +1195,7 @@ public final class CallTest {
   }
 
   @Test public void fatalErrorsAreNotCaughtEnqueue() throws Exception {
-    Retrofit retrofit = new Retrofit.Builder()
+    HttpRetrofit retrofit = new HttpRetrofit.Builder()
         .baseUrl(server.url("/"))
         .addConverterFactory(new ToStringConverterFactory())
         .build();
@@ -1234,7 +1239,7 @@ public final class CallTest {
   }
 
   @Test public void fatalErrorsAreNotCaughtExecute() throws Exception {
-    Retrofit retrofit = new Retrofit.Builder()
+    HttpRetrofit retrofit = new HttpRetrofit.Builder()
         .baseUrl(server.url("/"))
         .addConverterFactory(new ToStringConverterFactory())
         .build();

@@ -43,6 +43,7 @@ import retrofit2.Retrofit;
 import retrofit2.http.Body;
 import retrofit2.http.GET;
 import retrofit2.http.POST;
+import retrofit2.okhttp.HttpRetrofit;
 
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -159,19 +160,19 @@ public final class MoshiConverterFactoryTest {
     MoshiConverterFactory factoryLenient = factory.asLenient();
     MoshiConverterFactory factoryNulls = factory.withNullSerialization();
     MoshiConverterFactory factoryFailOnUnknown = factory.failOnUnknown();
-    Retrofit retrofit = new Retrofit.Builder()
+    Retrofit retrofit = new HttpRetrofit.Builder()
         .baseUrl(server.url("/"))
         .addConverterFactory(factory)
         .build();
-    Retrofit retrofitLenient = new Retrofit.Builder()
+    Retrofit retrofitLenient = new HttpRetrofit.Builder()
         .baseUrl(server.url("/"))
         .addConverterFactory(factoryLenient)
         .build();
-    Retrofit retrofitNulls = new Retrofit.Builder()
+    Retrofit retrofitNulls = new HttpRetrofit.Builder()
         .baseUrl(server.url("/"))
         .addConverterFactory(factoryNulls)
         .build();
-    Retrofit retrofitFailOnUnknown = new Retrofit.Builder()
+    Retrofit retrofitFailOnUnknown = new HttpRetrofit.Builder()
         .baseUrl(server.url("/"))
         .addConverterFactory(factoryFailOnUnknown)
         .build();

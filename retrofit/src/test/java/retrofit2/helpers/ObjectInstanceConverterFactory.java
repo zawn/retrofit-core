@@ -18,11 +18,13 @@ package retrofit2.helpers;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import javax.annotation.Nullable;
+
+import okhttp3.RequestBody;
 import okhttp3.ResponseBody;
 import retrofit2.Converter;
 import retrofit2.Retrofit;
 
-public final class ObjectInstanceConverterFactory extends Converter.Factory {
+public final class ObjectInstanceConverterFactory extends Converter.Factory<RequestBody,ResponseBody>  {
   public static final Object VALUE = new Object();
 
   @Override public @Nullable Converter<ResponseBody, ?> responseBodyConverter(

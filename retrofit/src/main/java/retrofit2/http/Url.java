@@ -20,6 +20,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 import okhttp3.HttpUrl;
 import retrofit2.Retrofit;
+import retrofit2.okhttp.HttpRetrofit;
 
 import static java.lang.annotation.ElementType.PARAMETER;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
@@ -31,7 +32,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
  * Call&lt;ResponseBody&gt; list(@Url String url);
  * </code></pre>
  * <p>
- * See {@linkplain retrofit2.Retrofit.Builder#baseUrl(HttpUrl) base URL} for details of how
+ * See {@linkplain HttpRetrofit.Builder#baseUrl(HttpUrl) base URL} for details of how
  * the value will be resolved against a base URL to create the full endpoint URL.
  */
 @Documented

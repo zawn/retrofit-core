@@ -33,6 +33,7 @@ import retrofit2.Retrofit;
 import retrofit2.http.Body;
 import retrofit2.http.GET;
 import retrofit2.http.POST;
+import retrofit2.okhttp.HttpRetrofit;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.fail;
@@ -55,7 +56,7 @@ public final class ProtoConverterFactoryTest {
   private ServiceWithRegistry serviceWithRegistry;
 
   @Before public void setUp() {
-    Retrofit retrofit = new Retrofit.Builder()
+    Retrofit retrofit = new HttpRetrofit.Builder()
         .baseUrl(server.url("/"))
         .addConverterFactory(ProtoConverterFactory.create())
         .build();
@@ -63,7 +64,7 @@ public final class ProtoConverterFactoryTest {
 
     ExtensionRegistry registry = ExtensionRegistry.newInstance();
     PhoneProtos.registerAllExtensions(registry);
-    Retrofit retrofitWithRegistry = new Retrofit.Builder()
+    Retrofit retrofitWithRegistry = new HttpRetrofit.Builder()
         .baseUrl(server.url("/"))
         .addConverterFactory(ProtoConverterFactory.createWithRegistry(registry))
         .build();

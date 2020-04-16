@@ -25,6 +25,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import retrofit2.helpers.ToStringConverterFactory;
+import retrofit2.okhttp.HttpRetrofit;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.fail;
@@ -38,7 +39,7 @@ public final class CompletableFutureCallAdapterFactoryTest {
   private Retrofit retrofit;
 
   @Before public void setUp() {
-    retrofit = new Retrofit.Builder()
+    retrofit = new HttpRetrofit.Builder()
         .baseUrl(server.url("/"))
         .addConverterFactory(new ToStringConverterFactory())
         .build();

@@ -26,6 +26,7 @@ import org.junit.Test;
 import org.junit.rules.TestRule;
 import retrofit2.Retrofit;
 import retrofit2.http.GET;
+import retrofit2.okhttp.HttpRetrofit;
 import rx.Completable;
 import rx.exceptions.CompositeException;
 import rx.exceptions.Exceptions;
@@ -51,7 +52,7 @@ public final class AsyncTest {
 
   private Service service;
   @Before public void setUp() {
-    Retrofit retrofit = new Retrofit.Builder()
+    Retrofit retrofit = new HttpRetrofit.Builder()
         .baseUrl(server.url("/"))
         .addCallAdapterFactory(RxJavaCallAdapterFactory.createAsync())
         .build();

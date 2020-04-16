@@ -15,6 +15,7 @@ import retrofit2.Retrofit;
 import retrofit2.mock.BehaviorDelegate;
 import retrofit2.mock.MockRetrofit;
 import retrofit2.mock.NetworkBehavior;
+import retrofit2.okhttp.HttpRetrofit;
 
 /**
  * An example of using {@link MockRetrofit} to create a mock service implementation with
@@ -67,7 +68,7 @@ public final class SimpleMockService {
 
   public static void main(String... args) throws IOException {
     // Create a very simple Retrofit adapter which points the GitHub API.
-    Retrofit retrofit = new Retrofit.Builder()
+    Retrofit retrofit = new HttpRetrofit.Builder()
         .baseUrl(SimpleService.API_URL)
         .build();
 

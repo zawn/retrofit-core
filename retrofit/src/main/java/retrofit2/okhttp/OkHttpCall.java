@@ -29,6 +29,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Converter;
 import retrofit2.Response;
+import retrofit2.RetrofitRequest;
 import retrofit2.Utils;
 
 import static retrofit2.Utils.checkNotNull;
@@ -62,10 +63,10 @@ public final class OkHttpCall<T> implements Call<T> {
     return new OkHttpCall<>(requestFactory, args, callFactory, responseConverter);
   }
 
-  @Override public synchronized Request request() {
+  @Override public synchronized RetrofitRequest<Request> request() {
     okhttp3.Call call = rawCall;
     if (call != null) {
-      return call.request();
+      return new RetrofitRequest<>(call.request());
     }
     if (creationFailure != null) {
       if (creationFailure instanceof IOException) {
@@ -77,7 +78,7 @@ public final class OkHttpCall<T> implements Call<T> {
       }
     }
     try {
-      return (rawCall = createRawCall()).request();
+      return new RetrofitRequest<>((rawCall = createRawCall()).request());
     } catch (RuntimeException | Error e) {
       throwIfFatal(e); // Do not assign a fatal error to creationFailure.
       creationFailure = e;

@@ -30,6 +30,7 @@ import retrofit2.Call;
 import retrofit2.Converter;
 import retrofit2.Retrofit;
 import retrofit2.http.GET;
+import retrofit2.okhttp.HttpRetrofit;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -44,7 +45,7 @@ public final class Java8OptionalConverterFactoryTest {
   private Service service;
 
   @Before public void setUp() {
-    Retrofit retrofit = new Retrofit.Builder()
+    Retrofit retrofit = new HttpRetrofit.Builder()
         .baseUrl(server.url("/"))
         .addConverterFactory(Java8OptionalConverterFactory.create())
         .addConverterFactory(new AlwaysNullConverterFactory())
@@ -69,7 +70,7 @@ public final class Java8OptionalConverterFactoryTest {
 
   @Test public void delegates() throws IOException {
     Object object = new Object();
-    Retrofit retrofit = new Retrofit.Builder()
+    Retrofit retrofit = new HttpRetrofit.Builder()
         .baseUrl(server.url("/"))
         .addConverterFactory(new Converter.Factory() {
           @Nullable @Override public Converter<ResponseBody, ?> responseBodyConverter(Type type,

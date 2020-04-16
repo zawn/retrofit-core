@@ -32,6 +32,7 @@ import org.junit.rules.TestRule;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.http.GET;
+import retrofit2.okhttp.HttpRetrofit;
 
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -52,7 +53,7 @@ public final class MaybeThrowingTest {
   private Service service;
 
   @Before public void setUp() {
-    Retrofit retrofit = new Retrofit.Builder()
+    Retrofit retrofit = new HttpRetrofit.Builder()
         .baseUrl(server.url("/"))
         .addConverterFactory(new StringConverterFactory())
         .addCallAdapterFactory(RxJava2CallAdapterFactory.create())

@@ -26,6 +26,7 @@ import okhttp3.Request;
 import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
 import retrofit2.okhttp.HttpResponse;
+import retrofit2.okhttp.HttpRetrofit;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertTrue;
@@ -35,7 +36,7 @@ import static org.junit.Assert.fail;
 public final class DefaultCallAdapterFactoryTest {
   private static final Annotation[] NO_ANNOTATIONS = new Annotation[0];
 
-  private final Retrofit retrofit = new Retrofit.Builder()
+  private final HttpRetrofit retrofit = new HttpRetrofit.Builder()
       .baseUrl("http://localhost:1")
       .build();
   private final CallAdapter.Factory factory = new DefaultCallAdapterFactory(new Executor() {

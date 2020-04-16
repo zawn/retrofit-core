@@ -37,6 +37,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 import retrofit2.converter.moshi.MoshiConverterFactory;
 import retrofit2.converter.simplexml.SimpleXmlConverterFactory;
 import retrofit2.http.GET;
+import retrofit2.okhttp.HttpRetrofit;
 
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
@@ -128,7 +129,7 @@ final class AnnotatedConverters {
     MoshiConverterFactory moshiConverterFactory = MoshiConverterFactory.create(moshi);
     GsonConverterFactory gsonConverterFactory = GsonConverterFactory.create(gson);
     SimpleXmlConverterFactory simpleXmlConverterFactory = SimpleXmlConverterFactory.create();
-    Retrofit retrofit = new Retrofit.Builder().baseUrl(server.url("/"))
+    Retrofit retrofit = new HttpRetrofit.Builder().baseUrl(server.url("/"))
         .addConverterFactory(
             new AnnotatedConverterFactory.Builder().add(Moshi.class, moshiConverterFactory)
                 .add(Gson.class, gsonConverterFactory)

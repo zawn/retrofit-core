@@ -22,6 +22,7 @@ import retrofit2.Call;
 import retrofit2.CallAdapter;
 import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
+import retrofit2.okhttp.HttpRetrofit;
 import rx.Observable;
 import rx.Scheduler;
 import rx.schedulers.Schedulers;
@@ -32,7 +33,7 @@ public final class RxJavaObserveOnMainThread {
   public static void main(String... args) {
     Scheduler observeOn = Schedulers.computation(); // Or use mainThread() for Android.
 
-    Retrofit retrofit = new Retrofit.Builder()
+    Retrofit retrofit = new HttpRetrofit.Builder()
         .baseUrl("http://example.com")
         .addCallAdapterFactory(new ObserveOnMainCallAdapterFactory(observeOn))
         .addCallAdapterFactory(RxJavaCallAdapterFactory.createWithScheduler(io()))

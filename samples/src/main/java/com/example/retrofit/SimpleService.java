@@ -22,6 +22,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 import retrofit2.Retrofit;
 import retrofit2.http.GET;
 import retrofit2.http.Path;
+import retrofit2.okhttp.HttpRetrofit;
 
 public final class SimpleService {
   public static final String API_URL = "https://api.github.com";
@@ -45,7 +46,7 @@ public final class SimpleService {
 
   public static void main(String... args) throws IOException {
     // Create a very simple REST adapter which points the GitHub API.
-    Retrofit retrofit = new Retrofit.Builder()
+    Retrofit retrofit = new HttpRetrofit.Builder()
         .baseUrl(API_URL)
         .addConverterFactory(GsonConverterFactory.create())
         .build();

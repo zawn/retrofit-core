@@ -21,11 +21,10 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.Optional;
 import javax.annotation.Nullable;
-import okhttp3.ResponseBody;
 import org.codehaus.mojo.animal_sniffer.IgnoreJRERequirement;
 
 @IgnoreJRERequirement // Only added when Optional is available (Java 8+ / Android API 24+).
-final class OptionalConverterFactory extends Converter.Factory {
+final class OptionalConverterFactory<RequestBody, ResponseBody> extends Converter.Factory<RequestBody, ResponseBody> {
   static final Converter.Factory INSTANCE = new OptionalConverterFactory();
 
   @Override public @Nullable Converter<ResponseBody, ?> responseBodyConverter(
@@ -41,7 +40,8 @@ final class OptionalConverterFactory extends Converter.Factory {
   }
 
   @IgnoreJRERequirement
-  static final class OptionalConverter<T> implements Converter<ResponseBody, Optional<T>> {
+  static final class OptionalConverter<ResponseBody,T> implements Converter<ResponseBody,
+      Optional<T>> {
     final Converter<ResponseBody, T> delegate;
 
     OptionalConverter(Converter<ResponseBody, T> delegate) {

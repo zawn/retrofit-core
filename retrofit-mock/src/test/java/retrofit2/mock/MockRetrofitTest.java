@@ -4,12 +4,13 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import org.junit.Test;
 import retrofit2.Retrofit;
+import retrofit2.okhttp.HttpRetrofit;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.fail;
 
 public final class MockRetrofitTest {
-  private final Retrofit retrofit = new Retrofit.Builder().baseUrl("http://example.com").build();
+  private final Retrofit retrofit = new HttpRetrofit.Builder().baseUrl("http://example.com").build();
   private final NetworkBehavior behavior = NetworkBehavior.create();
   private final ExecutorService executor = Executors.newSingleThreadExecutor();
 

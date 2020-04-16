@@ -26,6 +26,7 @@ import org.junit.Test;
 import retrofit2.helpers.ToStringConverterFactory;
 import retrofit2.http.GET;
 import retrofit2.okhttp.HttpException;
+import retrofit2.okhttp.HttpRetrofit;
 
 import static okhttp3.mockwebserver.SocketPolicy.DISCONNECT_AFTER_REQUEST;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -42,7 +43,7 @@ public final class CompletableFutureTest {
   private Service service;
 
   @Before public void setUp() {
-    Retrofit retrofit = new Retrofit.Builder()
+    HttpRetrofit retrofit = new HttpRetrofit.Builder()
         .baseUrl(server.url("/"))
         .addConverterFactory(new ToStringConverterFactory())
         .build();

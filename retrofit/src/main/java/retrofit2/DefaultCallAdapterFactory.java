@@ -21,7 +21,6 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.concurrent.Executor;
 import javax.annotation.Nullable;
-import okhttp3.Request;
 
 import static retrofit2.Utils.checkNotNull;
 
@@ -117,7 +116,7 @@ final class DefaultCallAdapterFactory extends CallAdapter.Factory {
       return new ExecutorCallbackCall<>(callbackExecutor, delegate.clone());
     }
 
-    @Override public Request request() {
+    @Override public RetrofitRequest request() {
       return delegate.request();
     }
   }

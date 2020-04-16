@@ -33,10 +33,10 @@ import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
 import static java.util.Collections.unmodifiableList;
 
-class Platform {
+public class Platform {
   private static final Platform PLATFORM = findPlatform();
 
-  static Platform get() {
+  public static Platform get() {
     return PLATFORM;
   }
 
@@ -56,24 +56,24 @@ class Platform {
     return new Platform();
   }
 
-  @Nullable Executor defaultCallbackExecutor() {
+  @Nullable public Executor defaultCallbackExecutor() {
     return null;
   }
 
-  List<? extends CallAdapter.Factory> defaultCallAdapterFactories(
+  public List<? extends CallAdapter.Factory> defaultCallAdapterFactories(
       @Nullable Executor callbackExecutor) {
     return singletonList(new DefaultCallAdapterFactory(callbackExecutor));
   }
 
-  int defaultCallAdapterFactoriesSize() {
+  public int defaultCallAdapterFactoriesSize() {
     return 1;
   }
 
-  List<? extends Converter.Factory> defaultConverterFactories() {
+  public List<? extends Converter.Factory> defaultConverterFactories() {
     return emptyList();
   }
 
-  int defaultConverterFactoriesSize() {
+  public int defaultConverterFactoriesSize() {
     return 0;
   }
 
@@ -104,7 +104,7 @@ class Platform {
           .invokeWithArguments(args);
     }
 
-    @Override List<? extends CallAdapter.Factory> defaultCallAdapterFactories(
+    @Override public List<? extends CallAdapter.Factory> defaultCallAdapterFactories(
         @Nullable Executor callbackExecutor) {
       List<CallAdapter.Factory> factories = new ArrayList<>(2);
       factories.add(CompletableFutureCallAdapterFactory.INSTANCE);
@@ -112,15 +112,15 @@ class Platform {
       return unmodifiableList(factories);
     }
 
-    @Override int defaultCallAdapterFactoriesSize() {
+    @Override public int defaultCallAdapterFactoriesSize() {
       return 2;
     }
 
-    @Override List<? extends Converter.Factory> defaultConverterFactories() {
+    @Override public List<? extends Converter.Factory> defaultConverterFactories() {
       return singletonList(OptionalConverterFactory.INSTANCE);
     }
 
-    @Override int defaultConverterFactoriesSize() {
+    @Override public int defaultConverterFactoriesSize() {
       return 1;
     }
   }
@@ -138,7 +138,7 @@ class Platform {
       return new MainThreadExecutor();
     }
 
-    @Override List<? extends CallAdapter.Factory> defaultCallAdapterFactories(
+    @Override public List<? extends CallAdapter.Factory> defaultCallAdapterFactories(
         @Nullable Executor callbackExecutor) {
       if (callbackExecutor == null) throw new AssertionError();
       DefaultCallAdapterFactory executorFactory = new DefaultCallAdapterFactory(callbackExecutor);
@@ -147,17 +147,17 @@ class Platform {
         : singletonList(executorFactory);
     }
 
-    @Override int defaultCallAdapterFactoriesSize() {
+    @Override public int defaultCallAdapterFactoriesSize() {
       return Build.VERSION.SDK_INT >= 24 ? 2 : 1;
     }
 
-    @Override List<? extends Converter.Factory> defaultConverterFactories() {
+    @Override public List<? extends Converter.Factory> defaultConverterFactories() {
       return Build.VERSION.SDK_INT >= 24
           ? singletonList(OptionalConverterFactory.INSTANCE)
           : Collections.<Converter.Factory>emptyList();
     }
 
-    @Override int defaultConverterFactoriesSize() {
+    @Override public int defaultConverterFactoriesSize() {
       return Build.VERSION.SDK_INT >= 24 ? 1 : 0;
     }
 

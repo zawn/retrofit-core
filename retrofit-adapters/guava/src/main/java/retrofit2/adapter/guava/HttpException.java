@@ -16,11 +16,12 @@
 package retrofit2.adapter.guava;
 
 import retrofit2.Response;
+import retrofit2.okhttp.HttpResponse;
 
 /** @deprecated Use {@link retrofit2.okhttp.HttpException}. */
 @Deprecated
 public final class HttpException extends retrofit2.okhttp.HttpException {
   public HttpException(Response<?> response) {
-    super(response);
+    super((HttpResponse<?>) response);
   }
 }

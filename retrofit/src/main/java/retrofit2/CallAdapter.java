@@ -15,6 +15,8 @@
  */
 package retrofit2;
 
+import retrofit2.okhttp.HttpRetrofit;
+
 import java.lang.annotation.Annotation;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
@@ -23,7 +25,7 @@ import javax.annotation.Nullable;
 /**
  * Adapts a {@link Call} with response type {@code R} into the type of {@code T}. Instances are
  * created by {@linkplain Factory a factory} which is
- * {@linkplain Retrofit.Builder#addCallAdapterFactory(Factory) installed} into the {@link Retrofit}
+ * {@linkplain HttpRetrofit.Builder#addCallAdapterFactory(Factory) installed} into the {@link Retrofit}
  * instance.
  */
 public interface CallAdapter<R, T> {

@@ -33,6 +33,7 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 import retrofit2.http.GET;
 import retrofit2.http.Query;
+import retrofit2.okhttp.HttpRetrofit;
 
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
@@ -96,7 +97,7 @@ public final class JsonQueryParameters {
     server.start();
     server.enqueue(new MockResponse());
 
-    Retrofit retrofit = new Retrofit.Builder()
+    Retrofit retrofit = new HttpRetrofit.Builder()
         .baseUrl(server.url("/"))
         .addConverterFactory(new JsonStringConverterFactory(GsonConverterFactory.create()))
         .build();

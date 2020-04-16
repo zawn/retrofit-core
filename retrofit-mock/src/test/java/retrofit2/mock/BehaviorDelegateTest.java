@@ -28,6 +28,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
+import retrofit2.okhttp.HttpRetrofit;
 
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static java.util.concurrent.TimeUnit.SECONDS;
@@ -46,7 +47,7 @@ public final class BehaviorDelegateTest {
   private DoWorkService service;
 
   @Before public void setUp() {
-    Retrofit retrofit = new Retrofit.Builder()
+    Retrofit retrofit = new HttpRetrofit.Builder()
         .baseUrl("http://example.com")
         .build();
     MockRetrofit mockRetrofit = new MockRetrofit.Builder(retrofit)

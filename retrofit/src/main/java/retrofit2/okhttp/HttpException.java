@@ -25,7 +25,8 @@ import static retrofit2.Utils.checkNotNull;
 public class HttpException extends RuntimeException {
   private static String getMessage(Response<?> response) {
     checkNotNull(response, "response == null");
-    return "HTTP " + response.code() + " " + response.message();
+    HttpResponse httpResponse = (HttpResponse) response;
+    return "HTTP " + httpResponse.code() + " " + httpResponse.message();
   }
 
   private final int code;
@@ -34,8 +35,9 @@ public class HttpException extends RuntimeException {
 
   public HttpException(Response<?> response) {
     super(getMessage(response));
-    this.code = response.code();
-    this.message = response.message();
+    HttpResponse httpResponse = (HttpResponse) response;
+    this.code = httpResponse.code();
+    this.message = httpResponse.message();
     this.response = response;
   }
 

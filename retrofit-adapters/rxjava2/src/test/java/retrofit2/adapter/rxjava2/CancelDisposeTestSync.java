@@ -23,6 +23,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import retrofit2.Retrofit;
 import retrofit2.http.GET;
+import retrofit2.okhttp.HttpRetrofit;
 
 import static org.junit.Assert.assertEquals;
 
@@ -37,7 +38,7 @@ public final class CancelDisposeTestSync {
   private Service service;
 
   @Before public void setUp() {
-    Retrofit retrofit = new Retrofit.Builder()
+    Retrofit retrofit = new HttpRetrofit.Builder()
         .baseUrl(server.url("/"))
         .addConverterFactory(new StringConverterFactory())
         .addCallAdapterFactory(RxJava2CallAdapterFactory.create())

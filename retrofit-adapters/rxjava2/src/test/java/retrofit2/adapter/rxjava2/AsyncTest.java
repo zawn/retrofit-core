@@ -40,6 +40,7 @@ import org.junit.Test;
 import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava2.CompletableThrowingTest.ForwardingCompletableObserver;
 import retrofit2.http.GET;
+import retrofit2.okhttp.HttpRetrofit;
 
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static okhttp3.mockwebserver.SocketPolicy.DISCONNECT_AFTER_REQUEST;
@@ -75,7 +76,7 @@ public final class AsyncTest {
     OkHttpClient client = new OkHttpClient.Builder()
         .dispatcher(new Dispatcher(executorService))
         .build();
-    Retrofit retrofit = new Retrofit.Builder()
+    Retrofit retrofit = new HttpRetrofit.Builder()
         .baseUrl(server.url("/"))
         .client(client)
         .addCallAdapterFactory(RxJava2CallAdapterFactory.createAsync())

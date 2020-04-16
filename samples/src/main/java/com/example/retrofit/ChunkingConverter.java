@@ -34,6 +34,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 import retrofit2.Retrofit;
 import retrofit2.http.Body;
 import retrofit2.http.POST;
+import retrofit2.okhttp.HttpRetrofit;
 
 import static java.lang.annotation.ElementType.PARAMETER;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
@@ -105,7 +106,7 @@ public final class ChunkingConverter {
     server.enqueue(new MockResponse());
     server.start();
 
-    Retrofit retrofit = new Retrofit.Builder()
+    Retrofit retrofit = new HttpRetrofit.Builder()
         .baseUrl(server.url("/"))
         .addConverterFactory(new ChunkingConverterFactory())
         .addConverterFactory(GsonConverterFactory.create())

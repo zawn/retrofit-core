@@ -29,6 +29,7 @@ import retrofit2.Retrofit;
 import retrofit2.http.Body;
 import retrofit2.http.GET;
 import retrofit2.http.POST;
+import retrofit2.okhttp.HttpRetrofit;
 
 import static junit.framework.TestCase.fail;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -57,7 +58,7 @@ public final class JaxbConverterFactoryTest {
 
   @Before public void setUp() {
     JaxbConverterFactory factory = JaxbConverterFactory.create();
-    Retrofit retrofit = new Retrofit.Builder()
+    Retrofit retrofit = new HttpRetrofit.Builder()
         .baseUrl(server.url("/"))
         .addConverterFactory(factory)
         .build();
@@ -101,7 +102,7 @@ public final class JaxbConverterFactoryTest {
   @Test public void userSuppliedJaxbContext() throws Exception {
     JAXBContext context = JAXBContext.newInstance(Contact.class);
     JaxbConverterFactory factory = JaxbConverterFactory.create(context);
-    Retrofit retrofit = new Retrofit.Builder()
+    Retrofit retrofit = new HttpRetrofit.Builder()
         .baseUrl(server.url("/"))
         .addConverterFactory(factory)
         .build();

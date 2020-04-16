@@ -33,6 +33,7 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 import retrofit2.converter.simplexml.SimpleXmlConverterFactory;
 import retrofit2.http.GET;
+import retrofit2.okhttp.HttpRetrofit;
 
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
@@ -109,7 +110,7 @@ public final class JsonAndXmlConverters {
     server.enqueue(new MockResponse().setBody("{\"name\": \"Jason\"}"));
     server.enqueue(new MockResponse().setBody("<user name=\"Eximel\"/>"));
 
-    Retrofit retrofit = new Retrofit.Builder()
+    Retrofit retrofit = new HttpRetrofit.Builder()
         .baseUrl(server.url("/"))
         .addConverterFactory(new QualifiedTypeConverterFactory(
             GsonConverterFactory.create(),

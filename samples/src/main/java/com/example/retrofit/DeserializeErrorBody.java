@@ -26,6 +26,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.http.GET;
+import retrofit2.okhttp.HttpRetrofit;
 
 public final class DeserializeErrorBody {
   interface Service {
@@ -49,7 +50,7 @@ public final class DeserializeErrorBody {
         .setBody("{\"message\":\"Unable to locate resource\"}"));
 
     // Create our Service instance with a Retrofit pointing at the local web server and Gson.
-    Retrofit retrofit = new Retrofit.Builder()
+    Retrofit retrofit = new HttpRetrofit.Builder()
         .baseUrl(server.url("/"))
         .addConverterFactory(GsonConverterFactory.create())
         .build();

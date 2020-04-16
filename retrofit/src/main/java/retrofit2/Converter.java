@@ -20,8 +20,6 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import javax.annotation.Nullable;
-import okhttp3.RequestBody;
-import okhttp3.ResponseBody;
 import retrofit2.http.Body;
 import retrofit2.http.Field;
 import retrofit2.http.FieldMap;
@@ -32,17 +30,18 @@ import retrofit2.http.PartMap;
 import retrofit2.http.Path;
 import retrofit2.http.Query;
 import retrofit2.http.QueryMap;
+import retrofit2.okhttp.HttpRetrofit;
 
 /**
  * Convert objects to and from their representation in HTTP. Instances are created by {@linkplain
- * Factory a factory} which is {@linkplain Retrofit.Builder#addConverterFactory(Factory) installed}
+ * Factory a factory} which is {@linkplain HttpRetrofit.Builder#addConverterFactory(Factory) installed}
  * into the {@link Retrofit} instance.
  */
 public interface Converter<F, T> {
   @Nullable T convert(F value) throws IOException;
 
   /** Creates {@link Converter} instances based on a type and target usage. */
-  abstract class Factory {
+  abstract class Factory<RequestBody, ResponseBody> {
     /**
      * Returns a {@link Converter} for converting an HTTP response body to {@code type}, or null if
      * {@code type} cannot be handled by this factory. This is used to create converters for

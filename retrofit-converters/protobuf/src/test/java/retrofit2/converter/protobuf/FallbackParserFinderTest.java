@@ -23,12 +23,13 @@ import org.junit.Test;
 import retrofit2.Converter;
 import retrofit2.Retrofit;
 import retrofit2.converter.protobuf.PhoneProtos.Phone;
+import retrofit2.okhttp.HttpRetrofit;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 public final class FallbackParserFinderTest {
   @Test public void converterFactoryFallsBackToParserField() {
-    Retrofit retrofit = new Retrofit.Builder().baseUrl("http://localhost/").build();
+    Retrofit retrofit = new HttpRetrofit.Builder().baseUrl("http://localhost/").build();
     ProtoConverterFactory factory = ProtoConverterFactory.create();
     Converter<ResponseBody, ?> converter =
         factory.responseBodyConverter(FakePhone.class, new Annotation[0], retrofit);

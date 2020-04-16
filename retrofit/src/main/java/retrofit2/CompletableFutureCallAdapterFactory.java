@@ -79,7 +79,7 @@ final class CompletableFutureCallAdapterFactory extends CallAdapter.Factory {
           if (response.isSuccessful()) {
             future.complete(response.body());
           } else {
-            future.completeExceptionally(new HttpException(response));
+            future.completeExceptionally(new RetrofitException(response));
           }
         }
 

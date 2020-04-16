@@ -33,6 +33,7 @@ import io.reactivex.Single;
 import io.reactivex.Flowable;
 import io.reactivex.Maybe;
 import io.reactivex.Completable;
+import retrofit2.okhttp.HttpRetrofit;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.fail;
@@ -44,7 +45,7 @@ public class RxJava2CallAdapterFactoryTest {
   private Retrofit retrofit;
 
   @Before public void setUp() {
-    retrofit = new Retrofit.Builder()
+    retrofit = new HttpRetrofit.Builder()
         .baseUrl("http://localhost:1")
         .addConverterFactory(new StringConverterFactory())
         .addCallAdapterFactory(factory)
