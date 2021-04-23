@@ -36,14 +36,14 @@ public final class KotlinUnitTest {
   }
 
   @Test public void unitOnClasspath() throws IOException {
-    Retrofit retrofit = new HttpRetrofit.Builder()
+    HttpRetrofit retrofit = new HttpRetrofit.Builder()
         .baseUrl(server.url("/"))
         .build();
     Service example = retrofit.create(Service.class);
 
     server.enqueue(new MockResponse().setBody("Hi"));
 
-    Response<Unit> response = example.empty().execute();
+    ResponseWrapper<Unit> response = example.empty().execute();
     assertThat(response.isSuccessful()).isTrue();
     assertThat(response.body()).isSameAs(Unit.INSTANCE);
   }

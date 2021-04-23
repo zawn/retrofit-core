@@ -22,7 +22,7 @@ import okhttp3.mockwebserver.MockWebServer;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import retrofit2.Response;
+import retrofit2.ResponseWrapper;
 import retrofit2.Retrofit;
 import retrofit2.http.GET;
 import retrofit2.okhttp.HttpRetrofit;
@@ -36,7 +36,7 @@ public final class FlowableTest {
 
   interface Service {
     @GET("/") Flowable<String> body();
-    @GET("/") Flowable<Response<String>> response();
+    @GET("/") Flowable<ResponseWrapper<String>> response();
     @GET("/") Flowable<Result<String>> result();
   }
 
@@ -96,7 +96,7 @@ public final class FlowableTest {
   @Test public void responseSuccess200() {
     server.enqueue(new MockResponse());
 
-    RecordingSubscriber<Response<String>> subscriber = subscriberRule.create();
+    RecordingSubscriber<ResponseWrapper<String>> subscriber = subscriberRule.create();
     service.response().subscribe(subscriber);
     assertThat(subscriber.takeValue().isSuccessful()).isTrue();
     subscriber.assertComplete();
@@ -105,7 +105,7 @@ public final class FlowableTest {
   @Test public void responseSuccess404() {
     server.enqueue(new MockResponse().setResponseCode(404));
 
-    RecordingSubscriber<Response<String>> subscriber = subscriberRule.create();
+    RecordingSubscriber<ResponseWrapper<String>> subscriber = subscriberRule.create();
     service.response().subscribe(subscriber);
     assertThat(subscriber.takeValue().isSuccessful()).isFalse();
     subscriber.assertComplete();
@@ -114,7 +114,7 @@ public final class FlowableTest {
   @Test public void responseFailure() {
     server.enqueue(new MockResponse().setSocketPolicy(DISCONNECT_AFTER_REQUEST));
 
-    RecordingSubscriber<Response<String>> subscriber = subscriberRule.create();
+    RecordingSubscriber<ResponseWrapper<String>> subscriber = subscriberRule.create();
     service.response().subscribe(subscriber);
     subscriber.assertError(IOException.class);
   }
@@ -122,8 +122,8 @@ public final class FlowableTest {
   @Test public void responseRespectsBackpressure() {
     server.enqueue(new MockResponse().setBody("Hi"));
 
-    RecordingSubscriber<Response<String>> subscriber = subscriberRule.createWithInitialRequest(0);
-    Flowable<Response<String>> o = service.response();
+    RecordingSubscriber<ResponseWrapper<String>> subscriber = subscriberRule.createWithInitialRequest(0);
+    Flowable<ResponseWrapper<String>> o = service.response();
 
     o.subscribe(subscriber);
     assertThat(server.getRequestCount()).isEqualTo(1);

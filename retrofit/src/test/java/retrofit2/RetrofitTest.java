@@ -72,7 +72,7 @@ public final class RetrofitTest {
     @GET("/") Call<String> disallowed();
     @POST("/") Call<ResponseBody> disallowed(@Body String body);
 
-    @GET("/") Call<retrofit2.Response> badType1();
+    @GET("/") Call<ResponseWrapper> badType1();
     @GET("/") Call<okhttp3.Response> badType2();
 
     @GET("/") Call<ResponseBody> getResponseBody();
@@ -550,7 +550,7 @@ public final class RetrofitTest {
 
     server.enqueue(new MockResponse().setBody("Hi"));
 
-    Response<ResponseBody> response = example.getResponseBody().execute();
+    ResponseWrapper<ResponseBody> response = example.getResponseBody().execute();
     assertThat(response.body().string()).isEqualTo("Hi");
   }
 
@@ -562,7 +562,7 @@ public final class RetrofitTest {
 
     server.enqueue(new MockResponse().setBody("Hi"));
 
-    Response<Void> response = example.getVoid().execute();
+    ResponseWrapper<Void> response = example.getVoid().execute();
     assertThat(response.body()).isNull();
   }
 
@@ -591,7 +591,7 @@ public final class RetrofitTest {
     server.enqueue(new MockResponse().setBody("Hi"));
 
     RequestBody body = RequestBody.create(MediaType.get("text/plain"), "Hey");
-    Response<ResponseBody> response = example.postRequestBody(body).execute();
+    ResponseWrapper<ResponseBody> response = example.postRequestBody(body).execute();
     assertThat(response.body().string()).isEqualTo("Hi");
 
     assertThat(server.takeRequest().getBody().readUtf8()).isEqualTo("Hey");
@@ -1374,7 +1374,7 @@ public final class RetrofitTest {
 
     final CountDownLatch callbackLatch = new CountDownLatch(1);
     call.enqueue(new Callback<ResponseBody>() {
-      @Override public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+      @Override public void onResponse(Call<ResponseBody> call, ResponseWrapper<ResponseBody> response) {
         callbackLatch.countDown();
       }
 
@@ -1410,7 +1410,7 @@ public final class RetrofitTest {
 
     final CountDownLatch callbackLatch = new CountDownLatch(1);
     call.enqueue(new Callback<ResponseBody>() {
-      @Override public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+      @Override public void onResponse(Call<ResponseBody> call, ResponseWrapper<ResponseBody> response) {
         throw new AssertionError();
       }
 
@@ -1443,7 +1443,7 @@ public final class RetrofitTest {
 
     final CountDownLatch latch = new CountDownLatch(1);
     call.enqueue(new Callback<ResponseBody>() {
-      @Override public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+      @Override public void onResponse(Call<ResponseBody> call, ResponseWrapper<ResponseBody> response) {
         latch.countDown();
       }
 
@@ -1471,7 +1471,7 @@ public final class RetrofitTest {
 
     final CountDownLatch latch = new CountDownLatch(1);
     call.enqueue(new Callback<ResponseBody>() {
-      @Override public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+      @Override public void onResponse(Call<ResponseBody> call, ResponseWrapper<ResponseBody> response) {
         throw new AssertionError();
       }
 
@@ -1499,7 +1499,7 @@ public final class RetrofitTest {
     Call<String> call1 = mutableParameters.method(i);
 
     i.set(101);
-    Response<String> response1 = call1.execute();
+    ResponseWrapper<String> response1 = call1.execute();
 
     i.set(102);
     assertEquals("a", response1.body());
@@ -1509,7 +1509,7 @@ public final class RetrofitTest {
     Call<String> call2 = call1.clone();
 
     i.set(201);
-    Response<String> response2 = call2.execute();
+    ResponseWrapper<String> response2 = call2.execute();
 
     i.set(202);
     assertEquals("b", response2.body());

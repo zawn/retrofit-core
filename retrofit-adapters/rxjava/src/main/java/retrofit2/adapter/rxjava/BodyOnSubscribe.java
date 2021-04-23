@@ -15,7 +15,7 @@
  */
 package retrofit2.adapter.rxjava;
 
-import retrofit2.Response;
+import retrofit2.ResponseWrapper;
 import rx.Observable.OnSubscribe;
 import rx.Subscriber;
 import rx.exceptions.CompositeException;
@@ -26,9 +26,9 @@ import rx.exceptions.OnErrorNotImplementedException;
 import rx.plugins.RxJavaPlugins;
 
 final class BodyOnSubscribe<T> implements OnSubscribe<T> {
-  private final OnSubscribe<Response<T>> upstream;
+  private final OnSubscribe<ResponseWrapper<T>> upstream;
 
-  BodyOnSubscribe(OnSubscribe<Response<T>> upstream) {
+  BodyOnSubscribe(OnSubscribe<ResponseWrapper<T>> upstream) {
     this.upstream = upstream;
   }
 
@@ -36,7 +36,7 @@ final class BodyOnSubscribe<T> implements OnSubscribe<T> {
     upstream.call(new BodySubscriber<T>(subscriber));
   }
 
-  private static class BodySubscriber<R> extends Subscriber<Response<R>> {
+  private static class BodySubscriber<R> extends Subscriber<ResponseWrapper<R>> {
     private final Subscriber<? super R> subscriber;
     /** Indicates whether a terminal event has been sent to {@link #subscriber}. */
     private boolean subscriberTerminated;
@@ -46,7 +46,7 @@ final class BodyOnSubscribe<T> implements OnSubscribe<T> {
       this.subscriber = subscriber;
     }
 
-    @Override public void onNext(Response<R> response) {
+    @Override public void onNext(ResponseWrapper<R> response) {
       if (response.isSuccessful()) {
         subscriber.onNext(response.body());
       } else {

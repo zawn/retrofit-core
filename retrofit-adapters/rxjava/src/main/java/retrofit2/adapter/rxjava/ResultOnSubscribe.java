@@ -15,7 +15,7 @@
  */
 package retrofit2.adapter.rxjava;
 
-import retrofit2.Response;
+import retrofit2.ResponseWrapper;
 import rx.Observable.OnSubscribe;
 import rx.Subscriber;
 import rx.exceptions.CompositeException;
@@ -26,9 +26,9 @@ import rx.exceptions.OnErrorNotImplementedException;
 import rx.plugins.RxJavaPlugins;
 
 final class ResultOnSubscribe<T> implements OnSubscribe<Result<T>> {
-  private final OnSubscribe<Response<T>> upstream;
+  private final OnSubscribe<ResponseWrapper<T>> upstream;
 
-  ResultOnSubscribe(OnSubscribe<Response<T>> upstream) {
+  ResultOnSubscribe(OnSubscribe<ResponseWrapper<T>> upstream) {
     this.upstream = upstream;
   }
 
@@ -36,7 +36,7 @@ final class ResultOnSubscribe<T> implements OnSubscribe<Result<T>> {
     upstream.call(new ResultSubscriber<T>(subscriber));
   }
 
-  private static class ResultSubscriber<R> extends Subscriber<Response<R>> {
+  private static class ResultSubscriber<R> extends Subscriber<ResponseWrapper<R>> {
     private final Subscriber<? super Result<R>> subscriber;
 
     ResultSubscriber(Subscriber<? super Result<R>> subscriber) {
@@ -44,7 +44,7 @@ final class ResultOnSubscribe<T> implements OnSubscribe<Result<T>> {
       this.subscriber = subscriber;
     }
 
-    @Override public void onNext(Response<R> response) {
+    @Override public void onNext(ResponseWrapper<R> response) {
       subscriber.onNext(Result.response(response));
     }
 

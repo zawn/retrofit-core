@@ -30,7 +30,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import retrofit2.Call;
-import retrofit2.Response;
+import retrofit2.ResponseWrapper;
 import retrofit2.Retrofit;
 import retrofit2.http.Body;
 import retrofit2.http.GET;
@@ -129,7 +129,7 @@ public final class GsonConverterFactoryTest {
     server.enqueue(new MockResponse().setBody("{\"name\":\"value\"}"));
 
     Call<AnInterface> call = service.anInterface(new AnImplementation("value"));
-    Response<AnInterface> response = call.execute();
+    ResponseWrapper<AnInterface> response = call.execute();
     AnInterface body = response.body();
     assertThat(body.getName()).isEqualTo("value");
 
@@ -142,7 +142,7 @@ public final class GsonConverterFactoryTest {
     server.enqueue(new MockResponse().setBody("{\"theName\":\"value\"}"));
 
     Call<AnImplementation> call = service.anImplementation(new AnImplementation("value"));
-    Response<AnImplementation> response = call.execute();
+    ResponseWrapper<AnImplementation> response = call.execute();
     AnImplementation body = response.body();
     assertThat(body.theName).isEqualTo("value");
 
@@ -164,7 +164,7 @@ public final class GsonConverterFactoryTest {
   @Test public void deserializeUsesConfiguration() throws IOException, InterruptedException {
     server.enqueue(new MockResponse().setBody("{/* a comment! */}"));
 
-    Response<AnImplementation> response =
+    ResponseWrapper<AnImplementation> response =
         service.anImplementation(new AnImplementation("value")).execute();
     assertThat(response.body().getName()).isNull();
   }

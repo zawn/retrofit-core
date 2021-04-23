@@ -20,12 +20,12 @@ import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import javax.annotation.Nullable;
-import kotlin.coroutines.Continuation;
+
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.CallAdapter;
 import retrofit2.Converter;
-import retrofit2.Response;
+import retrofit2.ResponseWrapper;
 import retrofit2.Retrofit;
 import retrofit2.ServiceMethod;
 import retrofit2.SkipCallbackExecutorImpl;
@@ -53,7 +53,7 @@ public abstract class HttpServiceMethod<ResponseT, ReturnT> extends ServiceMetho
       Type[] parameterTypes = method.getGenericParameterTypes();
       Type responseType = Utils.getParameterLowerBound(0,
           (ParameterizedType) parameterTypes[parameterTypes.length - 1]);
-      if (getRawType(responseType) == Response.class && responseType instanceof ParameterizedType) {
+      if (getRawType(responseType) == ResponseWrapper.class && responseType instanceof ParameterizedType) {
         // Unwrap the actual body type from Response<T>.
         responseType = Utils.getParameterUpperBound(0, (ParameterizedType) responseType);
         continuationWantsResponse = true;
@@ -78,7 +78,7 @@ public abstract class HttpServiceMethod<ResponseT, ReturnT> extends ServiceMetho
           + getRawType(responseType).getName()
           + "' is not a valid response body type. Did you mean ResponseBody?");
     }
-    if (responseType == Response.class) {
+    if (responseType == ResponseWrapper.class) {
       throw Utils.methodError(method, "Response must include generic type (e.g., Response<String>)");
     }
     // TODO support Unit for Kotlin?

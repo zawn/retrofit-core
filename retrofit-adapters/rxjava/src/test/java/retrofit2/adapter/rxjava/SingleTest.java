@@ -22,7 +22,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TestRule;
-import retrofit2.Response;
+import retrofit2.ResponseWrapper;
 import retrofit2.Retrofit;
 import retrofit2.http.GET;
 import retrofit2.okhttp.HttpRetrofit;
@@ -38,7 +38,7 @@ public final class SingleTest {
 
   interface Service {
     @GET("/") Single<String> body();
-    @GET("/") Single<Response<String>> response();
+    @GET("/") Single<ResponseWrapper<String>> response();
     @GET("/") Single<Result<String>> result();
   }
 
@@ -95,7 +95,7 @@ public final class SingleTest {
   @Test public void responseSuccess200() {
     server.enqueue(new MockResponse().setBody("Hi"));
 
-    RecordingSubscriber<Response<String>> subscriber = subscriberRule.create();
+    RecordingSubscriber<ResponseWrapper<String>> subscriber = subscriberRule.create();
     service.response().unsafeSubscribe(subscriber);
     assertThat(subscriber.takeValue().body()).isEqualTo("Hi");
     subscriber.assertCompleted();
@@ -104,7 +104,7 @@ public final class SingleTest {
   @Test public void responseSuccess404() throws IOException {
     server.enqueue(new MockResponse().setResponseCode(404));
 
-    RecordingSubscriber<Response<String>> subscriber = subscriberRule.create();
+    RecordingSubscriber<ResponseWrapper<String>> subscriber = subscriberRule.create();
     service.response().unsafeSubscribe(subscriber);
     assertThat(subscriber.takeValue().code()).isEqualTo(404);
     subscriber.assertCompleted();
@@ -113,7 +113,7 @@ public final class SingleTest {
   @Test public void responseFailure() {
     server.enqueue(new MockResponse().setSocketPolicy(DISCONNECT_AFTER_REQUEST));
 
-    RecordingSubscriber<Response<String>> subscriber = subscriberRule.create();
+    RecordingSubscriber<ResponseWrapper<String>> subscriber = subscriberRule.create();
     service.response().unsafeSubscribe(subscriber);
     subscriber.assertError(IOException.class);
   }
@@ -121,10 +121,10 @@ public final class SingleTest {
   @Test public void responseThrowingInOnNextDeliveredToError() {
     server.enqueue(new MockResponse().setBody("Hi"));
 
-    RecordingSubscriber<Response<String>> subscriber = subscriberRule.create();
+    RecordingSubscriber<ResponseWrapper<String>> subscriber = subscriberRule.create();
     final RuntimeException e = new RuntimeException();
-    service.response().unsafeSubscribe(new ForwardingSubscriber<Response<String>>(subscriber) {
-      @Override public void onNext(Response<String> value) {
+    service.response().unsafeSubscribe(new ForwardingSubscriber<ResponseWrapper<String>>(subscriber) {
+      @Override public void onNext(ResponseWrapper<String> value) {
         throw e;
       }
     });

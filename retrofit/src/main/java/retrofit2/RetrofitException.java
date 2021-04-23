@@ -6,14 +6,14 @@ import javax.annotation.Nullable;
 import static retrofit2.Utils.checkNotNull;
 
 public class RetrofitException extends RuntimeException {
-  private static String getMessage(Response<?> response) {
+  private static String getMessage(ResponseWrapper<?> response) {
     checkNotNull(response, "response == null");
     return response.toString();
   }
 
-  private final transient Response<?> response;
+  private final transient ResponseWrapper<?> response;
 
-  public RetrofitException(Response<?> response) {
+  public RetrofitException(ResponseWrapper<?> response) {
     super(getMessage(response));
     this.response = response;
   }
@@ -21,7 +21,7 @@ public class RetrofitException extends RuntimeException {
   /**
    * The full HTTP response. This may be null if the exception was serialized.
    */
-  public @Nullable Response<?> response() {
+  public @Nullable ResponseWrapper<?> response() {
     return response;
   }
 }

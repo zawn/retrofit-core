@@ -22,7 +22,7 @@ import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
 import retrofit2.CallAdapter;
-import retrofit2.Response;
+import retrofit2.ResponseWrapper;
 import retrofit2.Retrofit;
 import retrofit2.okhttp.HttpRetrofit;
 import rx.Observable;
@@ -81,17 +81,17 @@ public final class RxJavaCallAdapterFactoryTest {
     assertThat(factory.get(sBodyGeneric, NO_ANNOTATIONS, retrofit).responseType())
         .isEqualTo(new TypeToken<List<String>>() {}.getType());
 
-    Type oResponseClass = new TypeToken<Observable<Response<String>>>() {}.getType();
+    Type oResponseClass = new TypeToken<Observable<ResponseWrapper<String>>>() {}.getType();
     assertThat(factory.get(oResponseClass, NO_ANNOTATIONS, retrofit).responseType())
         .isEqualTo(String.class);
-    Type sResponseClass = new TypeToken<Single<Response<String>>>() {}.getType();
+    Type sResponseClass = new TypeToken<Single<ResponseWrapper<String>>>() {}.getType();
     assertThat(factory.get(sResponseClass, NO_ANNOTATIONS, retrofit).responseType())
         .isEqualTo(String.class);
 
-    Type oResponseWildcard = new TypeToken<Observable<Response<? extends String>>>() {}.getType();
+    Type oResponseWildcard = new TypeToken<Observable<ResponseWrapper<? extends String>>>() {}.getType();
     assertThat(factory.get(oResponseWildcard, NO_ANNOTATIONS, retrofit).responseType())
         .isEqualTo(String.class);
-    Type sResponseWildcard = new TypeToken<Single<Response<? extends String>>>() {}.getType();
+    Type sResponseWildcard = new TypeToken<Single<ResponseWrapper<? extends String>>>() {}.getType();
     assertThat(factory.get(sResponseWildcard, NO_ANNOTATIONS, retrofit).responseType())
         .isEqualTo(String.class);
 
@@ -131,7 +131,7 @@ public final class RxJavaCallAdapterFactoryTest {
   }
 
   @Test public void rawResponseTypeThrows() {
-    Type observableType = new TypeToken<Observable<Response>>() {}.getType();
+    Type observableType = new TypeToken<Observable<ResponseWrapper>>() {}.getType();
     try {
       factory.get(observableType, NO_ANNOTATIONS, retrofit);
       fail();
@@ -140,7 +140,7 @@ public final class RxJavaCallAdapterFactoryTest {
           "Response must be parameterized as Response<Foo> or Response<? extends Foo>");
     }
 
-    Type singleType = new TypeToken<Single<Response>>() {}.getType();
+    Type singleType = new TypeToken<Single<ResponseWrapper>>() {}.getType();
     try {
       factory.get(singleType, NO_ANNOTATIONS, retrofit);
       fail();

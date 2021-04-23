@@ -24,7 +24,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import retrofit2.CallAdapter;
-import retrofit2.Response;
+import retrofit2.ResponseWrapper;
 import retrofit2.Retrofit;
 import retrofit2.okhttp.HttpRetrofit;
 import scala.concurrent.Future;
@@ -58,16 +58,16 @@ public final class ScalaCallAdapterFactoryTest {
     Type bodyGeneric = new TypeToken<Future<List<String>>>() {}.getType();
     assertThat(factory.get(bodyGeneric, NO_ANNOTATIONS, retrofit).responseType())
         .isEqualTo(new TypeToken<List<String>>() {}.getType());
-    Type responseClass = new TypeToken<Future<Response<String>>>() {}.getType();
+    Type responseClass = new TypeToken<Future<ResponseWrapper<String>>>() {}.getType();
     assertThat(factory.get(responseClass, NO_ANNOTATIONS, retrofit).responseType())
         .isEqualTo(String.class);
-    Type responseWildcard = new TypeToken<Future<Response<? extends String>>>() {}.getType();
+    Type responseWildcard = new TypeToken<Future<ResponseWrapper<? extends String>>>() {}.getType();
     assertThat(factory.get(responseWildcard, NO_ANNOTATIONS, retrofit).responseType())
         .isEqualTo(String.class);
-    Type resultClass = new TypeToken<Future<Response<String>>>() {}.getType();
+    Type resultClass = new TypeToken<Future<ResponseWrapper<String>>>() {}.getType();
     assertThat(factory.get(resultClass, NO_ANNOTATIONS, retrofit).responseType())
         .isEqualTo(String.class);
-    Type resultWildcard = new TypeToken<Future<Response<? extends String>>>() {}.getType();
+    Type resultWildcard = new TypeToken<Future<ResponseWrapper<? extends String>>>() {}.getType();
     assertThat(factory.get(resultWildcard, NO_ANNOTATIONS, retrofit).responseType())
         .isEqualTo(String.class);
   }
@@ -89,7 +89,7 @@ public final class ScalaCallAdapterFactoryTest {
   }
 
   @Test public void rawResponseTypeThrows() {
-    Type observableType = new TypeToken<Future<Response>>() {}.getType();
+    Type observableType = new TypeToken<Future<ResponseWrapper>>() {}.getType();
     try {
       factory.get(observableType, NO_ANNOTATIONS, retrofit);
       fail();

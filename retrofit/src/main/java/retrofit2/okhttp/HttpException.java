@@ -15,7 +15,7 @@
  */
 package retrofit2.okhttp;
 
-import retrofit2.Response;
+import retrofit2.ResponseWrapper;
 
 import javax.annotation.Nullable;
 
@@ -23,21 +23,21 @@ import static retrofit2.Utils.checkNotNull;
 
 /** Exception for an unexpected, non-2xx HTTP response. */
 public class HttpException extends RuntimeException {
-  private static String getMessage(Response<?> response) {
+  private static String getMessage(ResponseWrapper<?> response) {
     checkNotNull(response, "response == null");
-    HttpResponse httpResponse = (HttpResponse) response;
-    return "HTTP " + httpResponse.code() + " " + httpResponse.message();
+    HttpResponseWrapper httpResponseWrapper = (HttpResponseWrapper) response;
+    return "HTTP " + httpResponseWrapper.code() + " " + httpResponseWrapper.message();
   }
 
   private final int code;
   private final String message;
-  private final transient Response<?> response;
+  private final transient ResponseWrapper<?> response;
 
-  public HttpException(Response<?> response) {
+  public HttpException(ResponseWrapper<?> response) {
     super(getMessage(response));
-    HttpResponse httpResponse = (HttpResponse) response;
-    this.code = httpResponse.code();
-    this.message = httpResponse.message();
+    HttpResponseWrapper httpResponseWrapper = (HttpResponseWrapper) response;
+    this.code = httpResponseWrapper.code();
+    this.message = httpResponseWrapper.message();
     this.response = response;
   }
 
@@ -54,7 +54,7 @@ public class HttpException extends RuntimeException {
   /**
    * The full HTTP response. This may be null if the exception was serialized.
    */
-  public @Nullable Response<?> response() {
+  public @Nullable ResponseWrapper<?> response() {
     return response;
   }
 }

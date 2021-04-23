@@ -34,11 +34,11 @@ public final class KotlinSuspendRawTest {
 
   interface Service {
     @GET("/")
-    Object body(Continuation<? super Response> response);
+    Object body(Continuation<? super ResponseWrapper> response);
   }
 
   @Test public void raw() {
-    Retrofit retrofit = new HttpRetrofit.Builder()
+    HttpRetrofit retrofit = new HttpRetrofit.Builder()
         .baseUrl(server.url("/"))
         .build();
     Service service = retrofit.create(Service.class);

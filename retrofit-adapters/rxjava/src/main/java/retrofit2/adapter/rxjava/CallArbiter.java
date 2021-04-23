@@ -17,7 +17,7 @@ package retrofit2.adapter.rxjava;
 
 import java.util.concurrent.atomic.AtomicInteger;
 import retrofit2.Call;
-import retrofit2.Response;
+import retrofit2.ResponseWrapper;
 import rx.Producer;
 import rx.Subscriber;
 import rx.Subscription;
@@ -35,12 +35,12 @@ final class CallArbiter<T> extends AtomicInteger implements Subscription, Produc
   private static final int STATE_TERMINATED = 3;
 
   private final Call<T> call;
-  private final Subscriber<? super Response<T>> subscriber;
+  private final Subscriber<? super ResponseWrapper<T>> subscriber;
 
   private volatile boolean unsubscribed;
-  private volatile Response<T> response;
+  private volatile ResponseWrapper<T> response;
 
-  CallArbiter(Call<T> call, Subscriber<? super Response<T>> subscriber) {
+  CallArbiter(Call<T> call, Subscriber<? super ResponseWrapper<T>> subscriber) {
     super(STATE_WAITING);
 
     this.call = call;
@@ -86,7 +86,7 @@ final class CallArbiter<T> extends AtomicInteger implements Subscription, Produc
     }
   }
 
-  void emitResponse(Response<T> response) {
+  void emitResponse(ResponseWrapper<T> response) {
     while (true) {
       int state = get();
       switch (state) {
@@ -114,7 +114,7 @@ final class CallArbiter<T> extends AtomicInteger implements Subscription, Produc
     }
   }
 
-  private void deliverResponse(Response<T> response) {
+  private void deliverResponse(ResponseWrapper<T> response) {
     try {
       if (!isUnsubscribed()) {
         subscriber.onNext(response);

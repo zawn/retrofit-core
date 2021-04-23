@@ -28,8 +28,8 @@ import okio.Okio;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Converter;
-import retrofit2.Response;
-import retrofit2.RetrofitRequest;
+import retrofit2.ResponseWrapper;
+import retrofit2.RequestWrapper;
 import retrofit2.Utils;
 
 import static retrofit2.Utils.checkNotNull;
@@ -63,10 +63,10 @@ public final class OkHttpCall<T> implements Call<T> {
     return new OkHttpCall<>(requestFactory, args, callFactory, responseConverter);
   }
 
-  @Override public synchronized RetrofitRequest<Request> request() {
+  @Override public synchronized RequestWrapper<Request> request() {
     okhttp3.Call call = rawCall;
     if (call != null) {
-      return new RetrofitRequest<>(call.request());
+      return new RequestWrapper<>(call.request());
     }
     if (creationFailure != null) {
       if (creationFailure instanceof IOException) {
@@ -78,7 +78,7 @@ public final class OkHttpCall<T> implements Call<T> {
       }
     }
     try {
-      return new RetrofitRequest<>((rawCall = createRawCall()).request());
+      return new RequestWrapper<>((rawCall = createRawCall()).request());
     } catch (RuntimeException | Error e) {
       throwIfFatal(e); // Do not assign a fatal error to creationFailure.
       creationFailure = e;
@@ -122,7 +122,7 @@ public final class OkHttpCall<T> implements Call<T> {
 
     call.enqueue(new okhttp3.Callback() {
       @Override public void onResponse(okhttp3.Call call, okhttp3.Response rawResponse) {
-        Response<T> response;
+        ResponseWrapper<T> response;
         try {
           response = parseResponse(rawResponse);
         } catch (Throwable e) {
@@ -158,7 +158,7 @@ public final class OkHttpCall<T> implements Call<T> {
     return executed;
   }
 
-  @Override public Response<T> execute() throws IOException {
+  @Override public ResponseWrapper<T> execute() throws IOException {
     okhttp3.Call call;
 
     synchronized (this) {
@@ -202,7 +202,7 @@ public final class OkHttpCall<T> implements Call<T> {
     return call;
   }
 
-  Response<T> parseResponse(okhttp3.Response rawResponse) throws IOException {
+  ResponseWrapper<T> parseResponse(okhttp3.Response rawResponse) throws IOException {
     ResponseBody rawBody = rawResponse.body();
 
     // Remove the body's source (the only stateful object) so we can pass the response along.
@@ -215,7 +215,7 @@ public final class OkHttpCall<T> implements Call<T> {
       try {
         // Buffer the entire body to avoid future I/O.
         ResponseBody bufferedBody = Utils.buffer(rawBody);
-        return HttpResponse.error(bufferedBody, rawResponse);
+        return HttpResponseWrapper.error(bufferedBody, rawResponse);
       } finally {
         rawBody.close();
       }
@@ -223,13 +223,13 @@ public final class OkHttpCall<T> implements Call<T> {
 
     if (code == 204 || code == 205) {
       rawBody.close();
-      return HttpResponse.success(null, rawResponse);
+      return HttpResponseWrapper.success(null, rawResponse);
     }
 
     ExceptionCatchingResponseBody catchingBody = new ExceptionCatchingResponseBody(rawBody);
     try {
       T body = responseConverter.convert(catchingBody);
-      return HttpResponse.success(body, rawResponse);
+      return HttpResponseWrapper.success(body, rawResponse);
     } catch (RuntimeException e) {
       // If the underlying source threw an exception, propagate that rather than indicating it was
       // a runtime exception.

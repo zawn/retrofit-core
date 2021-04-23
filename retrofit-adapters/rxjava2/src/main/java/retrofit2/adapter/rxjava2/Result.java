@@ -17,7 +17,7 @@ package retrofit2.adapter.rxjava2;
 
 import java.io.IOException;
 import javax.annotation.Nullable;
-import retrofit2.Response;
+import retrofit2.ResponseWrapper;
 
 /** The result of executing an HTTP request. */
 public final class Result<T> {
@@ -28,15 +28,15 @@ public final class Result<T> {
   }
 
   @SuppressWarnings("ConstantConditions") // Guarding public API nullability.
-  public static <T> Result<T> response(Response<T> response) {
+  public static <T> Result<T> response(ResponseWrapper<T> response) {
     if (response == null) throw new NullPointerException("response == null");
     return new Result<>(response, null);
   }
 
-  private final @Nullable Response<T> response;
+  private final @Nullable ResponseWrapper<T> response;
   private final @Nullable Throwable error;
 
-  private Result(@Nullable Response<T> response, @Nullable Throwable error) {
+  private Result(@Nullable ResponseWrapper<T> response, @Nullable Throwable error) {
     this.response = response;
     this.error = error;
   }
@@ -45,7 +45,7 @@ public final class Result<T> {
    * The response received from executing an HTTP request. Only present when {@link #isError()} is
    * false, null otherwise.
    */
-  public @Nullable Response<T> response() {
+  public @Nullable ResponseWrapper<T> response() {
     return response;
   }
 

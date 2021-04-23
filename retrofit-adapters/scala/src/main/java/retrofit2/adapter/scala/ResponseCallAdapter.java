@@ -19,11 +19,11 @@ import java.lang.reflect.Type;
 import retrofit2.Call;
 import retrofit2.CallAdapter;
 import retrofit2.Callback;
-import retrofit2.Response;
+import retrofit2.ResponseWrapper;
 import scala.concurrent.Future;
 import scala.concurrent.Promise;
 
-final class ResponseCallAdapter<T> implements CallAdapter<T, Future<Response<T>>> {
+final class ResponseCallAdapter<T> implements CallAdapter<T, Future<ResponseWrapper<T>>> {
   private final Type responseType;
 
   ResponseCallAdapter(Type responseType) {
@@ -34,11 +34,11 @@ final class ResponseCallAdapter<T> implements CallAdapter<T, Future<Response<T>>
     return responseType;
   }
 
-  @Override public Future<Response<T>> adapt(Call<T> call) {
-    Promise<Response<T>> promise = Promise.apply();
+  @Override public Future<ResponseWrapper<T>> adapt(Call<T> call) {
+    Promise<ResponseWrapper<T>> promise = Promise.apply();
 
     call.enqueue(new Callback<T>() {
-      @Override public void onResponse(Call<T> call, Response<T> response) {
+      @Override public void onResponse(Call<T> call, ResponseWrapper<T> response) {
         promise.success(response);
       }
 

@@ -72,7 +72,7 @@ final class DefaultCallAdapterFactory extends CallAdapter.Factory {
       checkNotNull(callback, "callback == null");
 
       delegate.enqueue(new Callback<T>() {
-        @Override public void onResponse(Call<T> call, final Response<T> response) {
+        @Override public void onResponse(Call<T> call, final ResponseWrapper<T> response) {
           callbackExecutor.execute(new Runnable() {
             @Override public void run() {
               if (delegate.isCanceled()) {
@@ -99,7 +99,7 @@ final class DefaultCallAdapterFactory extends CallAdapter.Factory {
       return delegate.isExecuted();
     }
 
-    @Override public Response<T> execute() throws IOException {
+    @Override public ResponseWrapper<T> execute() throws IOException {
       return delegate.execute();
     }
 
@@ -116,7 +116,7 @@ final class DefaultCallAdapterFactory extends CallAdapter.Factory {
       return new ExecutorCallbackCall<>(callbackExecutor, delegate.clone());
     }
 
-    @Override public RetrofitRequest request() {
+    @Override public RequestWrapper request() {
       return delegate.request();
     }
   }

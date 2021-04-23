@@ -2,11 +2,11 @@ package retrofit2;
 
 import javax.annotation.Nullable;
 
-public class RetrofitRequest<T> {
+public class RequestWrapper<T> {
 
   private final @Nullable T body;
 
-  public RetrofitRequest(@Nullable T body) {
+  public RequestWrapper(@Nullable T body) {
     this.body = body;
   }
 

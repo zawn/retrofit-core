@@ -16,26 +16,26 @@
 package retrofit2.adapter.rxjava;
 
 import retrofit2.Call;
-import retrofit2.Response;
+import retrofit2.ResponseWrapper;
 import rx.Observable.OnSubscribe;
 import rx.Subscriber;
 import rx.exceptions.Exceptions;
 
-final class CallExecuteOnSubscribe<T> implements OnSubscribe<Response<T>> {
+final class CallExecuteOnSubscribe<T> implements OnSubscribe<ResponseWrapper<T>> {
   private final Call<T> originalCall;
 
   CallExecuteOnSubscribe(Call<T> originalCall) {
     this.originalCall = originalCall;
   }
 
-  @Override public void call(Subscriber<? super Response<T>> subscriber) {
+  @Override public void call(Subscriber<? super ResponseWrapper<T>> subscriber) {
     // Since Call is a one-shot type, clone it for each new subscriber.
     Call<T> call = originalCall.clone();
     CallArbiter<T> arbiter = new CallArbiter<>(call, subscriber);
     subscriber.add(arbiter);
     subscriber.setProducer(arbiter);
 
-    Response<T> response;
+    ResponseWrapper<T> response;
     try {
       response = call.execute();
     } catch (Throwable t) {

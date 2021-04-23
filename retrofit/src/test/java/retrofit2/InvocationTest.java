@@ -15,12 +15,9 @@
  */
 package retrofit2;
 
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
+import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.ResponseBody;
 import org.junit.Test;
@@ -29,6 +26,11 @@ import retrofit2.http.POST;
 import retrofit2.http.Path;
 import retrofit2.http.Query;
 import retrofit2.okhttp.HttpRetrofit;
+
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.fail;
@@ -41,7 +43,7 @@ public final class InvocationTest {
   }
 
   @Test public void invocationObjectOnCallAndRequestTag() {
-    Retrofit retrofit = new HttpRetrofit.Builder()
+    HttpRetrofit retrofit = new HttpRetrofit.Builder()
         .baseUrl("http://example.com/")
         .callFactory(new OkHttpClient())
         .build();
@@ -50,7 +52,8 @@ public final class InvocationTest {
     RequestBody requestBody = RequestBody.create(MediaType.get("text/plain"), "three");
     Call<ResponseBody> call = example.postMethod("one", "two", requestBody);
 
-    Invocation invocation = call.request().tag(Invocation.class);
+    RequestWrapper<?> request = call.request();
+    Invocation invocation = ((Request) request.body()).tag(Invocation.class);
     Method method = invocation.method();
     assertThat(method.getName()).isEqualTo("postMethod");
     assertThat(method.getDeclaringClass()).isEqualTo(Example.class);

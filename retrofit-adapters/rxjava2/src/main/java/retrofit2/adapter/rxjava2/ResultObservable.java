@@ -21,12 +21,12 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.CompositeException;
 import io.reactivex.exceptions.Exceptions;
 import io.reactivex.plugins.RxJavaPlugins;
-import retrofit2.Response;
+import retrofit2.ResponseWrapper;
 
 final class ResultObservable<T> extends Observable<Result<T>> {
-  private final Observable<Response<T>> upstream;
+  private final Observable<ResponseWrapper<T>> upstream;
 
-  ResultObservable(Observable<Response<T>> upstream) {
+  ResultObservable(Observable<ResponseWrapper<T>> upstream) {
     this.upstream = upstream;
   }
 
@@ -34,7 +34,7 @@ final class ResultObservable<T> extends Observable<Result<T>> {
     upstream.subscribe(new ResultObserver<T>(observer));
   }
 
-  private static class ResultObserver<R> implements Observer<Response<R>> {
+  private static class ResultObserver<R> implements Observer<ResponseWrapper<R>> {
     private final Observer<? super Result<R>> observer;
 
     ResultObserver(Observer<? super Result<R>> observer) {
@@ -45,7 +45,7 @@ final class ResultObservable<T> extends Observable<Result<T>> {
       observer.onSubscribe(disposable);
     }
 
-    @Override public void onNext(Response<R> response) {
+    @Override public void onNext(ResponseWrapper<R> response) {
       observer.onNext(Result.response(response));
     }
 

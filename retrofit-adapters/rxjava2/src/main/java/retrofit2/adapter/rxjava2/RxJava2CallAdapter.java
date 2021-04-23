@@ -23,7 +23,7 @@ import java.lang.reflect.Type;
 import javax.annotation.Nullable;
 import retrofit2.Call;
 import retrofit2.CallAdapter;
-import retrofit2.Response;
+import retrofit2.ResponseWrapper;
 
 final class RxJava2CallAdapter<R> implements CallAdapter<R, Object> {
   private final Type responseType;
@@ -55,7 +55,7 @@ final class RxJava2CallAdapter<R> implements CallAdapter<R, Object> {
   }
 
   @Override public Object adapt(Call<R> call) {
-    Observable<Response<R>> responseObservable = isAsync
+    Observable<ResponseWrapper<R>> responseObservable = isAsync
         ? new CallEnqueueObservable<>(call)
         : new CallExecuteObservable<>(call);
 

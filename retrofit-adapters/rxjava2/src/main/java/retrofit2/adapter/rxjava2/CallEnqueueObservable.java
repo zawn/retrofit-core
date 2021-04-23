@@ -23,16 +23,16 @@ import io.reactivex.exceptions.Exceptions;
 import io.reactivex.plugins.RxJavaPlugins;
 import retrofit2.Call;
 import retrofit2.Callback;
-import retrofit2.Response;
+import retrofit2.ResponseWrapper;
 
-final class CallEnqueueObservable<T> extends Observable<Response<T>> {
+final class CallEnqueueObservable<T> extends Observable<ResponseWrapper<T>> {
   private final Call<T> originalCall;
 
   CallEnqueueObservable(Call<T> originalCall) {
     this.originalCall = originalCall;
   }
 
-  @Override protected void subscribeActual(Observer<? super Response<T>> observer) {
+  @Override protected void subscribeActual(Observer<? super ResponseWrapper<T>> observer) {
     // Since Call is a one-shot type, clone it for each new observer.
     Call<T> call = originalCall.clone();
     CallCallback<T> callback = new CallCallback<>(call, observer);
@@ -44,16 +44,16 @@ final class CallEnqueueObservable<T> extends Observable<Response<T>> {
 
   private static final class CallCallback<T> implements Disposable, Callback<T> {
     private final Call<?> call;
-    private final Observer<? super Response<T>> observer;
+    private final Observer<? super ResponseWrapper<T>> observer;
     private volatile boolean disposed;
     boolean terminated = false;
 
-    CallCallback(Call<?> call, Observer<? super Response<T>> observer) {
+    CallCallback(Call<?> call, Observer<? super ResponseWrapper<T>> observer) {
       this.call = call;
       this.observer = observer;
     }
 
-    @Override public void onResponse(Call<T> call, Response<T> response) {
+    @Override public void onResponse(Call<T> call, ResponseWrapper<T> response) {
       if (disposed) return;
 
       try {

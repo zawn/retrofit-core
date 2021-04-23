@@ -55,16 +55,16 @@ public final class CompletableFutureCallAdapterFactoryTest {
     Type bodyGeneric = new TypeToken<CompletableFuture<List<String>>>() {}.getType();
     assertThat(factory.get(bodyGeneric, NO_ANNOTATIONS, retrofit).responseType())
         .isEqualTo(new TypeToken<List<String>>() {}.getType());
-    Type responseClass = new TypeToken<CompletableFuture<Response<String>>>() {}.getType();
+    Type responseClass = new TypeToken<CompletableFuture<ResponseWrapper<String>>>() {}.getType();
     assertThat(factory.get(responseClass, NO_ANNOTATIONS, retrofit).responseType())
         .isEqualTo(String.class);
-    Type responseWildcard = new TypeToken<CompletableFuture<Response<? extends String>>>() {}.getType();
+    Type responseWildcard = new TypeToken<CompletableFuture<ResponseWrapper<? extends String>>>() {}.getType();
     assertThat(factory.get(responseWildcard, NO_ANNOTATIONS, retrofit).responseType())
         .isEqualTo(String.class);
-    Type resultClass = new TypeToken<CompletableFuture<Response<String>>>() {}.getType();
+    Type resultClass = new TypeToken<CompletableFuture<ResponseWrapper<String>>>() {}.getType();
     assertThat(factory.get(resultClass, NO_ANNOTATIONS, retrofit).responseType())
         .isEqualTo(String.class);
-    Type resultWildcard = new TypeToken<CompletableFuture<Response<? extends String>>>() {}.getType();
+    Type resultWildcard = new TypeToken<CompletableFuture<ResponseWrapper<? extends String>>>() {}.getType();
     assertThat(factory.get(resultWildcard, NO_ANNOTATIONS, retrofit).responseType())
         .isEqualTo(String.class);
   }
@@ -86,7 +86,7 @@ public final class CompletableFutureCallAdapterFactoryTest {
   }
 
   @Test public void rawResponseTypeThrows() {
-    Type observableType = new TypeToken<CompletableFuture<Response>>() {}.getType();
+    Type observableType = new TypeToken<CompletableFuture<ResponseWrapper>>() {}.getType();
     try {
       factory.get(observableType, NO_ANNOTATIONS, retrofit);
       fail();

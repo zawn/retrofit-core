@@ -23,7 +23,7 @@ import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TestRule;
-import retrofit2.Response;
+import retrofit2.ResponseWrapper;
 import retrofit2.Retrofit;
 import retrofit2.http.GET;
 import retrofit2.okhttp.HttpRetrofit;
@@ -45,7 +45,7 @@ public final class SingleThrowingTest {
 
   interface Service {
     @GET("/") Single<String> body();
-    @GET("/") Single<Response<String>> response();
+    @GET("/") Single<ResponseWrapper<String>> response();
     @GET("/") Single<Result<String>> result();
   }
 
@@ -123,10 +123,10 @@ public final class SingleThrowingTest {
       }
     });
 
-    RecordingSubscriber<Response<String>> observer = subscriberRule.create();
+    RecordingSubscriber<ResponseWrapper<String>> observer = subscriberRule.create();
     final RuntimeException e = new RuntimeException();
-    service.response().subscribe(new ForwardingObserver<Response<String>>(observer) {
-      @Override public void onSuccess(Response<String> value) {
+    service.response().subscribe(new ForwardingObserver<ResponseWrapper<String>>(observer) {
+      @Override public void onSuccess(ResponseWrapper<String> value) {
         throw e;
       }
     });
@@ -146,10 +146,10 @@ public final class SingleThrowingTest {
       }
     });
 
-    RecordingSubscriber<Response<String>> observer = subscriberRule.create();
+    RecordingSubscriber<ResponseWrapper<String>> observer = subscriberRule.create();
     final AtomicReference<Throwable> errorRef = new AtomicReference<>();
     final RuntimeException e = new RuntimeException();
-    service.response().subscribe(new ForwardingObserver<Response<String>>(observer) {
+    service.response().subscribe(new ForwardingObserver<ResponseWrapper<String>>(observer) {
       @Override public void onError(Throwable throwable) {
         if (!errorRef.compareAndSet(null, throwable)) {
           throw Exceptions.propagate(throwable);

@@ -30,7 +30,7 @@ import org.simpleframework.xml.stream.Format;
 import org.simpleframework.xml.stream.HyphenStyle;
 import org.simpleframework.xml.stream.Verbosity;
 import retrofit2.Call;
-import retrofit2.Response;
+import retrofit2.ResponseWrapper;
 import retrofit2.Retrofit;
 import retrofit2.http.Body;
 import retrofit2.http.GET;
@@ -66,7 +66,7 @@ public class SimpleXmlConverterFactoryTest {
         "<my-object><message>hello world</message><count>10</count></my-object>"));
 
     Call<MyObject> call = service.post(new MyObject("hello world", 10));
-    Response<MyObject> response = call.execute();
+    ResponseWrapper<MyObject> response = call.execute();
     MyObject body = response.body();
     assertThat(body.getMessage()).isEqualTo("hello world");
     assertThat(body.getCount()).isEqualTo(10);
@@ -86,7 +86,7 @@ public class SimpleXmlConverterFactoryTest {
         new MockResponse().setBody(buffer).addHeader("Content-Type", "text/xml;charset=GBK"));
 
     Call<MyObject> call = service.get();
-    Response<MyObject> response = call.execute();
+    ResponseWrapper<MyObject> response = call.execute();
     MyObject body = response.body();
     assertThat(body.getMessage()).isEqualTo("你好，世界");
   }

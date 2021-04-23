@@ -29,7 +29,7 @@ import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TestRule;
-import retrofit2.Response;
+import retrofit2.ResponseWrapper;
 import retrofit2.Retrofit;
 import retrofit2.http.GET;
 import retrofit2.okhttp.HttpRetrofit;
@@ -46,7 +46,7 @@ public final class MaybeThrowingTest {
 
   interface Service {
     @GET("/") Maybe<String> body();
-    @GET("/") Maybe<Response<String>> response();
+    @GET("/") Maybe<ResponseWrapper<String>> response();
     @GET("/") Maybe<Result<String>> result();
   }
 
@@ -125,10 +125,10 @@ public final class MaybeThrowingTest {
       }
     });
 
-    RecordingMaybeObserver<Response<String>> observer = subscriberRule.create();
+    RecordingMaybeObserver<ResponseWrapper<String>> observer = subscriberRule.create();
     final RuntimeException e = new RuntimeException();
-    service.response().subscribe(new ForwardingObserver<Response<String>>(observer) {
-      @Override public void onSuccess(Response<String> value) {
+    service.response().subscribe(new ForwardingObserver<ResponseWrapper<String>>(observer) {
+      @Override public void onSuccess(ResponseWrapper<String> value) {
         throw e;
       }
     });
@@ -148,10 +148,10 @@ public final class MaybeThrowingTest {
       }
     });
 
-    RecordingMaybeObserver<Response<String>> observer = subscriberRule.create();
+    RecordingMaybeObserver<ResponseWrapper<String>> observer = subscriberRule.create();
     final AtomicReference<Throwable> errorRef = new AtomicReference<>();
     final RuntimeException e = new RuntimeException();
-    service.response().subscribe(new ForwardingObserver<Response<String>>(observer) {
+    service.response().subscribe(new ForwardingObserver<ResponseWrapper<String>>(observer) {
       @Override public void onError(Throwable throwable) {
         if (!errorRef.compareAndSet(null, throwable)) {
           throw Exceptions.propagate(throwable);

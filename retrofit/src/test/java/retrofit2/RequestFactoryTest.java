@@ -3021,7 +3021,7 @@ public final class RequestFactoryTest {
       }
     };
 
-    Retrofit retrofit = builder.callFactory(callFactory).build();
+    HttpRetrofit retrofit = builder.callFactory(callFactory).build();
 
     Method method = TestingUtils.onlyMethod(cls);
     try {

@@ -24,7 +24,7 @@ import okhttp3.mockwebserver.MockWebServer;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import retrofit2.Response;
+import retrofit2.ResponseWrapper;
 import retrofit2.Retrofit;
 import retrofit2.http.GET;
 import retrofit2.okhttp.HttpRetrofit;
@@ -38,7 +38,7 @@ public final class ObservableTest {
 
   interface Service {
     @GET("/") Observable<String> body();
-    @GET("/") Observable<Response<String>> response();
+    @GET("/") Observable<ResponseWrapper<String>> response();
     @GET("/") Observable<Result<String>> result();
   }
 
@@ -81,7 +81,7 @@ public final class ObservableTest {
   @Test public void responseSuccess200() {
     server.enqueue(new MockResponse());
 
-    RecordingObserver<Response<String>> observer = observerRule.create();
+    RecordingObserver<ResponseWrapper<String>> observer = observerRule.create();
     service.response().subscribe(observer);
     assertThat(observer.takeValue().isSuccessful()).isTrue();
     observer.assertComplete();
@@ -90,7 +90,7 @@ public final class ObservableTest {
   @Test public void responseSuccess404() {
     server.enqueue(new MockResponse().setResponseCode(404));
 
-    RecordingObserver<Response<String>> observer = observerRule.create();
+    RecordingObserver<ResponseWrapper<String>> observer = observerRule.create();
     service.response().subscribe(observer);
     assertThat(observer.takeValue().isSuccessful()).isFalse();
     observer.assertComplete();
@@ -99,7 +99,7 @@ public final class ObservableTest {
   @Test public void responseFailure() {
     server.enqueue(new MockResponse().setSocketPolicy(DISCONNECT_AFTER_REQUEST));
 
-    RecordingObserver<Response<String>> observer = observerRule.create();
+    RecordingObserver<ResponseWrapper<String>> observer = observerRule.create();
     service.response().subscribe(observer);
     observer.assertError(IOException.class);
   }

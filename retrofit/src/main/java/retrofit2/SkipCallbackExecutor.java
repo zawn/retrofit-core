@@ -27,7 +27,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 /**
  * Change the behavior of a {@code Call<BodyType>} return type to not use the
  * {@linkplain Retrofit#callbackExecutor() callback executor} for invoking the
- * {@link Callback#onResponse(Call, Response) onResponse} or
+ * {@link Callback#onResponse(Call, ResponseWrapper) onResponse} or
  * {@link Callback#onFailure(Call, Throwable) onFailure} methods.
  *
  * <pre><code>

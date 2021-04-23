@@ -22,7 +22,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TestRule;
-import retrofit2.Response;
+import retrofit2.ResponseWrapper;
 import retrofit2.Retrofit;
 import retrofit2.http.GET;
 import retrofit2.okhttp.HttpRetrofit;
@@ -39,7 +39,7 @@ public final class ObservableTest {
 
   interface Service {
     @GET("/") Observable<String> body();
-    @GET("/") Observable<Response<String>> response();
+    @GET("/") Observable<ResponseWrapper<String>> response();
     @GET("/") Observable<Result<String>> result();
   }
 
@@ -97,7 +97,7 @@ public final class ObservableTest {
   @Test public void responseSuccess200() {
     server.enqueue(new MockResponse().setBody("Hi"));
 
-    RecordingSubscriber<Response<String>> subscriber = subscriberRule.create();
+    RecordingSubscriber<ResponseWrapper<String>> subscriber = subscriberRule.create();
     service.response().unsafeSubscribe(subscriber);
     assertThat(subscriber.takeValue().body()).isEqualTo("Hi");
     subscriber.assertCompleted();
@@ -106,7 +106,7 @@ public final class ObservableTest {
   @Test public void responseSuccess404() throws IOException {
     server.enqueue(new MockResponse().setResponseCode(404));
 
-    RecordingSubscriber<Response<String>> subscriber = subscriberRule.create();
+    RecordingSubscriber<ResponseWrapper<String>> subscriber = subscriberRule.create();
     service.response().unsafeSubscribe(subscriber);
     assertThat(subscriber.takeValue().code()).isEqualTo(404);
     subscriber.assertCompleted();
@@ -115,7 +115,7 @@ public final class ObservableTest {
   @Test public void responseFailure() {
     server.enqueue(new MockResponse().setSocketPolicy(DISCONNECT_AFTER_REQUEST));
 
-    RecordingSubscriber<Response<String>> subscriber = subscriberRule.create();
+    RecordingSubscriber<ResponseWrapper<String>> subscriber = subscriberRule.create();
     service.response().unsafeSubscribe(subscriber);
     subscriber.assertError(IOException.class);
   }
@@ -123,7 +123,7 @@ public final class ObservableTest {
   @Test public void responseRespectsBackpressure() {
     server.enqueue(new MockResponse().setBody("Hi"));
 
-    RecordingSubscriber<Response<String>> subscriber = subscriberRule.createWithInitialRequest(0);
+    RecordingSubscriber<ResponseWrapper<String>> subscriber = subscriberRule.createWithInitialRequest(0);
     service.response().unsafeSubscribe(subscriber);
     assertThat(server.getRequestCount()).isEqualTo(1);
     subscriber.assertNoEvents();
@@ -138,11 +138,11 @@ public final class ObservableTest {
   @Test public void responseUnsubscribedDoesNotCallCompleted() throws InterruptedException {
     server.enqueue(new MockResponse().setBody("Hi"));
 
-    final RecordingSubscriber<Response<String>> subscriber = subscriberRule.create();
+    final RecordingSubscriber<ResponseWrapper<String>> subscriber = subscriberRule.create();
     service.response()
-        .doOnNext(new Action1<Response<String>>() {
+        .doOnNext(new Action1<ResponseWrapper<String>>() {
           @Override
-          public void call(Response<String> response) {
+          public void call(ResponseWrapper<String> response) {
             subscriber.unsubscribe();
           }
         })

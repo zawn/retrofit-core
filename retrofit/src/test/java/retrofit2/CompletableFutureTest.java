@@ -15,9 +15,6 @@
  */
 package retrofit2;
 
-import java.io.IOException;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
 import org.junit.Before;
@@ -26,7 +23,12 @@ import org.junit.Test;
 import retrofit2.helpers.ToStringConverterFactory;
 import retrofit2.http.GET;
 import retrofit2.okhttp.HttpException;
+import retrofit2.okhttp.HttpResponseWrapper;
 import retrofit2.okhttp.HttpRetrofit;
+
+import java.io.IOException;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 import static okhttp3.mockwebserver.SocketPolicy.DISCONNECT_AFTER_REQUEST;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -37,7 +39,8 @@ public final class CompletableFutureTest {
 
   interface Service {
     @GET("/") CompletableFuture<String> body();
-    @GET("/") CompletableFuture<Response<String>> response();
+
+    @GET("/") CompletableFuture<HttpResponseWrapper<String>> response();
   }
 
   private Service service;
@@ -66,8 +69,8 @@ public final class CompletableFutureTest {
       fail();
     } catch (ExecutionException e) {
       assertThat(e.getCause())
-          .isInstanceOf(HttpException.class) // Required for backwards compatibility.
-          .isInstanceOf(HttpException.class)
+          .isInstanceOf(RetrofitException.class) // Required for backwards compatibility.
+          .isInstanceOf(RetrofitException.class)
           .hasMessage("HTTP 404 Client Error");
     }
   }
@@ -87,8 +90,8 @@ public final class CompletableFutureTest {
   @Test public void responseSuccess200() throws Exception {
     server.enqueue(new MockResponse().setBody("Hi"));
 
-    CompletableFuture<Response<String>> future = service.response();
-    Response<String> response = future.get();
+    CompletableFuture<HttpResponseWrapper<String>> future = service.response();
+    HttpResponseWrapper<String> response = future.get();
     assertThat(response.isSuccessful()).isTrue();
     assertThat(response.body()).isEqualTo("Hi");
   }
@@ -96,8 +99,8 @@ public final class CompletableFutureTest {
   @Test public void responseSuccess404() throws Exception {
     server.enqueue(new MockResponse().setResponseCode(404).setBody("Hi"));
 
-    CompletableFuture<Response<String>> future = service.response();
-    Response<String> response = future.get();
+    CompletableFuture<HttpResponseWrapper<String>> future = service.response();
+    HttpResponseWrapper<String> response = future.get();
     assertThat(response.isSuccessful()).isFalse();
     assertThat(response.errorBody().string()).isEqualTo("Hi");
   }
@@ -105,7 +108,7 @@ public final class CompletableFutureTest {
   @Test public void responseFailure() throws Exception {
     server.enqueue(new MockResponse().setSocketPolicy(DISCONNECT_AFTER_REQUEST));
 
-    CompletableFuture<Response<String>> future = service.response();
+    CompletableFuture<HttpResponseWrapper<String>> future = service.response();
     try {
       future.get();
       fail();

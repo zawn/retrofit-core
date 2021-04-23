@@ -41,7 +41,7 @@ import retrofit2.http.GET;
 import retrofit2.http.POST;
 import retrofit2.http.Path;
 import retrofit2.http.Streaming;
-import retrofit2.okhttp.HttpResponse;
+import retrofit2.okhttp.HttpResponseWrapper;
 import retrofit2.okhttp.HttpRetrofit;
 
 import javax.annotation.Nullable;
@@ -73,7 +73,7 @@ public final class CallTest {
 
     server.enqueue(new MockResponse().setBody("Hi"));
 
-    Response<String> response = example.getString().execute();
+    ResponseWrapper<String> response = example.getString().execute();
     assertThat(response.isSuccessful()).isTrue();
     assertThat(response.body()).isEqualTo("Hi");
   }
@@ -87,10 +87,10 @@ public final class CallTest {
 
     server.enqueue(new MockResponse().setBody("Hi"));
 
-    final AtomicReference<Response<String>> responseRef = new AtomicReference<>();
+    final AtomicReference<ResponseWrapper<String>> responseRef = new AtomicReference<>();
     final CountDownLatch latch = new CountDownLatch(1);
     example.getString().enqueue(new Callback<String>() {
-      @Override public void onResponse(Call<String> call, Response<String> response) {
+      @Override public void onResponse(Call<String> call, ResponseWrapper<String> response) {
         responseRef.set(response);
         latch.countDown();
       }
@@ -101,7 +101,7 @@ public final class CallTest {
     });
     assertTrue(latch.await(10, SECONDS));
 
-    Response<String> response = responseRef.get();
+    ResponseWrapper<String> response = responseRef.get();
     assertThat(response.isSuccessful()).isTrue();
     assertThat(response.body()).isEqualTo("Hi");
   }
@@ -115,7 +115,7 @@ public final class CallTest {
 
     server.enqueue(new MockResponse().setResponseCode(404).setBody("Hi"));
 
-    HttpResponse<String> response = (HttpResponse<String>) example.getString().execute();
+    HttpResponseWrapper<String> response = (HttpResponseWrapper<String>) example.getString().execute();
     assertThat(response.isSuccessful()).isFalse();
     assertThat(response.code()).isEqualTo(404);
     assertThat(response.errorBody().string()).isEqualTo("Hi");
@@ -130,10 +130,10 @@ public final class CallTest {
 
     server.enqueue(new MockResponse().setResponseCode(404).setBody("Hi"));
 
-    final AtomicReference<Response<String>> responseRef = new AtomicReference<>();
+    final AtomicReference<ResponseWrapper<String>> responseRef = new AtomicReference<>();
     final CountDownLatch latch = new CountDownLatch(1);
     example.getString().enqueue(new Callback<String>() {
-      @Override public void onResponse(Call<String> call, Response<String> response) {
+      @Override public void onResponse(Call<String> call, ResponseWrapper<String> response) {
         responseRef.set(response);
         latch.countDown();
       }
@@ -144,7 +144,7 @@ public final class CallTest {
     });
     assertTrue(latch.await(10, SECONDS));
 
-    HttpResponse<String> response = (HttpResponse<String>) responseRef.get();
+    HttpResponseWrapper<String> response = (HttpResponseWrapper<String>) responseRef.get();
     assertThat(response.isSuccessful()).isFalse();
     assertThat(response.code()).isEqualTo(404);
     assertThat(response.errorBody().string()).isEqualTo("Hi");
@@ -179,7 +179,7 @@ public final class CallTest {
     final AtomicReference<Throwable> failureRef = new AtomicReference<>();
     final CountDownLatch latch = new CountDownLatch(1);
     example.getString().enqueue(new Callback<String>() {
-      @Override public void onResponse(Call<String> call, Response<String> response) {
+      @Override public void onResponse(Call<String> call, ResponseWrapper<String> response) {
         throw new AssertionError();
       }
 
@@ -242,7 +242,7 @@ public final class CallTest {
     final AtomicReference<Throwable> failureRef = new AtomicReference<>();
     final CountDownLatch latch = new CountDownLatch(1);
     example.postString("Hi").enqueue(new Callback<String>() {
-      @Override public void onResponse(Call<String> call, Response<String> response) {
+      @Override public void onResponse(Call<String> call, ResponseWrapper<String> response) {
         throw new AssertionError();
       }
 
@@ -357,7 +357,7 @@ public final class CallTest {
     final AtomicReference<Throwable> failureRef = new AtomicReference<>();
     final CountDownLatch latch = new CountDownLatch(1);
     example.postString("Hi").enqueue(new Callback<String>() {
-      @Override public void onResponse(Call<String> call, Response<String> response) {
+      @Override public void onResponse(Call<String> call, ResponseWrapper<String> response) {
         throw new AssertionError();
       }
 
@@ -392,7 +392,7 @@ public final class CallTest {
 
     server.enqueue(new MockResponse().setStatus("HTTP/1.1 204 Nothin"));
 
-    HttpResponse<String> response = (HttpResponse<String>) example.getString().execute();
+    HttpResponseWrapper<String> response = (HttpResponseWrapper<String>) example.getString().execute();
     assertThat(response.code()).isEqualTo(204);
     assertThat(response.body()).isNull();
   }
@@ -418,7 +418,7 @@ public final class CallTest {
 
     server.enqueue(new MockResponse().setStatus("HTTP/1.1 205 Nothin"));
 
-    HttpResponse<String> response = (HttpResponse<String>) example.getString().execute();
+    HttpResponseWrapper<String> response = (HttpResponseWrapper<String>) example.getString().execute();
     assertThat(response.code()).isEqualTo(205);
     assertThat(response.body()).isNull();
   }
@@ -444,7 +444,7 @@ public final class CallTest {
 
     server.enqueue(new MockResponse().setBody(repeat('a', 10_000) + repeat('b', 10_000)));
 
-    Response<String> response = example.getString().execute();
+    ResponseWrapper<String> response = example.getString().execute();
     assertThat(response.body()).isEqualTo("aabb");
   }
 
@@ -474,7 +474,7 @@ public final class CallTest {
 
     server.enqueue(new MockResponse().setBody("Hi").removeHeader("Content-Type"));
 
-    Response<String> response = example.getString().execute();
+    ResponseWrapper<String> response = example.getString().execute();
     assertThat(response.body()).isEqualTo("Hi");
   }
 
@@ -487,7 +487,7 @@ public final class CallTest {
 
     server.enqueue(new MockResponse().setBody("1234"));
 
-    Response<ResponseBody> response = example.getBody().execute();
+    ResponseWrapper<ResponseBody> response = example.getBody().execute();
     assertThat(response.body().string()).isEqualTo("1234");
   }
 
@@ -523,7 +523,7 @@ public final class CallTest {
         .setBody("1234")
         .setSocketPolicy(DISCONNECT_DURING_RESPONSE_BODY));
 
-    Response<ResponseBody> response = example.getStreamingBody().execute();
+    ResponseWrapper<ResponseBody> response = example.getStreamingBody().execute();
 
     ResponseBody streamedBody = response.body();
     // When streaming we only detect socket problems as the ResponseBody is read.
@@ -544,7 +544,7 @@ public final class CallTest {
 
     server.enqueue(new MockResponse().setBody("Hi").addHeader("Content-Type", "text/greeting"));
 
-    HttpResponse<String> response = (HttpResponse<String>) example.getString().execute();
+    HttpResponseWrapper<String> response = (HttpResponseWrapper<String>) example.getString().execute();
     assertThat(response.body()).isEqualTo("Hi");
     ResponseBody rawBody = response.raw().body();
     assertThat(rawBody.contentLength()).isEqualTo(2);
@@ -566,7 +566,7 @@ public final class CallTest {
 
     server.enqueue(new MockResponse().setBody("").addHeader("Content-Type", "text/stringy"));
 
-    HttpResponse<String> response = (HttpResponse<String>) example.getString().execute();
+    HttpResponseWrapper<String> response = (HttpResponseWrapper<String>) example.getString().execute();
     assertThat(response.body()).isEqualTo("");
     ResponseBody rawBody = response.raw().body();
     assertThat(rawBody.contentLength()).isEqualTo(0);
@@ -602,7 +602,7 @@ public final class CallTest {
     assertThat(call.isExecuted()).isFalse();
 
     call.enqueue(new Callback<String>() {
-      @Override public void onResponse(Call<String> call, Response<String> response) {}
+      @Override public void onResponse(Call<String> call, ResponseWrapper<String> response) {}
       @Override public void onFailure(Call<String> call, Throwable t) {}
     });
     assertThat(call.isExecuted()).isTrue();
@@ -641,7 +641,7 @@ public final class CallTest {
     final AtomicReference<Throwable> failureRef = new AtomicReference<>();
     final CountDownLatch latch = new CountDownLatch(1);
     call.enqueue(new Callback<String>() {
-      @Override public void onResponse(Call<String> call, Response<String> response) {
+      @Override public void onResponse(Call<String> call, ResponseWrapper<String> response) {
         throw new AssertionError();
       }
 
@@ -685,7 +685,7 @@ public final class CallTest {
     final AtomicReference<Throwable> failureRef = new AtomicReference<>();
     final CountDownLatch latch = new CountDownLatch(1);
     call.enqueue(new Callback<String>() {
-      @Override public void onResponse(Call<String> call, Response<String> response) {
+      @Override public void onResponse(Call<String> call, ResponseWrapper<String> response) {
         throw new AssertionError();
       }
 
@@ -718,7 +718,7 @@ public final class CallTest {
     final AtomicReference<Throwable> failureRef = new AtomicReference<>();
     final CountDownLatch latch = new CountDownLatch(1);
     call.enqueue(new Callback<String>() {
-      @Override public void onResponse(Call<String> call, Response<String> response) {
+      @Override public void onResponse(Call<String> call, ResponseWrapper<String> response) {
         throw new AssertionError();
       }
 
@@ -949,7 +949,7 @@ public final class CallTest {
 
     final CountDownLatch latch = new CountDownLatch(1);
     call.enqueue(new Callback<String>() {
-      @Override public void onResponse(Call<String> call, Response<String> response) {
+      @Override public void onResponse(Call<String> call, ResponseWrapper<String> response) {
         assertThat(writeCount.get()).isEqualTo(1);
         latch.countDown();
       }
@@ -989,7 +989,7 @@ public final class CallTest {
 
     final CountDownLatch latch = new CountDownLatch(1);
     call.enqueue(new Callback<String>() {
-      @Override public void onResponse(Call<String> call, Response<String> response) {
+      @Override public void onResponse(Call<String> call, ResponseWrapper<String> response) {
       }
 
       @Override public void onFailure(Call<String> call, Throwable t) {
@@ -1030,7 +1030,7 @@ public final class CallTest {
 
     final CountDownLatch latch = new CountDownLatch(1);
     call.enqueue(new Callback<String>() {
-      @Override public void onResponse(Call<String> call, Response<String> response) {
+      @Override public void onResponse(Call<String> call, ResponseWrapper<String> response) {
       }
 
       @Override public void onFailure(Call<String> call, Throwable t) {
@@ -1063,7 +1063,7 @@ public final class CallTest {
 
     final CountDownLatch latch = new CountDownLatch(1);
     call.enqueue(new Callback<String>() {
-      @Override public void onResponse(Call<String> call, Response<String> response) {
+      @Override public void onResponse(Call<String> call, ResponseWrapper<String> response) {
         assertThat(writeCount.get()).isEqualTo(1);
         latch.countDown();
       }
@@ -1098,7 +1098,7 @@ public final class CallTest {
 
     final CountDownLatch latch = new CountDownLatch(1);
     call.enqueue(new Callback<String>() {
-      @Override public void onResponse(Call<String> call, Response<String> response) {
+      @Override public void onResponse(Call<String> call, ResponseWrapper<String> response) {
       }
 
       @Override public void onFailure(Call<String> call, Throwable t) {
@@ -1139,7 +1139,7 @@ public final class CallTest {
 
     final CountDownLatch latch = new CountDownLatch(1);
     call.enqueue(new Callback<String>() {
-      @Override public void onResponse(Call<String> call, Response<String> response) {
+      @Override public void onResponse(Call<String> call, ResponseWrapper<String> response) {
       }
 
       @Override public void onFailure(Call<String> call, Throwable t) {
@@ -1215,7 +1215,7 @@ public final class CallTest {
     try {
       final AtomicBoolean callsFailureSynchronously = new AtomicBoolean();
       call.enqueue(new Callback<String>() {
-        @Override public void onResponse(Call<String> call, Response<String> response) {
+        @Override public void onResponse(Call<String> call, ResponseWrapper<String> response) {
         }
 
         @Override public void onFailure(Call<String> call, Throwable t) {

@@ -21,7 +21,7 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import javax.annotation.Nullable;
 import retrofit2.CallAdapter;
-import retrofit2.Response;
+import retrofit2.ResponseWrapper;
 import retrofit2.Retrofit;
 import retrofit2.okhttp.HttpException;
 import scala.concurrent.Future;
@@ -43,7 +43,7 @@ import scala.concurrent.Future;
  * responses, sets {@link HttpException HttpException} errors for non-2XX responses, and
  * sets {@link IOException} for network errors.</li>
  * <li>Response wrapped body (e.g., {@code Future<Response<User>>}) returns a
- * {@link Response} object for all HTTP responses and sets {@link IOException} for network
+ * {@link ResponseWrapper} object for all HTTP responses and sets {@link IOException} for network
  * errors</li>
  * </ul>
  */
@@ -66,7 +66,7 @@ public final class ScalaCallAdapterFactory extends CallAdapter.Factory {
     }
     Type innerType = getParameterUpperBound(0, (ParameterizedType) returnType);
 
-    if (getRawType(innerType) != Response.class) {
+    if (getRawType(innerType) != ResponseWrapper.class) {
       // Generic type is not Response<T>. Use it for body-only adapter.
       return new BodyCallAdapter<>(innerType);
     }

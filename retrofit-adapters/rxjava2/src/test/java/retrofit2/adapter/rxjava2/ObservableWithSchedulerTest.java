@@ -22,7 +22,7 @@ import okhttp3.mockwebserver.MockWebServer;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import retrofit2.Response;
+import retrofit2.ResponseWrapper;
 import retrofit2.Retrofit;
 import retrofit2.http.GET;
 import retrofit2.okhttp.HttpRetrofit;
@@ -33,7 +33,7 @@ public final class ObservableWithSchedulerTest {
 
   interface Service {
     @GET("/") Observable<String> body();
-    @GET("/") Observable<Response<String>> response();
+    @GET("/") Observable<ResponseWrapper<String>> response();
     @GET("/") Observable<Result<String>> result();
   }
 

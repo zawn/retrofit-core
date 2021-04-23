@@ -22,7 +22,7 @@ import okhttp3.mockwebserver.MockWebServer;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import retrofit2.Response;
+import retrofit2.ResponseWrapper;
 import retrofit2.Retrofit;
 import retrofit2.http.GET;
 import retrofit2.okhttp.HttpRetrofit;
@@ -36,7 +36,7 @@ public final class MaybeTest {
 
   interface Service {
     @GET("/") Maybe<String> body();
-    @GET("/") Maybe<Response<String>> response();
+    @GET("/") Maybe<ResponseWrapper<String>> response();
     @GET("/") Maybe<Result<String>> result();
   }
 
@@ -79,16 +79,16 @@ public final class MaybeTest {
   @Test public void responseSuccess200() {
     server.enqueue(new MockResponse().setBody("Hi"));
 
-    RecordingMaybeObserver<Response<String>> observer = observerRule.create();
+    RecordingMaybeObserver<ResponseWrapper<String>> observer = observerRule.create();
     service.response().subscribe(observer);
-    Response<String> response = observer.takeValue();
+    ResponseWrapper<String> response = observer.takeValue();
     assertThat(response.isSuccessful()).isTrue();
   }
 
   @Test public void responseSuccess404() {
     server.enqueue(new MockResponse().setResponseCode(404));
 
-    RecordingMaybeObserver<Response<String>> observer = observerRule.create();
+    RecordingMaybeObserver<ResponseWrapper<String>> observer = observerRule.create();
     service.response().subscribe(observer);
     assertThat(observer.takeValue().isSuccessful()).isFalse();
   }
@@ -96,7 +96,7 @@ public final class MaybeTest {
   @Test public void responseFailure() {
     server.enqueue(new MockResponse().setSocketPolicy(DISCONNECT_AFTER_REQUEST));
 
-    RecordingMaybeObserver<Response<String>> observer = observerRule.create();
+    RecordingMaybeObserver<ResponseWrapper<String>> observer = observerRule.create();
     service.response().subscribe(observer);
     observer.assertError(IOException.class);
   }

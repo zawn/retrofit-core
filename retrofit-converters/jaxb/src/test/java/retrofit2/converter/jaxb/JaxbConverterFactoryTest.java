@@ -24,7 +24,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import retrofit2.Call;
-import retrofit2.Response;
+import retrofit2.ResponseWrapper;
 import retrofit2.Retrofit;
 import retrofit2.http.Body;
 import retrofit2.http.GET;
@@ -81,7 +81,7 @@ public final class JaxbConverterFactoryTest {
         .setBody(SAMPLE_CONTACT_XML));
 
     Call<Contact> call = service.getXml();
-    Response<Contact> response = call.execute();
+    ResponseWrapper<Contact> response = call.execute();
     assertThat(response.body()).isEqualTo(SAMPLE_CONTACT);
   }
 
@@ -94,7 +94,7 @@ public final class JaxbConverterFactoryTest {
             + "</contact>"));
 
     Call<Contact> call = service.getXml();
-    Response<Contact> response = call.execute();
+    ResponseWrapper<Contact> response = call.execute();
     assertThat(response.body().name)
         .isEqualTo("Бронтозавр \uD83E\uDD95 ティラノサウルス・レックス \uD83E\uDD96");
   }
@@ -144,7 +144,7 @@ public final class JaxbConverterFactoryTest {
             + "</contact>"));
 
     Call<Contact> call = service.getXml();
-    Response<Contact> response = call.execute();
+    ResponseWrapper<Contact> response = call.execute();
     assertThat(response.body().name).isEqualTo("Jenny");
   }
 
@@ -163,7 +163,7 @@ public final class JaxbConverterFactoryTest {
 
     Call<Contact> call = service.getXml();
     try {
-      Response<Contact> response = call.execute();
+      ResponseWrapper<Contact> response = call.execute();
       response.body();
       fail();
     } catch (RuntimeException expected) {
@@ -189,7 +189,7 @@ public final class JaxbConverterFactoryTest {
 
     Call<Contact> call = service.getXml();
     try {
-      Response<Contact> response = call.execute();
+      ResponseWrapper<Contact> response = call.execute();
       response.body();
       fail();
     } catch (RuntimeException expected) {

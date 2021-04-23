@@ -38,7 +38,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import retrofit2.Call;
-import retrofit2.Response;
+import retrofit2.ResponseWrapper;
 import retrofit2.Retrofit;
 import retrofit2.http.Body;
 import retrofit2.http.GET;
@@ -186,7 +186,7 @@ public final class MoshiConverterFactoryTest {
     server.enqueue(new MockResponse().setBody("{\"name\":\"value\"}"));
 
     Call<AnInterface> call = service.anInterface(new AnImplementation("value"));
-    Response<AnInterface> response = call.execute();
+    ResponseWrapper<AnInterface> response = call.execute();
     AnInterface body = response.body();
     assertThat(body.getName()).isEqualTo("value");
 
@@ -199,7 +199,7 @@ public final class MoshiConverterFactoryTest {
     server.enqueue(new MockResponse().setBody("{\"theName\":\"value\"}"));
 
     Call<AnImplementation> call = service.anImplementation(new AnImplementation("value"));
-    Response<AnImplementation> response = call.execute();
+    ResponseWrapper<AnImplementation> response = call.execute();
     AnImplementation body = response.body();
     assertThat(body.theName).isEqualTo("value");
 
@@ -212,7 +212,7 @@ public final class MoshiConverterFactoryTest {
     server.enqueue(new MockResponse().setBody("\"qualified!\""));
 
     Call<String> call = service.annotations("value");
-    Response<String> response = call.execute();
+    ResponseWrapper<String> response = call.execute();
     assertThat(response.body()).isEqualTo("it worked!");
 
     RecordedRequest request = server.takeRequest();
@@ -235,7 +235,7 @@ public final class MoshiConverterFactoryTest {
     }
 
     Call<AnImplementation> call2 = serviceLenient.anImplementation(new AnImplementation("value"));
-    Response<AnImplementation> response = call2.execute();
+    ResponseWrapper<AnImplementation> response = call2.execute();
     AnImplementation body = response.body();
     assertThat(body.theName).isEqualTo("value");
   }
@@ -268,7 +268,7 @@ public final class MoshiConverterFactoryTest {
     server.enqueue(malformedResponse);
 
     Call<AnImplementation> call = service.anImplementation(new AnImplementation("value"));
-    Response<AnImplementation> response = call.execute();
+    ResponseWrapper<AnImplementation> response = call.execute();
     AnImplementation body = response.body();
     assertThat(body.theName).isEqualTo("value");
   }

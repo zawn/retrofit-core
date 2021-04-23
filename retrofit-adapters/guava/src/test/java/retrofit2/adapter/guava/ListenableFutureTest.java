@@ -23,7 +23,7 @@ import okhttp3.mockwebserver.MockWebServer;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import retrofit2.Response;
+import retrofit2.ResponseWrapper;
 import retrofit2.Retrofit;
 import retrofit2.http.GET;
 import retrofit2.okhttp.HttpRetrofit;
@@ -37,7 +37,7 @@ public final class ListenableFutureTest {
 
   interface Service {
     @GET("/") ListenableFuture<String> body();
-    @GET("/") ListenableFuture<Response<String>> response();
+    @GET("/") ListenableFuture<ResponseWrapper<String>> response();
   }
 
   private Service service;
@@ -88,8 +88,8 @@ public final class ListenableFutureTest {
   @Test public void responseSuccess200() throws Exception {
     server.enqueue(new MockResponse().setBody("Hi"));
 
-    ListenableFuture<Response<String>> future = service.response();
-    Response<String> response = future.get();
+    ListenableFuture<ResponseWrapper<String>> future = service.response();
+    ResponseWrapper<String> response = future.get();
     assertThat(response.isSuccessful()).isTrue();
     assertThat(response.body()).isEqualTo("Hi");
   }
@@ -97,8 +97,8 @@ public final class ListenableFutureTest {
   @Test public void responseSuccess404() throws Exception {
     server.enqueue(new MockResponse().setResponseCode(404).setBody("Hi"));
 
-    ListenableFuture<Response<String>> future = service.response();
-    Response<String> response = future.get();
+    ListenableFuture<ResponseWrapper<String>> future = service.response();
+    ResponseWrapper<String> response = future.get();
     assertThat(response.isSuccessful()).isFalse();
     assertThat(response.errorBody().string()).isEqualTo("Hi");
   }
@@ -106,7 +106,7 @@ public final class ListenableFutureTest {
   @Test public void responseFailure() throws Exception {
     server.enqueue(new MockResponse().setSocketPolicy(DISCONNECT_AFTER_REQUEST));
 
-    ListenableFuture<Response<String>> future = service.response();
+    ListenableFuture<ResponseWrapper<String>> future = service.response();
     try {
       future.get();
       fail();

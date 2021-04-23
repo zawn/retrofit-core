@@ -18,11 +18,11 @@ package retrofit2;
 import javax.annotation.Nullable;
 
 /** An HTTP response. */
-public abstract class Response<T> {
+public abstract class ResponseWrapper<T> {
 
   private final @Nullable T body;
 
-  public Response(@Nullable T body) {
+  public ResponseWrapper(@Nullable T body) {
     this.body = body;
   }
 

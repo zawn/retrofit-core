@@ -27,7 +27,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import retrofit2.Call;
-import retrofit2.Response;
+import retrofit2.ResponseWrapper;
 import retrofit2.Retrofit;
 import retrofit2.http.Body;
 import retrofit2.http.GET;
@@ -62,7 +62,7 @@ public final class WireConverterFactoryTest {
     server.enqueue(new MockResponse().setBody(new Buffer().write(encoded)));
 
     Call<Phone> call = service.post(new Phone("(519) 867-5309"));
-    Response<Phone> response = call.execute();
+    ResponseWrapper<Phone> response = call.execute();
     Phone body = response.body();
     assertThat(body.number).isEqualTo("(519) 867-5309");
 
@@ -75,7 +75,7 @@ public final class WireConverterFactoryTest {
     server.enqueue(new MockResponse());
 
     Call<Phone> call = service.get();
-    Response<Phone> response = call.execute();
+    ResponseWrapper<Phone> response = call.execute();
     Phone body = response.body();
     assertThat(body.number).isNull();
   }

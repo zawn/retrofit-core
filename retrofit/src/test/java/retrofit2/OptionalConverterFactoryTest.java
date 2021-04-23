@@ -39,7 +39,7 @@ public final class OptionalConverterFactoryTest {
   private Service service;
 
   @Before public void setUp() {
-    Retrofit retrofit = new HttpRetrofit.Builder()
+    HttpRetrofit retrofit = new HttpRetrofit.Builder()
         .baseUrl(server.url("/"))
         .addConverterFactory(new ObjectInstanceConverterFactory())
         .build();

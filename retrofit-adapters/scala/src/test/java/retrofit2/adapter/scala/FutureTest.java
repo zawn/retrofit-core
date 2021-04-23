@@ -22,7 +22,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import retrofit2.okhttp.HttpException;
-import retrofit2.Response;
+import retrofit2.ResponseWrapper;
 import retrofit2.Retrofit;
 import retrofit2.http.GET;
 import retrofit2.okhttp.HttpRetrofit;
@@ -40,7 +40,7 @@ public final class FutureTest {
 
   interface Service {
     @GET("/") Future<String> body();
-    @GET("/") Future<Response<String>> response();
+    @GET("/") Future<ResponseWrapper<String>> response();
   }
 
   private Service service;
@@ -92,8 +92,8 @@ public final class FutureTest {
   @Test public void responseSuccess200() throws Exception {
     server.enqueue(new MockResponse().setBody("Hi"));
 
-    Future<Response<String>> future = service.response();
-    Response<String> response = Await.result(future, Duration.create(5, SECONDS));
+    Future<ResponseWrapper<String>> future = service.response();
+    ResponseWrapper<String> response = Await.result(future, Duration.create(5, SECONDS));
     assertThat(response.isSuccessful()).isTrue();
     assertThat(response.body()).isEqualTo("Hi");
   }
@@ -101,8 +101,8 @@ public final class FutureTest {
   @Test public void responseSuccess404() throws Exception {
     server.enqueue(new MockResponse().setResponseCode(404).setBody("Hi"));
 
-    Future<Response<String>> future = service.response();
-    Response<String> response = Await.result(future, Duration.create(5, SECONDS));
+    Future<ResponseWrapper<String>> future = service.response();
+    ResponseWrapper<String> response = Await.result(future, Duration.create(5, SECONDS));
     assertThat(response.isSuccessful()).isFalse();
     assertThat(response.errorBody().string()).isEqualTo("Hi");
   }
@@ -110,7 +110,7 @@ public final class FutureTest {
   @Test public void responseFailure() {
     server.enqueue(new MockResponse().setSocketPolicy(DISCONNECT_AFTER_REQUEST));
 
-    Future<Response<String>> future = service.response();
+    Future<ResponseWrapper<String>> future = service.response();
     try {
       Await.result(future, Duration.create(5, SECONDS));
       fail();

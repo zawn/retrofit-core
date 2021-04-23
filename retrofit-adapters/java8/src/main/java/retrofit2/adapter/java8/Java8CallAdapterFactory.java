@@ -24,7 +24,7 @@ import javax.annotation.Nullable;
 import retrofit2.Call;
 import retrofit2.CallAdapter;
 import retrofit2.Callback;
-import retrofit2.Response;
+import retrofit2.ResponseWrapper;
 import retrofit2.Retrofit;
 
 /**
@@ -47,7 +47,7 @@ import retrofit2.Retrofit;
  * responses, sets {@link retrofit2.okhttp.HttpException HttpException} errors for non-2XX responses, and
  * sets {@link IOException} for network errors.</li>
  * <li>Response wrapped body (e.g., {@code CompletableFuture<Response<User>>}) returns a
- * {@link Response} object for all HTTP responses and sets {@link IOException} for network
+ * {@link ResponseWrapper} object for all HTTP responses and sets {@link IOException} for network
  * errors</li>
  * </ul>
  */
@@ -71,7 +71,7 @@ public final class Java8CallAdapterFactory extends CallAdapter.Factory {
     }
     Type innerType = getParameterUpperBound(0, (ParameterizedType) returnType);
 
-    if (getRawType(innerType) != Response.class) {
+    if (getRawType(innerType) != ResponseWrapper.class) {
       // Generic type is not Response<T>. Use it for body-only adapter.
       return new BodyCallAdapter<>(innerType);
     }
@@ -107,7 +107,7 @@ public final class Java8CallAdapterFactory extends CallAdapter.Factory {
       };
 
       call.enqueue(new Callback<R>() {
-        @Override public void onResponse(Call<R> call, Response<R> response) {
+        @Override public void onResponse(Call<R> call, ResponseWrapper<R> response) {
           if (response.isSuccessful()) {
             future.complete(response.body());
           } else {
@@ -125,7 +125,7 @@ public final class Java8CallAdapterFactory extends CallAdapter.Factory {
   }
 
   private static final class ResponseCallAdapter<R>
-      implements CallAdapter<R, CompletableFuture<Response<R>>> {
+      implements CallAdapter<R, CompletableFuture<ResponseWrapper<R>>> {
     private final Type responseType;
 
     ResponseCallAdapter(Type responseType) {
@@ -136,8 +136,8 @@ public final class Java8CallAdapterFactory extends CallAdapter.Factory {
       return responseType;
     }
 
-    @Override public CompletableFuture<Response<R>> adapt(final Call<R> call) {
-      final CompletableFuture<Response<R>> future = new CompletableFuture<Response<R>>() {
+    @Override public CompletableFuture<ResponseWrapper<R>> adapt(final Call<R> call) {
+      final CompletableFuture<ResponseWrapper<R>> future = new CompletableFuture<ResponseWrapper<R>>() {
         @Override public boolean cancel(boolean mayInterruptIfRunning) {
           if (mayInterruptIfRunning) {
             call.cancel();
@@ -147,7 +147,7 @@ public final class Java8CallAdapterFactory extends CallAdapter.Factory {
       };
 
       call.enqueue(new Callback<R>() {
-        @Override public void onResponse(Call<R> call, Response<R> response) {
+        @Override public void onResponse(Call<R> call, ResponseWrapper<R> response) {
           future.complete(response);
         }
 

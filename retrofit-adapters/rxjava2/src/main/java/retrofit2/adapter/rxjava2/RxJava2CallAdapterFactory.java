@@ -28,7 +28,7 @@ import java.lang.reflect.Type;
 import javax.annotation.Nullable;
 import retrofit2.CallAdapter;
 import retrofit2.okhttp.HttpException;
-import retrofit2.Response;
+import retrofit2.ResponseWrapper;
 import retrofit2.Retrofit;
 
 /**
@@ -49,7 +49,7 @@ import retrofit2.Retrofit;
  * for 2XX responses and calls {@code onError} with {@link HttpException} for non-2XX responses and
  * {@link IOException} for network errors.</li>
  * <li>Response wrapped body (e.g., {@code Observable<Response<User>>}) calls {@code onNext}
- * with a {@link Response} object for all HTTP responses and calls {@code onError} with
+ * with a {@link ResponseWrapper} object for all HTTP responses and calls {@code onError} with
  * {@link IOException} for network errors</li>
  * <li>Result wrapped body (e.g., {@code Observable<Result<User>>}) calls {@code onNext} with a
  * {@link Result} object for all HTTP responses and errors.</li>
@@ -121,7 +121,7 @@ public final class RxJava2CallAdapterFactory extends CallAdapter.Factory {
 
     Type observableType = getParameterUpperBound(0, (ParameterizedType) returnType);
     Class<?> rawObservableType = getRawType(observableType);
-    if (rawObservableType == Response.class) {
+    if (rawObservableType == ResponseWrapper.class) {
       if (!(observableType instanceof ParameterizedType)) {
         throw new IllegalStateException("Response must be parameterized"
             + " as Response<Foo> or Response<? extends Foo>");

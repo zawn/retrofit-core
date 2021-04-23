@@ -17,15 +17,15 @@ package retrofit2.adapter.rxjava2;
 
 import java.io.IOException;
 import org.junit.Test;
-import retrofit2.Response;
-import retrofit2.okhttp.HttpResponse;
+import retrofit2.ResponseWrapper;
+import retrofit2.okhttp.HttpResponseWrapper;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.fail;
 
 public final class ResultTest {
   @Test public void response() {
-    Response<String> response = HttpResponse.success("Hi");
+    ResponseWrapper<String> response = HttpResponseWrapper.success("Hi");
     Result<String> result = Result.response(response);
     assertThat(result.isError()).isFalse();
     assertThat(result.error()).isNull();

@@ -21,7 +21,6 @@ import java.lang.reflect.Type;
 import java.util.concurrent.CompletableFuture;
 import javax.annotation.Nullable;
 import org.codehaus.mojo.animal_sniffer.IgnoreJRERequirement;
-import retrofit2.okhttp.HttpException;
 
 @IgnoreJRERequirement // Only added when CompletableFuture is available (Java 8+ / Android API 24+).
 final class CompletableFutureCallAdapterFactory extends CallAdapter.Factory {
@@ -38,7 +37,7 @@ final class CompletableFutureCallAdapterFactory extends CallAdapter.Factory {
     }
     Type innerType = getParameterUpperBound(0, (ParameterizedType) returnType);
 
-    if (getRawType(innerType) != Response.class) {
+    if (!ResponseWrapper.class.isAssignableFrom(getRawType(innerType))) {
       // Generic type is not Response<T>. Use it for body-only adapter.
       return new BodyCallAdapter<>(innerType);
     }
@@ -75,7 +74,7 @@ final class CompletableFutureCallAdapterFactory extends CallAdapter.Factory {
       };
 
       call.enqueue(new Callback<R>() {
-        @Override public void onResponse(Call<R> call, Response<R> response) {
+        @Override public void onResponse(Call<R> call, ResponseWrapper<R> response) {
           if (response.isSuccessful()) {
             future.complete(response.body());
           } else {
@@ -94,7 +93,7 @@ final class CompletableFutureCallAdapterFactory extends CallAdapter.Factory {
 
   @IgnoreJRERequirement
   private static final class ResponseCallAdapter<R>
-      implements CallAdapter<R, CompletableFuture<Response<R>>> {
+      implements CallAdapter<R, CompletableFuture<ResponseWrapper<R>>> {
     private final Type responseType;
 
     ResponseCallAdapter(Type responseType) {
@@ -105,8 +104,8 @@ final class CompletableFutureCallAdapterFactory extends CallAdapter.Factory {
       return responseType;
     }
 
-    @Override public CompletableFuture<Response<R>> adapt(final Call<R> call) {
-      final CompletableFuture<Response<R>> future = new CompletableFuture<Response<R>>() {
+    @Override public CompletableFuture<ResponseWrapper<R>> adapt(final Call<R> call) {
+      final CompletableFuture<ResponseWrapper<R>> future = new CompletableFuture<ResponseWrapper<R>>() {
         @Override public boolean cancel(boolean mayInterruptIfRunning) {
           if (mayInterruptIfRunning) {
             call.cancel();
@@ -116,7 +115,7 @@ final class CompletableFutureCallAdapterFactory extends CallAdapter.Factory {
       };
 
       call.enqueue(new Callback<R>() {
-        @Override public void onResponse(Call<R> call, Response<R> response) {
+        @Override public void onResponse(Call<R> call, ResponseWrapper<R> response) {
           future.complete(response);
         }
 

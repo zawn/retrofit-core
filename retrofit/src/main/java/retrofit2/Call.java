@@ -28,9 +28,9 @@ import java.io.IOException;
  * is busy writing its request or reading its response may receive a {@link IOException}; this is
  * working as designed.
  *
- * @param <T> Successful response body type.
+ * @param <Response> Successful response body type.
  */
-public interface Call<T> extends Cloneable {
+public interface Call<Response> extends Cloneable {
   /**
    * Synchronously send the request and return its response.
    *
@@ -38,13 +38,13 @@ public interface Call<T> extends Cloneable {
    * @throws RuntimeException (and subclasses) if an unexpected error occurs creating the request
    * or decoding the response.
    */
-  Response<T> execute() throws IOException;
+  ResponseWrapper<Response> execute() throws IOException;
 
   /**
    * Asynchronously send the request and notify {@code callback} of its response or if an error
    * occurred talking to the server, creating the request, or processing the response.
    */
-  void enqueue(Callback<T> callback);
+  void enqueue(Callback<Response> callback);
 
   /**
    * Returns true if this call has been either {@linkplain #execute() executed} or {@linkplain
@@ -65,8 +65,8 @@ public interface Call<T> extends Cloneable {
    * Create a new, identical call to this one which can be enqueued or executed even if this call
    * has already been.
    */
-  Call<T> clone();
+  Call<Response> clone();
 
   /** The original HTTP request. */
-  RetrofitRequest request();
+  RequestWrapper<?> request();
 }

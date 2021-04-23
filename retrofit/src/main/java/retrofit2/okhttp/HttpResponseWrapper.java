@@ -4,19 +4,19 @@ import okhttp3.Headers;
 import okhttp3.Protocol;
 import okhttp3.Request;
 import okhttp3.ResponseBody;
-import retrofit2.Response;
+import retrofit2.ResponseWrapper;
 
 import javax.annotation.Nullable;
 
 import static retrofit2.Utils.checkNotNull;
 
-public class HttpResponse<T> extends Response<T> {
+public class HttpResponseWrapper<T> extends ResponseWrapper<T> {
 
   private final okhttp3.Response rawResponse;
   private final @Nullable ResponseBody errorBody;
 
   /** Create a synthetic successful response with {@code body} as the deserialized body. */
-  public static <T> Response<T> success(@Nullable T body) {
+  public static <T> HttpResponseWrapper<T> success(@Nullable T body) {
     return success(body, new okhttp3.Response.Builder() //
         .code(200)
         .message("OK")
@@ -29,7 +29,7 @@ public class HttpResponse<T> extends Response<T> {
    * Create a synthetic successful response with an HTTP status code of {@code code} and
    * {@code body} as the deserialized body.
    */
-  public static <T> Response<T> success(int code, @Nullable T body) {
+  public static <T> HttpResponseWrapper<T> success(int code, @Nullable T body) {
     if (code < 200 || code >= 300) {
       throw new IllegalArgumentException("code < 200 or >= 300: " + code);
     }
@@ -45,7 +45,7 @@ public class HttpResponse<T> extends Response<T> {
    * Create a synthetic successful response using {@code headers} with {@code body} as the
    * deserialized body.
    */
-  public static <T> Response<T> success(@Nullable T body, Headers headers) {
+  public static <T> HttpResponseWrapper<T> success(@Nullable T body, Headers headers) {
     checkNotNull(headers, "headers == null");
     return success(body, new okhttp3.Response.Builder() //
         .code(200)
@@ -60,19 +60,19 @@ public class HttpResponse<T> extends Response<T> {
    * Create a successful response from {@code rawResponse} with {@code body} as the deserialized
    * body.
    */
-  public static <T> Response<T> success(@Nullable T body, okhttp3.Response rawResponse) {
+  public static <T> HttpResponseWrapper<T> success(@Nullable T body, okhttp3.Response rawResponse) {
     checkNotNull(rawResponse, "rawResponse == null");
     if (!rawResponse.isSuccessful()) {
       throw new IllegalArgumentException("rawResponse must be successful response");
     }
-    return new HttpResponse<>(rawResponse, body, null);
+    return new HttpResponseWrapper<>(rawResponse, body, null);
   }
 
   /**
    * Create a synthetic error response with an HTTP status code of {@code code} and {@code body}
    * as the error body.
    */
-  public static <T> Response<T> error(int code, ResponseBody body) {
+  public static <T> HttpResponseWrapper<T> error(int code, ResponseBody body) {
     checkNotNull(body, "body == null");
     if (code < 400) throw new IllegalArgumentException("code < 400: " + code);
     return error(body, new okhttp3.Response.Builder() //
@@ -85,18 +85,18 @@ public class HttpResponse<T> extends Response<T> {
   }
 
   /** Create an error response from {@code rawResponse} with {@code body} as the error body. */
-  public static <T> Response<T> error(ResponseBody body, okhttp3.Response rawResponse) {
+  public static <T> HttpResponseWrapper<T> error(ResponseBody body, okhttp3.Response rawResponse) {
     checkNotNull(body, "body == null");
     checkNotNull(rawResponse, "rawResponse == null");
     if (rawResponse.isSuccessful()) {
       throw new IllegalArgumentException("rawResponse should not be successful response");
     }
-    return new HttpResponse<>(rawResponse, null, body);
+    return new HttpResponseWrapper<>(rawResponse, null, body);
   }
 
 
-  private HttpResponse(okhttp3.Response rawResponse, @Nullable T body,
-                   @Nullable ResponseBody errorBody) {
+  private HttpResponseWrapper(okhttp3.Response rawResponse, @Nullable T body,
+                              @Nullable ResponseBody errorBody) {
     super(body);
     this.rawResponse = rawResponse;
     this.errorBody = errorBody;
@@ -133,6 +133,6 @@ public class HttpResponse<T> extends Response<T> {
   }
 
   @Override public String toString() {
-    return rawResponse.toString();
+    return "HTTP "+ rawResponse.code()+" "+rawResponse.message();
   }
 }

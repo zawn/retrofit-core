@@ -98,7 +98,7 @@ public final class RequestFactory {
     isKotlinSuspendFunction = builder.isKotlinSuspendFunction;
   }
 
-  okhttp3.Request create(Object[] args) throws IOException {
+  public okhttp3.Request create(Object[] args) throws IOException {
     @SuppressWarnings("unchecked") // It is an error to invoke a method with the wrong arg types.
     ParameterHandler<RequestBuilder, Object>[] handlers = (ParameterHandler<RequestBuilder, Object>[]) parameterHandlers;
 
@@ -132,7 +132,7 @@ public final class RequestFactory {
    * requires potentially-expensive reflection so it is best to build each service method only once
    * and reuse it. Builders cannot be reused.
    */
-  static final class Builder {
+  public static final class Builder {
     // Upper and lower characters, digits, underscores, and hyphens, starting with a character.
     private static final String PARAM = "[a-zA-Z][a-zA-Z0-9_-]*";
     private static final Pattern PARAM_URL_REGEX = Pattern.compile("\\{(" + PARAM + ")\\}");
@@ -786,7 +786,7 @@ public final class RequestFactory {
      * Gets the set of unique path parameters used in the given URI. If a parameter is used twice
      * in the URI, it will only show up once in the set.
      */
-    static Set<String> parsePathParameters(String path) {
+    public static Set<String> parsePathParameters(String path) {
       Matcher m = PARAM_URL_REGEX.matcher(path);
       Set<String> patterns = new LinkedHashSet<>();
       while (m.find()) {

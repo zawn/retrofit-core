@@ -20,7 +20,7 @@ import retrofit2.Call;
 import retrofit2.CallAdapter;
 import retrofit2.Callback;
 import retrofit2.okhttp.HttpException;
-import retrofit2.Response;
+import retrofit2.ResponseWrapper;
 import scala.concurrent.Future;
 import scala.concurrent.Promise;
 
@@ -39,7 +39,7 @@ final class BodyCallAdapter<T> implements CallAdapter<T, Future<T>> {
     Promise<T> promise = Promise.apply();
 
     call.enqueue(new Callback<T>() {
-      @Override public void onResponse(Call<T> call, Response<T> response) {
+      @Override public void onResponse(Call<T> call, ResponseWrapper<T> response) {
         if (response.isSuccessful()) {
           promise.success(response.body());
         } else {

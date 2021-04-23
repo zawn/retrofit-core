@@ -29,7 +29,7 @@ import org.junit.Test;
 import org.junit.rules.TestRule;
 import org.reactivestreams.Subscriber;
 import org.reactivestreams.Subscription;
-import retrofit2.Response;
+import retrofit2.ResponseWrapper;
 import retrofit2.Retrofit;
 import retrofit2.http.GET;
 import retrofit2.okhttp.HttpRetrofit;
@@ -44,7 +44,7 @@ public final class FlowableThrowingTest {
 
   interface Service {
     @GET("/") Flowable<String> body();
-    @GET("/") Flowable<Response<String>> response();
+    @GET("/") Flowable<ResponseWrapper<String>> response();
     @GET("/") Flowable<Result<String>> result();
   }
 
@@ -130,10 +130,10 @@ public final class FlowableThrowingTest {
   @Test public void responseThrowingInOnNextDeliveredToError() {
     server.enqueue(new MockResponse());
 
-    RecordingSubscriber<Response<String>> subscriber = subscriberRule.create();
+    RecordingSubscriber<ResponseWrapper<String>> subscriber = subscriberRule.create();
     final RuntimeException e = new RuntimeException();
-    service.response().safeSubscribe(new ForwardingSubscriber<Response<String>>(subscriber) {
-      @Override public void onNext(Response<String> value) {
+    service.response().safeSubscribe(new ForwardingSubscriber<ResponseWrapper<String>>(subscriber) {
+      @Override public void onNext(ResponseWrapper<String> value) {
         throw e;
       }
     });
@@ -153,9 +153,9 @@ public final class FlowableThrowingTest {
       }
     });
 
-    RecordingSubscriber<Response<String>> subscriber = subscriberRule.create();
+    RecordingSubscriber<ResponseWrapper<String>> subscriber = subscriberRule.create();
     final RuntimeException e = new RuntimeException();
-    service.response().subscribe(new ForwardingSubscriber<Response<String>>(subscriber) {
+    service.response().subscribe(new ForwardingSubscriber<ResponseWrapper<String>>(subscriber) {
       @Override public void onComplete() {
         throw e;
       }
@@ -177,10 +177,10 @@ public final class FlowableThrowingTest {
       }
     });
 
-    RecordingSubscriber<Response<String>> subscriber = subscriberRule.create();
+    RecordingSubscriber<ResponseWrapper<String>> subscriber = subscriberRule.create();
     final AtomicReference<Throwable> errorRef = new AtomicReference<>();
     final RuntimeException e = new RuntimeException();
-    service.response().subscribe(new ForwardingSubscriber<Response<String>>(subscriber) {
+    service.response().subscribe(new ForwardingSubscriber<ResponseWrapper<String>>(subscriber) {
       @Override public void onError(Throwable throwable) {
         if (!errorRef.compareAndSet(null, throwable)) {
           throw Exceptions.propagate(throwable);

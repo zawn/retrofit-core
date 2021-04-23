@@ -22,10 +22,10 @@ import java.lang.reflect.Type;
 import java.util.List;
 import java.util.concurrent.Executor;
 import java.util.concurrent.atomic.AtomicBoolean;
-import okhttp3.Request;
+
 import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
-import retrofit2.okhttp.HttpResponse;
+import retrofit2.okhttp.HttpResponseWrapper;
 import retrofit2.okhttp.HttpRetrofit;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -70,9 +70,9 @@ public final class DefaultCallAdapterFactoryTest {
     Type returnType = new TypeToken<Call<String>>() {}.getType();
     CallAdapter<String, Call<String>> adapter =
         (CallAdapter<String, Call<String>>) factory.get(returnType, NO_ANNOTATIONS, retrofit);
-    final Response<String> response = HttpResponse.success("Hi");
+    final ResponseWrapper<String> response = HttpResponseWrapper.success("Hi");
     Call<String> call = adapter.adapt(new EmptyCall() {
-      @Override public Response<String> execute() {
+      @Override public ResponseWrapper<String> execute() {
         return response;
       }
     });
@@ -119,7 +119,7 @@ public final class DefaultCallAdapterFactoryTest {
       return false;
     }
 
-    @Override public Response<String> execute() throws IOException {
+    @Override public ResponseWrapper<String> execute() throws IOException {
       throw new UnsupportedOperationException();
     }
 
@@ -135,7 +135,7 @@ public final class DefaultCallAdapterFactoryTest {
       throw new UnsupportedOperationException();
     }
 
-    @Override public Request request() {
+    @Override public RequestWrapper request() {
       throw new UnsupportedOperationException();
     }
   }

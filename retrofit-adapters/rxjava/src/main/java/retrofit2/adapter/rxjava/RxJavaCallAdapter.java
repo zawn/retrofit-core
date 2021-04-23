@@ -19,7 +19,7 @@ import java.lang.reflect.Type;
 import javax.annotation.Nullable;
 import retrofit2.Call;
 import retrofit2.CallAdapter;
-import retrofit2.Response;
+import retrofit2.ResponseWrapper;
 import rx.Observable;
 import rx.Observable.OnSubscribe;
 import rx.Scheduler;
@@ -49,7 +49,7 @@ final class RxJavaCallAdapter<R> implements CallAdapter<R, Object> {
   }
 
   @Override public Object adapt(Call<R> call) {
-    OnSubscribe<Response<R>> callFunc = isAsync
+    OnSubscribe<ResponseWrapper<R>> callFunc = isAsync
         ? new CallEnqueueOnSubscribe<>(call)
         : new CallExecuteOnSubscribe<>(call);
 

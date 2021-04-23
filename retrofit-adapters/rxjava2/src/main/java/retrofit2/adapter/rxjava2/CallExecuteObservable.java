@@ -22,16 +22,16 @@ import io.reactivex.exceptions.CompositeException;
 import io.reactivex.exceptions.Exceptions;
 import io.reactivex.plugins.RxJavaPlugins;
 import retrofit2.Call;
-import retrofit2.Response;
+import retrofit2.ResponseWrapper;
 
-final class CallExecuteObservable<T> extends Observable<Response<T>> {
+final class CallExecuteObservable<T> extends Observable<ResponseWrapper<T>> {
   private final Call<T> originalCall;
 
   CallExecuteObservable(Call<T> originalCall) {
     this.originalCall = originalCall;
   }
 
-  @Override protected void subscribeActual(Observer<? super Response<T>> observer) {
+  @Override protected void subscribeActual(Observer<? super ResponseWrapper<T>> observer) {
     // Since Call is a one-shot type, clone it for each new observer.
     Call<T> call = originalCall.clone();
     CallDisposable disposable = new CallDisposable(call);
@@ -42,7 +42,7 @@ final class CallExecuteObservable<T> extends Observable<Response<T>> {
 
     boolean terminated = false;
     try {
-      Response<T> response = call.execute();
+      ResponseWrapper<T> response = call.execute();
       if (!disposable.isDisposed()) {
         observer.onNext(response);
       }

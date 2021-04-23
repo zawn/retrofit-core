@@ -47,7 +47,7 @@ public final class OptionalConverterFactoryAndroidTest {
   private Service service;
 
   @Before public void setUp() {
-    Retrofit retrofit = new HttpRetrofit.Builder()
+    HttpRetrofit retrofit = new HttpRetrofit.Builder()
         .baseUrl(server.url("/"))
         .addConverterFactory(new ObjectInstanceConverterFactory())
         .build();

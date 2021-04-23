@@ -24,7 +24,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import retrofit2.Call;
-import retrofit2.Response;
+import retrofit2.ResponseWrapper;
 import retrofit2.Retrofit;
 import retrofit2.http.Body;
 import retrofit2.http.GET;
@@ -240,19 +240,19 @@ public final class ScalarsConverterFactoryTest {
 
   @Test public void supportedResponseTypes() throws IOException, InterruptedException {
     server.enqueue(new MockResponse().setBody("test"));
-    Response<String> stringResponse = service.stringObject().execute();
+    ResponseWrapper<String> stringResponse = service.stringObject().execute();
     assertThat(stringResponse.body()).isEqualTo("test");
 
     server.enqueue(new MockResponse().setBody("true"));
-    Response<Boolean> booleanResponse = service.booleanObject().execute();
+    ResponseWrapper<Boolean> booleanResponse = service.booleanObject().execute();
     assertThat(booleanResponse.body()).isTrue();
 
     server.enqueue(new MockResponse().setBody("5"));
-    Response<Byte> byteResponse = service.byteObject().execute();
+    ResponseWrapper<Byte> byteResponse = service.byteObject().execute();
     assertThat(byteResponse.body()).isEqualTo((byte) 5);
 
     server.enqueue(new MockResponse().setBody("b"));
-    Response<Character> characterResponse = service.charObject().execute();
+    ResponseWrapper<Character> characterResponse = service.charObject().execute();
     assertThat(characterResponse.body()).isEqualTo('b');
 
     server.enqueue(new MockResponse().setBody(""));
@@ -270,23 +270,23 @@ public final class ScalarsConverterFactoryTest {
     }
 
     server.enqueue(new MockResponse().setBody("13.13"));
-    Response<Double> doubleResponse = service.doubleObject().execute();
+    ResponseWrapper<Double> doubleResponse = service.doubleObject().execute();
     assertThat(doubleResponse.body()).isEqualTo(13.13);
 
     server.enqueue(new MockResponse().setBody("13.13"));
-    Response<Float> floatResponse = service.floatObject().execute();
+    ResponseWrapper<Float> floatResponse = service.floatObject().execute();
     assertThat(floatResponse.body()).isEqualTo(13.13f);
 
     server.enqueue(new MockResponse().setBody("13"));
-    Response<Integer> integerResponse = service.integerObject().execute();
+    ResponseWrapper<Integer> integerResponse = service.integerObject().execute();
     assertThat(integerResponse.body()).isEqualTo(13);
 
     server.enqueue(new MockResponse().setBody("1347"));
-    Response<Long> longResponse = service.longObject().execute();
+    ResponseWrapper<Long> longResponse = service.longObject().execute();
     assertThat(longResponse.body()).isEqualTo(1347L);
 
     server.enqueue(new MockResponse().setBody("134"));
-    Response<Short> shortResponse = service.shortObject().execute();
+    ResponseWrapper<Short> shortResponse = service.shortObject().execute();
     assertThat(shortResponse.body()).isEqualTo((short) 134);
   }
 }
