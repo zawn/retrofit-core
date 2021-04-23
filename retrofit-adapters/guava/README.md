@@ -30,7 +30,7 @@ Download
 Download [the latest JAR][2] or grab via [Maven][3]:
 ```xml
 <dependency>
-  <groupId>com.squareup.retrofit2</groupId>
+  <groupId>com.appunity.retrofit2</groupId>
   <artifactId>adapter-guava</artifactId>
   <version>latest.version</version>
 </dependency>

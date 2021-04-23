@@ -11,7 +11,7 @@ Download
 Download [the latest JAR][1] or grab via [Maven][2]:
 ```xml
 <dependency>
-  <groupId>com.squareup.retrofit2</groupId>
+  <groupId>com.appunity.retrofit2</groupId>
   <artifactId>converter-scalars</artifactId>
   <version>latest.version</version>
 </dependency>

@@ -9,7 +9,7 @@ Download
 Download [the latest JAR][1] or grab via [Maven][2]:
 ```xml
 <dependency>
-  <groupId>com.squareup.retrofit2</groupId>
+  <groupId>com.appunity.retrofit2</groupId>
   <artifactId>retrofit-mock</artifactId>
   <version>see.latest.version</version>
 </dependency>
