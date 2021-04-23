@@ -42,7 +42,7 @@ public final class Utils {
         + method.getName(), cause);
   }
 
-  static RuntimeException parameterError(Method method,
+  public static RuntimeException parameterError(Method method,
       Throwable cause, int p, String message, Object... args) {
     return methodError(method, cause, message + " (parameter #" + (p + 1) + ")", args);
   }

@@ -4,7 +4,6 @@ import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
 import retrofit2.Converter;
 import retrofit2.ParameterHandler;
-import retrofit2.RequestBuilder;
 
 import javax.annotation.Nullable;
 import java.io.IOException;
@@ -17,7 +16,7 @@ public abstract class HttpParamHandler<T> extends ParameterHandler<RequestBuilde
 
 
     @Override
-    abstract void apply(RequestBuilder builder, @Nullable T value) throws IOException;
+    public abstract void apply(RequestBuilder builder, @Nullable T value) throws IOException;
 
     static final class RelativeUrl extends HttpParamHandler<Object> {
         private final Method method;
@@ -28,7 +27,7 @@ public abstract class HttpParamHandler<T> extends ParameterHandler<RequestBuilde
             this.p = p;
         }
 
-        @Override void apply(RequestBuilder builder, @Nullable Object value) {
+        @Override public void apply(RequestBuilder builder, @Nullable Object value) {
             if (value == null) {
                 throw retrofit2.Utils.parameterError(method, p, "@Url parameter is null.");
             }
@@ -45,7 +44,7 @@ public abstract class HttpParamHandler<T> extends ParameterHandler<RequestBuilde
             this.valueConverter = valueConverter;
         }
 
-        @Override void apply(RequestBuilder builder, @Nullable T value) throws IOException {
+        @Override public void apply(RequestBuilder builder, @Nullable T value) throws IOException {
             if (value == null) return; // Skip null values.
 
             String headerValue = valueConverter.convert(value);
@@ -71,7 +70,7 @@ public abstract class HttpParamHandler<T> extends ParameterHandler<RequestBuilde
             this.encoded = encoded;
         }
 
-        @Override void apply(RequestBuilder builder, @Nullable T value) throws IOException {
+        @Override public void apply(RequestBuilder builder, @Nullable T value) throws IOException {
             if (value == null) {
                 throw retrofit2.Utils.parameterError(method, p,
                         "Path parameter \"" + name + "\" value must not be null.");
@@ -91,7 +90,7 @@ public abstract class HttpParamHandler<T> extends ParameterHandler<RequestBuilde
             this.encoded = encoded;
         }
 
-        @Override void apply(RequestBuilder builder, @Nullable T value) throws IOException {
+        @Override public void apply(RequestBuilder builder, @Nullable T value) throws IOException {
             if (value == null) return; // Skip null values.
 
             String queryValue = valueConverter.convert(value);
@@ -110,7 +109,7 @@ public abstract class HttpParamHandler<T> extends ParameterHandler<RequestBuilde
             this.encoded = encoded;
         }
 
-        @Override void apply(RequestBuilder builder, @Nullable T value) throws IOException {
+        @Override public void apply(RequestBuilder builder, @Nullable T value) throws IOException {
             if (value == null) return; // Skip null values.
             builder.addQueryParam(nameConverter.convert(value), null, encoded);
         }
@@ -129,7 +128,7 @@ public abstract class HttpParamHandler<T> extends ParameterHandler<RequestBuilde
             this.encoded = encoded;
         }
 
-        @Override void apply(RequestBuilder builder, @Nullable Map<String, T> value)
+        @Override public void apply(RequestBuilder builder, @Nullable Map<String, T> value)
                 throws IOException {
             if (value == null) {
                 throw retrofit2.Utils.parameterError(method, p, "Query map was null");
@@ -173,7 +172,7 @@ public abstract class HttpParamHandler<T> extends ParameterHandler<RequestBuilde
             this.valueConverter = valueConverter;
         }
 
-        @Override void apply(RequestBuilder builder, @Nullable Map<String, T> value)
+        @Override public void apply(RequestBuilder builder, @Nullable Map<String, T> value)
                 throws IOException {
             if (value == null) {
                 throw retrofit2.Utils.parameterError(method, p, "Header map was null.");
@@ -203,7 +202,7 @@ public abstract class HttpParamHandler<T> extends ParameterHandler<RequestBuilde
             this.p = p;
         }
 
-        @Override void apply(RequestBuilder builder, @Nullable okhttp3.Headers headers) {
+        @Override public void apply(RequestBuilder builder, @Nullable okhttp3.Headers headers) {
             if (headers == null) {
                 throw retrofit2.Utils.parameterError(method, p, "Headers parameter must not be null.");
             }
@@ -222,7 +221,7 @@ public abstract class HttpParamHandler<T> extends ParameterHandler<RequestBuilde
             this.encoded = encoded;
         }
 
-        @Override void apply(RequestBuilder builder, @Nullable T value) throws IOException {
+        @Override public void apply(RequestBuilder builder, @Nullable T value) throws IOException {
             if (value == null) return; // Skip null values.
 
             String fieldValue = valueConverter.convert(value);
@@ -245,7 +244,7 @@ public abstract class HttpParamHandler<T> extends ParameterHandler<RequestBuilde
             this.encoded = encoded;
         }
 
-        @Override void apply(RequestBuilder builder, @Nullable Map<String, T> value)
+        @Override public void apply(RequestBuilder builder, @Nullable Map<String, T> value)
                 throws IOException {
             if (value == null) {
                 throw retrofit2.Utils.parameterError(method, p, "Field map was null.");
@@ -291,7 +290,7 @@ public abstract class HttpParamHandler<T> extends ParameterHandler<RequestBuilde
             this.converter = converter;
         }
 
-        @Override void apply(RequestBuilder builder, @Nullable T value) {
+        @Override public void apply(RequestBuilder builder, @Nullable T value) {
             if (value == null) return; // Skip null values.
 
             RequestBody body;
@@ -310,7 +309,7 @@ public abstract class HttpParamHandler<T> extends ParameterHandler<RequestBuilde
         private RawPart() {
         }
 
-        @Override void apply(RequestBuilder builder, @Nullable MultipartBody.Part value) {
+        @Override public void apply(RequestBuilder builder, @Nullable MultipartBody.Part value) {
             if (value != null) { // Skip null values.
                 builder.addPart(value);
             }
@@ -331,7 +330,7 @@ public abstract class HttpParamHandler<T> extends ParameterHandler<RequestBuilde
             this.transferEncoding = transferEncoding;
         }
 
-        @Override void apply(RequestBuilder builder, @Nullable Map<String, T> value)
+        @Override public void apply(RequestBuilder builder, @Nullable Map<String, T> value)
                 throws IOException {
             if (value == null) {
                 throw retrofit2.Utils.parameterError(method, p, "Part map was null.");
@@ -368,7 +367,7 @@ public abstract class HttpParamHandler<T> extends ParameterHandler<RequestBuilde
             this.converter = converter;
         }
 
-        @Override void apply(RequestBuilder builder, @Nullable T value) {
+        @Override public void apply(RequestBuilder builder, @Nullable T value) {
             if (value == null) {
                 throw retrofit2.Utils.parameterError(method, p, "Body parameter value must not be null.");
             }
@@ -389,7 +388,7 @@ public abstract class HttpParamHandler<T> extends ParameterHandler<RequestBuilde
             this.cls = cls;
         }
 
-        @Override void apply(RequestBuilder builder, @Nullable T value) {
+        @Override public void apply(RequestBuilder builder, @Nullable T value) {
             builder.addTag(cls, value);
         }
     }

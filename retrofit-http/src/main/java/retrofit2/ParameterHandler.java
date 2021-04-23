@@ -20,11 +20,12 @@ import java.io.IOException;
 import java.lang.reflect.Array;
 
 public abstract class ParameterHandler<B,T> {
-  abstract void apply(B builder, @Nullable T value) throws IOException;
+  public abstract void apply(B builder, @Nullable T value) throws IOException;
 
   final ParameterHandler<B,Iterable<T>> iterable() {
     return new ParameterHandler<B,Iterable<T>>() {
-      @Override void apply(B builder, @Nullable Iterable<T> values)
+      @Override
+      public void apply(B builder, @Nullable Iterable<T> values)
           throws IOException {
         if (values == null) return; // Skip null values.
 
@@ -37,7 +38,8 @@ public abstract class ParameterHandler<B,T> {
 
   final ParameterHandler<B,Object> array() {
     return new ParameterHandler<B,Object>() {
-      @Override void apply(B builder, @Nullable Object values) throws IOException {
+      @Override
+      public void apply(B builder, @Nullable Object values) throws IOException {
         if (values == null) return; // Skip null values.
 
         for (int i = 0, size = Array.getLength(values); i < size; i++) {
