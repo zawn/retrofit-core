@@ -25,6 +25,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
+import okhttp3.CacheControl;
 import okhttp3.Request;
 import okio.Timeout;
 import org.junit.Test;
@@ -121,12 +122,22 @@ public final class DefaultCallAdapterFactoryTest {
     }
 
     @Override
+    public void enqueue(Callback<String> callback, CacheControl cacheControl) {
+      throw new UnsupportedOperationException();
+    }
+
+    @Override
     public boolean isExecuted() {
       return false;
     }
 
     @Override
     public Response<String> execute() throws IOException {
+      throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public Response<String> execute(CacheControl cacheControl) throws IOException {
       throw new UnsupportedOperationException();
     }
 

@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.util.concurrent.Callable;
 import java.util.concurrent.atomic.AtomicBoolean;
 import javax.annotation.Nullable;
+import okhttp3.CacheControl;
 import okhttp3.Request;
 import okio.Timeout;
 import retrofit2.Call;
@@ -98,6 +99,11 @@ public final class Calls {
       throw (T) t;
     }
 
+    @Override
+    public Response<T> execute(CacheControl cacheControl) throws IOException {
+      return execute();
+    }
+
     @SuppressWarnings("ConstantConditions") // Guarding public API nullability.
     @Override
     public void enqueue(Callback<T> callback) {
@@ -114,6 +120,11 @@ public final class Calls {
       } else {
         callback.onFailure(this, error);
       }
+    }
+
+    @Override
+    public void enqueue(Callback<T> callback, CacheControl cacheControl) {
+      enqueue(callback);
     }
 
     @Override
@@ -177,8 +188,18 @@ public final class Calls {
     }
 
     @Override
+    public Response<T> execute(CacheControl cacheControl) throws IOException {
+      return getDelegate().execute(cacheControl);
+    }
+
+    @Override
     public void enqueue(Callback<T> callback) {
       getDelegate().enqueue(callback);
+    }
+
+    @Override
+    public void enqueue(Callback<T> callback, CacheControl cacheControl) {
+      getDelegate().enqueue(callback, cacheControl);
     }
 
     @Override
