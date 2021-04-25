@@ -22,6 +22,7 @@ import java.lang.reflect.Type;
 import java.util.Objects;
 import java.util.concurrent.Executor;
 import javax.annotation.Nullable;
+import okhttp3.CacheControl;
 import okhttp3.Request;
 
 final class DefaultCallAdapterFactory extends CallAdapter.Factory {
@@ -69,6 +70,10 @@ final class DefaultCallAdapterFactory extends CallAdapter.Factory {
     }
 
     @Override public void enqueue(final Callback<T> callback) {
+      enqueue(callback, null);
+    }
+
+    @Override public void enqueue(final Callback<T> callback, CacheControl cacheControl) {
       Objects.requireNonNull(callback, "callback == null");
 
       delegate.enqueue(new Callback<T>() {
@@ -86,7 +91,7 @@ final class DefaultCallAdapterFactory extends CallAdapter.Factory {
         @Override public void onFailure(Call<T> call, final Throwable t) {
           callbackExecutor.execute(() -> callback.onFailure(ExecutorCallbackCall.this, t));
         }
-      });
+      }, cacheControl);
     }
 
     @Override public boolean isExecuted() {
@@ -95,6 +100,11 @@ final class DefaultCallAdapterFactory extends CallAdapter.Factory {
 
     @Override public Response<T> execute() throws IOException {
       return delegate.execute();
+    }
+
+    @Override
+    public Response<T> execute(CacheControl cacheControl) throws IOException {
+      return delegate.execute(cacheControl);
     }
 
     @Override public void cancel() {

@@ -16,9 +16,11 @@
 package retrofit2;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Objects;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.GuardedBy;
+import okhttp3.CacheControl;
 import okhttp3.MediaType;
 import okhttp3.Request;
 import okhttp3.ResponseBody;
@@ -72,7 +74,7 @@ final class OkHttpCall<T> implements Call<T> {
       }
     }
     try {
-      return (rawCall = createRawCall()).request();
+      return (rawCall = createRawCall(null)).request();
     } catch (RuntimeException | Error e) {
       throwIfFatal(e); // Do not assign a fatal error to creationFailure.
       creationFailure = e;
@@ -84,6 +86,10 @@ final class OkHttpCall<T> implements Call<T> {
   }
 
   @Override public void enqueue(final Callback<T> callback) {
+    enqueue(callback, null);
+  }
+
+  @Override public void enqueue(final Callback<T> callback, CacheControl cacheControl) {
     Objects.requireNonNull(callback, "callback == null");
 
     okhttp3.Call call;
@@ -97,7 +103,7 @@ final class OkHttpCall<T> implements Call<T> {
       failure = creationFailure;
       if (call == null && failure == null) {
         try {
-          call = rawCall = createRawCall();
+          call = rawCall = createRawCall(cacheControl);
         } catch (Throwable t) {
           throwIfFatal(t);
           failure = creationFailure = t;
@@ -153,6 +159,10 @@ final class OkHttpCall<T> implements Call<T> {
   }
 
   @Override public Response<T> execute() throws IOException {
+    return execute(null);
+  }
+
+  @Override public Response<T> execute(CacheControl cacheControl) throws IOException {
     okhttp3.Call call;
 
     synchronized (this) {
@@ -172,7 +182,7 @@ final class OkHttpCall<T> implements Call<T> {
       call = rawCall;
       if (call == null) {
         try {
-          call = rawCall = createRawCall();
+          call = rawCall = createRawCall(cacheControl);
         } catch (IOException | RuntimeException | Error e) {
           throwIfFatal(e); //  Do not assign a fatal error to creationFailure.
           creationFailure = e;
@@ -188,8 +198,15 @@ final class OkHttpCall<T> implements Call<T> {
     return parseResponse(call.execute());
   }
 
-  private okhttp3.Call createRawCall() throws IOException {
-    okhttp3.Call call = callFactory.newCall(requestFactory.create(args));
+  private okhttp3.Call createRawCall(final CacheControl cacheControl) throws IOException {
+    Object[] copyOf;
+    if (cacheControl != null) {
+      copyOf = Arrays.copyOf(args, args.length + 1);
+      copyOf[args.length] = cacheControl;
+    } else {
+      copyOf = args;
+    }
+    okhttp3.Call call = callFactory.newCall(requestFactory.create(copyOf));
     if (call == null) {
       throw new NullPointerException("Call.Factory returned null.");
     }

@@ -22,6 +22,7 @@ import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicReference;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.GuardedBy;
+import okhttp3.CacheControl;
 import okhttp3.Request;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -55,7 +56,7 @@ final class BehaviorCall<T> implements Call<T> {
   }
 
   @SuppressWarnings("ConstantConditions") // Guarding public API nullability.
-  @Override public void enqueue(final Callback<T> callback) {
+  @Override public void enqueue(final Callback<T> callback, CacheControl cacheControl) {
     if (callback == null) throw new NullPointerException("callback == null");
 
     synchronized (this) {
@@ -107,11 +108,15 @@ final class BehaviorCall<T> implements Call<T> {
     });
   }
 
+  @Override public void enqueue(Callback<T> callback) {
+    enqueue(callback, null);
+  }
+
   @Override public synchronized boolean isExecuted() {
     return executed;
   }
 
-  @Override public Response<T> execute() throws IOException {
+  @Override public Response<T> execute(CacheControl cacheControl) throws IOException {
     final AtomicReference<Response<T>> responseRef = new AtomicReference<>();
     final AtomicReference<Throwable> failureRef = new AtomicReference<>();
     final CountDownLatch latch = new CountDownLatch(1);
@@ -137,6 +142,10 @@ final class BehaviorCall<T> implements Call<T> {
     if (failure instanceof RuntimeException) throw (RuntimeException) failure;
     if (failure instanceof IOException) throw (IOException) failure;
     throw new RuntimeException(failure);
+  }
+
+  @Override public Response<T> execute() throws IOException {
+    return execute(null);
   }
 
   @Override public void cancel() {
