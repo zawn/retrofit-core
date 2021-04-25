@@ -21,6 +21,8 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.concurrent.Executor;
 import javax.annotation.Nullable;
+
+import okhttp3.CacheControl;
 import okhttp3.Request;
 
 import static retrofit2.Utils.checkNotNull;
@@ -70,6 +72,10 @@ final class DefaultCallAdapterFactory extends CallAdapter.Factory {
     }
 
     @Override public void enqueue(final Callback<T> callback) {
+      enqueue(callback, null);
+    }
+
+    @Override public void enqueue(final Callback<T> callback, CacheControl cacheControl) {
       checkNotNull(callback, "callback == null");
 
       delegate.enqueue(new Callback<T>() {
@@ -93,7 +99,7 @@ final class DefaultCallAdapterFactory extends CallAdapter.Factory {
             }
           });
         }
-      });
+      }, cacheControl);
     }
 
     @Override public boolean isExecuted() {
@@ -102,6 +108,11 @@ final class DefaultCallAdapterFactory extends CallAdapter.Factory {
 
     @Override public Response<T> execute() throws IOException {
       return delegate.execute();
+    }
+
+    @Override
+    public Response<T> execute(CacheControl cacheControl) throws IOException {
+      return delegate.execute(cacheControl);
     }
 
     @Override public void cancel() {

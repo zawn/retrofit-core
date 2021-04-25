@@ -22,6 +22,7 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -30,6 +31,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.annotation.Nullable;
 import kotlin.coroutines.Continuation;
+import okhttp3.CacheControl;
 import okhttp3.Headers;
 import okhttp3.HttpUrl;
 import okhttp3.MediaType;
@@ -77,6 +79,9 @@ final class RequestFactory {
   private final boolean isFormEncoded;
   private final boolean isMultipart;
   private final ParameterHandler<?>[] parameterHandlers;
+  private final ParameterHandler<?>[] typeCommonHandlers;
+  private final ParamProvider paramProvider;
+
   final boolean isKotlinSuspendFunction;
 
   RequestFactory(Builder builder) {
@@ -90,10 +95,58 @@ final class RequestFactory {
     isFormEncoded = builder.isFormEncoded;
     isMultipart = builder.isMultipart;
     parameterHandlers = builder.parameterHandlers;
+    typeCommonHandlers = builder.typeCommonHandlers;
+    paramProvider = builder.paramProvider;
     isKotlinSuspendFunction = builder.isKotlinSuspendFunction;
   }
 
   okhttp3.Request create(Object[] args) throws IOException {
+
+    RequestBuilder requestBuilder = new RequestBuilder(httpMethod, baseUrl, relativeUrl,
+        headers, contentType, hasBody, isFormEncoded, isMultipart);
+
+    @SuppressWarnings("unchecked")
+    // It is an error to invoke a method with the wrong arg typeCommonHandlers.
+    ParameterHandler<Object>[] typeHandlers = (ParameterHandler<Object>[]) typeCommonHandlers;
+    if (typeHandlers != null && typeHandlers.length > 0) {
+      if (paramProvider == null) {
+        throw new IllegalArgumentException("Use type parameters must be set ParamProvider");
+      }
+      for (int i = 0; i < typeHandlers.length; i++) {
+        final ParameterHandler<Object> parameterHandler = typeHandlers[i];
+        Object value = null;
+        if (parameterHandler instanceof ParameterHandler.ParamUrl) {
+          String paramName = ((ParameterHandler.ParamUrl) parameterHandler).key;
+          value = (paramName == null) ? ((ParameterHandler.ParamUrl) parameterHandler).url
+              : paramProvider.getUrlParam(paramName);
+        }
+        if (value != null)
+          parameterHandler.apply(requestBuilder, value);
+      }
+      for (int i = 0; i < typeHandlers.length; i++) {
+        final ParameterHandler<Object> parameterHandler = typeHandlers[i];
+        Object value = null;
+        if (parameterHandler instanceof ParameterHandler.ParamHeader) {
+          String paramName = ((ParameterHandler.ParamHeader) parameterHandler).key;
+          value = (paramName == null) ? ((ParameterHandler.ParamHeader) parameterHandler).value
+              : paramProvider.getHeaderParam(paramName);
+        } else if (parameterHandler instanceof ParameterHandler.ParamQuery) {
+          String paramName = ((ParameterHandler.ParamQuery) parameterHandler).key;
+          value = (paramName == null) ? ((ParameterHandler.ParamQuery) parameterHandler).value
+              : paramProvider.getQueryParam(paramName);
+        }
+        if (value != null)
+          parameterHandler.apply(requestBuilder, value);
+      }
+    }
+
+    CacheControl cacheControl = null;
+    if (args != null && args.length - parameterHandlers.length == 1
+        && (args[args.length - 1] instanceof CacheControl)) {
+      cacheControl = (CacheControl) args[args.length - 1];
+      args = Arrays.copyOfRange(args, 0, args.length - 1);
+    }
+
     @SuppressWarnings("unchecked") // It is an error to invoke a method with the wrong arg types.
     ParameterHandler<Object>[] handlers = (ParameterHandler<Object>[]) parameterHandlers;
 
@@ -102,9 +155,6 @@ final class RequestFactory {
       throw new IllegalArgumentException("Argument count (" + argumentCount
           + ") doesn't match expected count (" + handlers.length + ")");
     }
-
-    RequestBuilder requestBuilder = new RequestBuilder(httpMethod, baseUrl, relativeUrl,
-        headers, contentType, hasBody, isFormEncoded, isMultipart);
 
     if (isKotlinSuspendFunction) {
       // The Continuation is the last parameter and the handlers array contains null at that index.
@@ -115,6 +165,11 @@ final class RequestFactory {
     for (int p = 0; p < argumentCount; p++) {
       argumentList.add(args[p]);
       handlers[p].apply(requestBuilder, args[p]);
+    }
+
+
+    if (cacheControl != null) {
+      requestBuilder.cacheControl(cacheControl);
     }
 
     return requestBuilder.get()
@@ -132,12 +187,16 @@ final class RequestFactory {
     private static final String PARAM = "[a-zA-Z][a-zA-Z0-9_-]*";
     private static final Pattern PARAM_URL_REGEX = Pattern.compile("\\{(" + PARAM + ")\\}");
     private static final Pattern PARAM_NAME_REGEX = Pattern.compile(PARAM);
+    private static final Pattern PARAM_HEADER_REGEX = Pattern.compile("\\{([^}]+)\\}");
+
 
     final Retrofit retrofit;
     final Method method;
     final Annotation[] methodAnnotations;
     final Annotation[][] parameterAnnotationsArray;
     final Type[] parameterTypes;
+    final ParamProvider paramProvider;
+    final ParameterHandler[] typeCommonHandlers;
 
     boolean gotField;
     boolean gotPart;
@@ -164,6 +223,9 @@ final class RequestFactory {
       this.methodAnnotations = method.getAnnotations();
       this.parameterTypes = method.getGenericParameterTypes();
       this.parameterAnnotationsArray = method.getParameterAnnotations();
+
+      this.typeCommonHandlers = retrofit.getTypeCommonHandlers(method.getDeclaringClass());
+      this.paramProvider = retrofit.getParamProvider(method.getDeclaringClass());
     }
 
     RequestFactory build() {
@@ -783,6 +845,15 @@ final class RequestFactory {
      */
     static Set<String> parsePathParameters(String path) {
       Matcher m = PARAM_URL_REGEX.matcher(path);
+      Set<String> patterns = new LinkedHashSet<>();
+      while (m.find()) {
+        patterns.add(m.group(1));
+      }
+      return patterns;
+    }
+
+    static Set<String> parseHeaderParameters(String header) {
+      Matcher m = PARAM_HEADER_REGEX.matcher(header);
       Set<String> patterns = new LinkedHashSet<>();
       while (m.find()) {
         patterns.add(m.group(1));

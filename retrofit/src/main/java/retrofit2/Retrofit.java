@@ -23,6 +23,7 @@ import java.lang.reflect.Proxy;
 import java.lang.reflect.Type;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -61,6 +62,7 @@ import static retrofit2.Utils.checkNotNull;
  */
 public final class Retrofit {
   private final Map<Method, ServiceMethod<?>> serviceMethodCache = new ConcurrentHashMap<>();
+  private final Map<Type, ParameterHandler[]> typeCommonHandlersCache = new LinkedHashMap<>();
 
   final okhttp3.Call.Factory callFactory;
   final HttpUrl baseUrl;
@@ -68,6 +70,7 @@ public final class Retrofit {
   final List<CallAdapter.Factory> callAdapterFactories;
   final @Nullable Executor callbackExecutor;
   final boolean validateEagerly;
+  private ParamProvider paramProvider;
 
   Retrofit(okhttp3.Call.Factory callFactory, HttpUrl baseUrl,
       List<Converter.Factory> converterFactories, List<CallAdapter.Factory> callAdapterFactories,
@@ -78,6 +81,15 @@ public final class Retrofit {
     this.callAdapterFactories = callAdapterFactories; // Copy+unmodifiable at call site.
     this.callbackExecutor = callbackExecutor;
     this.validateEagerly = validateEagerly;
+  }
+
+
+  Retrofit(okhttp3.Call.Factory callFactory, HttpUrl baseUrl,
+      List<Converter.Factory> converterFactories, List<CallAdapter.Factory> callAdapterFactories,
+      @Nullable Executor callbackExecutor, boolean validateEagerly, ParamProvider paramProvider) {
+    this(callFactory, baseUrl, converterFactories, callAdapterFactories, callbackExecutor,
+        validateEagerly);
+    this.paramProvider = paramProvider;
   }
 
   /**
@@ -132,6 +144,9 @@ public final class Retrofit {
     if (validateEagerly) {
       eagerlyValidateMethods(service);
     }
+
+    loadTypeCommonActions(service);
+
     return (T) Proxy.newProxyInstance(service.getClassLoader(), new Class<?>[] { service },
         new InvocationHandler() {
           private final Platform platform = Platform.get();
@@ -158,6 +173,27 @@ public final class Retrofit {
         loadServiceMethod(method);
       }
     }
+  }
+
+  void loadTypeCommonActions(Class service) {
+    synchronized (typeCommonHandlersCache) {
+      ParameterHandler[] requestActions = typeCommonHandlersCache.get(service);
+      if (requestActions == null) {
+        requestActions = ServiceParser.parseClassAnnotations(service, this);
+        typeCommonHandlersCache.put(service, requestActions);
+      }
+    }
+  }
+
+  ParamProvider getParamProvider(Class serivce) {
+    return paramProvider;
+  }
+
+  ParameterHandler[] getTypeCommonHandlers(Class serivce) {
+    if (!typeCommonHandlersCache.containsKey(serivce)) {
+      loadTypeCommonActions(serivce);
+    }
+    return typeCommonHandlersCache.get(serivce);
   }
 
   ServiceMethod<?> loadServiceMethod(Method method) {
@@ -399,6 +435,7 @@ public final class Retrofit {
     private final List<CallAdapter.Factory> callAdapterFactories = new ArrayList<>();
     private @Nullable Executor callbackExecutor;
     private boolean validateEagerly;
+    private ParamProvider paramProvider;
 
     Builder(Platform platform) {
       this.platform = platform;
@@ -546,6 +583,14 @@ public final class Retrofit {
     }
 
     /**
+     * Add Common Param Provider.
+     */
+    public Builder setParamProvider(ParamProvider paramProvider) {
+      this.paramProvider = checkNotNull(paramProvider, "paramProvider == null");
+      return this;
+    }
+
+    /**
      * The executor on which {@link Callback} methods are invoked when returning {@link Call} from
      * your service method.
      * <p>
@@ -612,7 +657,7 @@ public final class Retrofit {
       converterFactories.addAll(platform.defaultConverterFactories());
 
       return new Retrofit(callFactory, baseUrl, unmodifiableList(converterFactories),
-          unmodifiableList(callAdapterFactories), callbackExecutor, validateEagerly);
+          unmodifiableList(callAdapterFactories), callbackExecutor, validateEagerly, paramProvider);
     }
   }
 }
