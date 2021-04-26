@@ -25,7 +25,7 @@
 
   <groupId>com.appunity.retrofit2</groupId>
   <artifactId>parent</artifactId>
-  <version>2.7.3-SNAPSHOT</version>
+  <version>2.6.5-SNAPSHOT</version>
   <packaging>pom</packaging>
 
   <name>Retrofit (Parent)</name>
@@ -41,6 +41,11 @@
   </modules>
 
   <properties>
+
+    <bintray.subject>zhangzhenli</bintray.subject>
+    <bintray.repo>maven</bintray.repo>
+    <bintray.package>Retrofit</bintray.package>
+
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.sourceEncoding>UTF-8</project.reporting.sourceEncoding>
 
@@ -335,6 +340,27 @@
           </signature>
         </configuration>
       </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-source-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>attach-sources</id>
+            <goals>
+              <goal>jar</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
     </plugins>
   </build>
+
+
+  <distributionManagement>
+    <repository>
+      <id>bintray</id>
+      <url>https://api.bintray.com/maven/${bintray.subject}/${bintray.repo}/${bintray.package}/;publish=1</url>
+    </repository>
+  </distributionManagement>
+
 </project>
