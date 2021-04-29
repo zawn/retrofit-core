@@ -34,12 +34,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.annotation.Nullable;
 import kotlin.coroutines.Continuation;
-import okhttp3.CacheControl;
-import okhttp3.Headers;
-import okhttp3.HttpUrl;
-import okhttp3.MediaType;
-import okhttp3.MultipartBody;
-import okhttp3.RequestBody;
+import okhttp3.*;
+import org.jetbrains.annotations.NotNull;
 import retrofit2.http.Body;
 import retrofit2.http.DELETE;
 import retrofit2.http.Field;
@@ -80,6 +76,7 @@ final class RequestFactory {
   private final boolean isMultipart;
   private final ParameterHandler<?>[] parameterHandlers;
   private final ParameterHandler<?>[] typeCommonHandlers;
+  private final Converter<Object, RequestBody> requestBodyConverter;
   private final ParamProvider paramProvider;
 
   final boolean isKotlinSuspendFunction;
@@ -98,6 +95,7 @@ final class RequestFactory {
     typeCommonHandlers = builder.typeCommonHandlers;
     paramProvider = builder.paramProvider;
     isKotlinSuspendFunction = builder.isKotlinSuspendFunction;
+    requestBodyConverter = builder.requestBodyConverter;
   }
 
   okhttp3.Request create(Object[] args) throws IOException {
@@ -110,6 +108,7 @@ final class RequestFactory {
             headers,
             contentType,
             hasBody,
+            requestBodyConverter,
             isFormEncoded,
             isMultipart);
 
@@ -229,6 +228,7 @@ final class RequestFactory {
     @Nullable Set<String> relativeUrlParamNames;
     @Nullable ParameterHandler<?>[] parameterHandlers;
     boolean isKotlinSuspendFunction;
+    private Converter<Object, RequestBody> requestBodyConverter;
 
     Builder(Retrofit retrofit, Method method) {
       this.retrofit = retrofit;
@@ -277,6 +277,33 @@ final class RequestFactory {
       if (!isFormEncoded && !isMultipart && !hasBody && gotBody) {
         throw methodError(method, "Non-body HTTP method cannot contain @Body.");
       }
+      if (gotField) {
+        if (contentType != null
+            && !MediaType.get("application/x-www-form-urlencoded").equals(contentType)) {
+          Converter.Factory skipPast = findSkipFactory();
+          try {
+            requestBodyConverter =
+                retrofit.nextRequestBodyConverter(
+                    skipPast, FormBody.class, new Annotation[0], methodAnnotations);
+          } catch (IllegalArgumentException ignore) {
+          }
+        }
+      }
+      if (gotPart) {
+        if (contentType != null
+            && !MultipartBody.MIXED.equals(contentType)
+            && !MultipartBody.ALTERNATIVE.equals(contentType)
+            && !MultipartBody.PARALLEL.equals(contentType)
+            && !MultipartBody.FORM.equals(contentType)) {
+          Converter.Factory skipFactory = findSkipFactory();
+          try {
+            requestBodyConverter =
+                retrofit.nextRequestBodyConverter(
+                    skipFactory, MultipartBody.class, new Annotation[0], methodAnnotations);
+          } catch (IllegalArgumentException ignore) {
+          }
+        }
+      }
       if (isFormEncoded && !gotField) {
         throw methodError(method, "Form-encoded method must contain at least one @Field.");
       }
@@ -285,6 +312,17 @@ final class RequestFactory {
       }
 
       return new RequestFactory(this);
+    }
+
+    @NotNull
+    private Converter.Factory findSkipFactory() {
+      List<Converter.Factory> factories = retrofit.converterFactories();
+      for (Converter.Factory factory : factories) {
+        if (factory instanceof BuiltInConverters) {
+          return factory;
+        }
+      }
+      return null;
     }
 
     private void parseMethodAnnotation(Annotation annotation) {

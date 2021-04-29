@@ -64,6 +64,7 @@ final class RequestBuilder {
   private final boolean hasBody;
   private @Nullable MultipartBody.Builder multipartBuilder;
   private @Nullable FormBody.Builder formBuilder;
+  private @Nullable Converter<Object, RequestBody> requestBodyConverter;
   private @Nullable RequestBody body;
 
   RequestBuilder(
@@ -73,6 +74,7 @@ final class RequestBuilder {
       @Nullable Headers headers,
       @Nullable MediaType contentType,
       boolean hasBody,
+      Converter<Object, RequestBody> requestBodyConverter,
       boolean isFormEncoded,
       boolean isMultipart) {
     this.method = method;
@@ -88,6 +90,7 @@ final class RequestBuilder {
       headersBuilder = new Headers.Builder();
     }
 
+    this.requestBodyConverter = requestBodyConverter;
     if (isFormEncoded) {
       // Will be set to 'body' in 'build'.
       formBuilder = new FormBody.Builder();
@@ -234,7 +237,7 @@ final class RequestBuilder {
     requestBuilder.tag(cls, value);
   }
 
-  Request.Builder get() {
+  Request.Builder get() throws IOException {
     HttpUrl url;
     url = buildHttpUrl();
 
@@ -254,6 +257,9 @@ final class RequestBuilder {
     MediaType contentType = this.contentType;
     if (contentType != null) {
       if (body != null) {
+        if (requestBodyConverter != null) {
+          body = requestBodyConverter.convert(body);
+        }
         body = new ContentTypeOverridingRequestBody(body, contentType);
       } else {
         headersBuilder.add("Content-Type", contentType.toString());

@@ -40,6 +40,7 @@ import okhttp3.ResponseBody;
 import okio.Buffer;
 import org.junit.Ignore;
 import org.junit.Test;
+import retrofit2.helpers.FormToStringConverterFactory;
 import retrofit2.helpers.NullObjectConverterFactory;
 import retrofit2.helpers.ToStringConverterFactory;
 import retrofit2.http.Body;
@@ -2950,6 +2951,49 @@ public final class RequestFactoryTest {
       }
     }
     Request request = buildRequest(Example.class, "bar", "pong");
+    assertBody(request.body(), "foo=bar&ping=pong");
+    assertThat(request.body().contentType().toString()).isEqualTo("text/not-plain");
+  }
+
+  @Test
+  public void contentTypeAnnotationHeaderOverridesConvertFormUrlEncoded() {
+    class Example {
+      @FormUrlEncoded //
+      @POST("/foo") //
+      @Headers("Content-Type: text/not-plain") //
+      Call<ResponseBody> method(@Field("foo") String foo, @Field("ping") String ping) {
+        return null;
+      }
+    }
+
+    Retrofit.Builder retrofitBuilder =
+        new Retrofit.Builder()
+            .baseUrl("http://example.com/")
+            .addConverterFactory(new ToStringConverterFactory())
+            .addConverterFactory(new FormToStringConverterFactory());
+    Request request = buildRequest(Example.class, retrofitBuilder, "bar", "pong");
+    assertBody(request.body(), "foo=bar;ping=pong;");
+    assertThat(request.body().contentType().toString()).isEqualTo("text/not-plain");
+  }
+
+  @Test
+  public void contentTypeAnnotationHeaderOverridesConvertMultipart() {
+    class Example {
+      @Multipart //
+      @POST("/foo") //
+      @Headers("Content-Type: text/not-plain") //
+      Call<ResponseBody> method(@Part("foo") String foo, @Part("ping") String ping) {
+        return null;
+      }
+    }
+
+    Retrofit.Builder retrofitBuilder =
+        new Retrofit.Builder()
+            .baseUrl("http://example.com/")
+            .addConverterFactory(new ToStringConverterFactory())
+            .addConverterFactory(new FormToStringConverterFactory());
+    Request request = buildRequest(Example.class, retrofitBuilder, "bar", "pong");
+    assertBody(request.body(), "foo=bar;ping=pong;");
     assertThat(request.body().contentType().toString()).isEqualTo("text/not-plain");
   }
 
