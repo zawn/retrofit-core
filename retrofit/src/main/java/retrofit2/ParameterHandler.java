@@ -536,7 +536,7 @@ abstract class ParameterHandler<T> {
         }
       }
       if (resultValue != null && !"".equals(resultValue)) {
-        builder.addHeader(name, resultValue);
+        builder.addHeader(name, resultValue.trim());
       }
     }
 
