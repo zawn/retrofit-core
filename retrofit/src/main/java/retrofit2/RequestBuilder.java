@@ -275,6 +275,9 @@ final class RequestBuilder {
       url = baseUrl;
       if (serviceUrl != null) {
         url = url.resolve(serviceUrl);
+        if (url == null) {
+            url = HttpUrl.get(serviceUrl);
+        }
         serviceUrl = null;
       }
       if (relativeUrl != null) {
