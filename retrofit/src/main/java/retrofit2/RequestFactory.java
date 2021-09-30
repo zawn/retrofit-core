@@ -140,12 +140,6 @@ final class RequestFactory {
               (paramName == null)
                   ? ((ParameterHandler.ParamHeader) parameterHandler).value
                   : paramProvider.getHeaderParam(paramName);
-        } else if (parameterHandler instanceof ParameterHandler.ParamQuery) {
-          String paramName = ((ParameterHandler.ParamQuery) parameterHandler).key;
-          value =
-              (paramName == null)
-                  ? ((ParameterHandler.ParamQuery) parameterHandler).value
-                  : paramProvider.getQueryParam(paramName);
         }
         if (value != null) parameterHandler.apply(requestBuilder, value);
       }
@@ -176,11 +170,34 @@ final class RequestFactory {
       // The Continuation is the last parameter and the handlers array contains null at that index.
       argumentCount--;
     }
-
     List<Object> argumentList = new ArrayList<>(argumentCount);
     for (int p = 0; p < argumentCount; p++) {
-      argumentList.add(args[p]);
-      handlers[p].apply(requestBuilder, args[p]);
+      ParameterHandler<Object> parameterHandler = handlers[p];
+      if (parameterHandler instanceof ParameterHandler.Path) {
+        argumentList.add(args[p]);
+        parameterHandler.apply(requestBuilder, args[p]);
+      }
+    }
+    if (typeHandlers != null && typeHandlers.length > 0) {
+      for (int i = 0; i < typeHandlers.length; i++) {
+        final ParameterHandler<Object> parameterHandler = typeHandlers[i];
+        Object value = null;
+        if (parameterHandler instanceof ParameterHandler.ParamQuery) {
+          String paramName = ((ParameterHandler.ParamQuery) parameterHandler).key;
+          value =
+              (paramName == null)
+                  ? ((ParameterHandler.ParamQuery) parameterHandler).value
+                  : paramProvider.getQueryParam(paramName);
+        }
+        if (value != null) parameterHandler.apply(requestBuilder, value);
+      }
+    }
+    for (int p = 0; p < argumentCount; p++) {
+      ParameterHandler<Object> parameterHandler = handlers[p];
+      if (!(parameterHandler instanceof ParameterHandler.Path)) {
+        argumentList.add(args[p]);
+        handlers[p].apply(requestBuilder, args[p]);
+      }
     }
 
     if (cacheControl != null) {
@@ -218,15 +235,21 @@ final class RequestFactory {
     boolean gotQueryName;
     boolean gotQueryMap;
     boolean gotUrl;
-    @Nullable String httpMethod;
+    @Nullable
+    String httpMethod;
     boolean hasBody;
     boolean isFormEncoded;
     boolean isMultipart;
-    @Nullable String relativeUrl;
-    @Nullable Headers headers;
-    @Nullable MediaType contentType;
-    @Nullable Set<String> relativeUrlParamNames;
-    @Nullable ParameterHandler<?>[] parameterHandlers;
+    @Nullable
+    String relativeUrl;
+    @Nullable
+    Headers headers;
+    @Nullable
+    MediaType contentType;
+    @Nullable
+    Set<String> relativeUrlParamNames;
+    @Nullable
+    ParameterHandler<?>[] parameterHandlers;
     boolean isKotlinSuspendFunction;
     private Converter<Object, RequestBody> requestBodyConverter;
 
@@ -419,7 +442,8 @@ final class RequestFactory {
       return builder.build();
     }
 
-    private @Nullable ParameterHandler<?> parseParameter(
+    private @Nullable
+    ParameterHandler<?> parseParameter(
         int p, Type parameterType, @Nullable Annotation[] annotations, boolean allowContinuation) {
       ParameterHandler<?> result = null;
       if (annotations != null) {
