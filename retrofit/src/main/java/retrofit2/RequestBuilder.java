@@ -134,7 +134,7 @@ final class RequestBuilder {
   void addPathParam(String name, String value, boolean encoded) {
     if (relativeUrl == null) {
       // The relative URL is cleared when the first query parameter is set.
-      throw new AssertionError();
+      throw new AssertionError("The current request has an error while add the path :" + name + "=" + value);
     }
     String replacement = canonicalizeForPath(value, encoded);
     String newRelativeUrl = relativeUrl.replace("{" + name + "}", replacement);
