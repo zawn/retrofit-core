@@ -3,46 +3,46 @@ import org.gradle.internal.jvm.Jvm
 
 buildscript {
   ext.versions = [
-      'kotlin': '1.3.50',
-      'okhttp': '3.14.9',
+      'kotlin'  : '1.3.50',
+      'okhttp'  : '3.14.9',
       'protobuf': '3.10.0',
-      'jaxb': '2.3.1',
-      'robovm': '2.3.9',
+      'jaxb'    : '2.3.1',
+      'robovm'  : '2.3.9',
   ]
   ext.deps = [
-      'kotlinStdLib': "org.jetbrains.kotlin:kotlin-stdlib:${versions.kotlin}",
-      'kotlinCoroutines': 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.2',
-      'okhttp': "com.squareup.okhttp3:okhttp:${versions.okhttp}",
-      'mockwebserver': "com.squareup.okhttp3:mockwebserver:${versions.okhttp}",
-      'junit': 'junit:junit:4.13',
-      'assertj': 'org.assertj:assertj-core:3.13.2',
-      'guava': 'com.google.guava:guava:28.1-jre',
-      'android': 'com.google.android:android:4.1.1.4',
+      'kotlinStdLib'            : "org.jetbrains.kotlin:kotlin-stdlib:${versions.kotlin}",
+      'kotlinCoroutines'        : 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.2',
+      'okhttp'                  : "com.squareup.okhttp3:okhttp:${versions.okhttp}",
+      'mockwebserver'           : "com.squareup.okhttp3:mockwebserver:${versions.okhttp}",
+      'junit'                   : 'junit:junit:4.13',
+      'assertj'                 : 'org.assertj:assertj-core:3.13.2',
+      'guava'                   : 'com.google.guava:guava:28.1-jre',
+      'android'                 : 'com.google.android:android:4.1.1.4',
       'animalSnifferAnnotations': 'org.codehaus.mojo:animal-sniffer-annotations:1.18',
-      'findBugsAnnotations': 'com.google.code.findbugs:jsr305:3.0.2',
-      'androidxTestRunner': 'androidx.test:runner:1.1.0',
-      'rxjava': 'io.reactivex:rxjava:1.3.8',
-      'rxjava2': 'io.reactivex.rxjava2:rxjava:2.0.0',
-      'rxjava3': 'io.reactivex.rxjava3:rxjava:3.0.0',
-      'reactiveStreams': 'org.reactivestreams:reactive-streams:1.0.3',
-      'scalaLibrary': 'org.scala-lang:scala-library:2.13.1',
-      'gson': 'com.google.code.gson:gson:2.8.5',
-      'jacksonDatabind': 'com.fasterxml.jackson.core:jackson-databind:2.10.5.1',
-      'jaxbApi': "javax.xml.bind:jaxb-api:${versions.jaxb}",
-      'jaxbImpl': "org.glassfish.jaxb:jaxb-runtime:${versions.jaxb}",
-      'moshi': 'com.squareup.moshi:moshi:1.8.0',
-      'protobuf': "com.google.protobuf:protobuf-java:${versions.protobuf}",
-      'simpleXml': 'org.simpleframework:simple-xml:2.7.1',
-      'wireRuntime': 'com.squareup.wire:wire-runtime:2.2.0',
-      'jsoup': 'org.jsoup:jsoup:1.12.1',
-      'robovm': "com.mobidevelop.robovm:robovm-rt:${versions.robovm}",
+      'findBugsAnnotations'     : 'com.google.code.findbugs:jsr305:3.0.2',
+      'androidxTestRunner'      : 'androidx.test:runner:1.1.0',
+      'rxjava'                  : 'io.reactivex:rxjava:1.3.8',
+      'rxjava2'                 : 'io.reactivex.rxjava2:rxjava:2.0.0',
+      'rxjava3'                 : 'io.reactivex.rxjava3:rxjava:3.0.0',
+      'reactiveStreams'         : 'org.reactivestreams:reactive-streams:1.0.3',
+      'scalaLibrary'            : 'org.scala-lang:scala-library:2.13.1',
+      'gson'                    : 'com.google.code.gson:gson:2.8.5',
+      'jacksonDatabind'         : 'com.fasterxml.jackson.core:jackson-databind:2.10.5.1',
+      'jaxbApi'                 : "javax.xml.bind:jaxb-api:${versions.jaxb}",
+      'jaxbImpl'                : "org.glassfish.jaxb:jaxb-runtime:${versions.jaxb}",
+      'moshi'                   : 'com.squareup.moshi:moshi:1.8.0',
+      'protobuf'                : "com.google.protobuf:protobuf-java:${versions.protobuf}",
+      'simpleXml'               : 'org.simpleframework:simple-xml:2.7.1',
+      'wireRuntime'             : 'com.squareup.wire:wire-runtime:2.2.0',
+      'jsoup'                   : 'org.jsoup:jsoup:1.12.1',
+      'robovm'                  : "com.mobidevelop.robovm:robovm-rt:${versions.robovm}",
   ]
 
   dependencies {
     classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:${versions.kotlin}"
     classpath 'net.ltgt.gradle:gradle-errorprone-plugin:0.8.1'
     classpath 'com.android.tools.build:gradle:3.6.2'
-    classpath 'com.vanniktech:gradle-maven-publish-plugin:0.9.0'
+    classpath 'com.vanniktech:gradle-maven-publish-plugin:0.18.0'
     classpath 'com.google.protobuf:protobuf-gradle-plugin:0.8.12'
     classpath 'ru.vyarus:gradle-animalsniffer-plugin:1.5.0'
     classpath 'gradle.plugin.com.github.sherter.google-java-format:google-java-format-gradle-plugin:0.9'
@@ -54,6 +54,12 @@ buildscript {
     jcenter()
     gradlePluginPortal()
   }
+}
+
+def localReleaseDest = "${rootProject.getRootDir()}/repo"
+
+def isUploadRemoteMaven() {
+  return hasProperty('publish_is_upload_remote') ? publish_is_upload_remote.toBoolean() : false
 }
 
 subprojects {
@@ -70,6 +76,8 @@ subprojects {
   }
 
   apply plugin: 'net.ltgt.errorprone'
+  apply plugin: 'maven-publish'
+  apply plugin: 'signing'
 
   dependencies {
     errorproneJavac 'com.google.errorprone:javac:9+181-r4173-1'
@@ -87,6 +95,7 @@ subprojects {
       check('UnusedVariable', CheckSeverity.ERROR)
     }
   }
+
 
   plugins.withId('java-library') {
     // Animal Sniffer only works on JDK 11 or older currently.
@@ -128,6 +137,72 @@ subprojects {
           onlyIf { verify.state.failure != null }
         }
         verify.finalizedBy(prompt)
+      }
+    }
+    def props = new Properties()
+    def file = file(project.projectDir.toString() + "/gradle.properties")
+    if (file.exists()) {
+      file.withInputStream { props.load(it) }
+      def pom_artifact_id = props.getProperty("POM_ARTIFACT_ID")
+      if (pom_artifact_id != null && !pom_artifact_id.isEmpty()) {
+        java {
+          withJavadocJar()
+          withSourcesJar()
+        }
+
+        publishing {
+          repositories {
+            maven {
+              url = localReleaseDest
+
+              if (isUploadRemoteMaven()) {
+                credentials {
+                  username rootProject.nexus_username
+                  password rootProject.nexus_password
+                }
+                def releasesRepoUrl = rootProject.release_repository_url
+                def snapshotsRepoUrl = rootProject.snapshot_repository_url
+                url = rootProject.VERSION_NAME.endsWith('SNAPSHOT') ? snapshotsRepoUrl : releasesRepoUrl
+              }
+
+            }
+          }
+          publications {
+            mavenJava(MavenPublication) {
+
+              from components.java
+              groupId = rootProject.GROUP
+              artifactId = pom_artifact_id
+              version = rootProject.VERSION_NAME
+              pom {
+                name = project.POM_NAME
+                description = project.POM_DESCRIPTION
+                url = rootProject.POM_URL
+                licenses {
+                  license {
+                    name = rootProject.POM_LICENCE_NAME
+                    url = rootProject.POM_LICENCE_URL
+                  }
+                }
+                developers {
+                  developer {
+                    id = rootProject.POM_DEVELOPER_ID
+                    name = rootProject.POM_DEVELOPER_NAME
+                  }
+                }
+                scm {
+                  connection = rootProject.POM_SCM_CONNECTION
+                  developerConnection = rootProject.POM_SCM_DEV_CONNECTION
+                  url = rootProject.POM_SCM_URL
+                }
+              }
+            }
+          }
+        }
+
+        signing {
+          sign publishing.publications.mavenJava
+        }
       }
     }
   }
